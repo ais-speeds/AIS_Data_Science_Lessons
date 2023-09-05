@@ -1,0 +1,90 @@
+---
+title: "Tutorial Template Python"
+description: "Exploring the Iris Dataset"
+format:
+  html:
+    code-fold: false
+jupyter:
+    kernel: anaconda_quarto
+---
+
+## Introduction
+
+This is a template tutorial. The Iris dataset is explored here as an example in Python. 
+
+## Loading Required Libraries
+
+We'll start by importing necessary libraries. `sklearn` helps us load the Iris dataset, `pandas` allows us to work with data frames, and `seaborn` assists in data visualization.
+
+```{python}
+from sklearn.datasets import load_iris
+import pandas as pd
+import seaborn as sns
+```
+
+## Loading Iris Dataset
+
+Next, we'll load the Iris dataset and check its keys to understand the available information.
+
+
+```{python}
+iris = load_iris()
+print(iris.keys())
+```
+
+## Creating a Data Frame
+
+We'll transform the Iris dataset into a Pandas data frame for easier manipulation and print its dimensions.
+
+
+```{python}
+iris_data = pd.DataFrame(data=iris['data'], columns=iris['feature_names'])
+print("Dimensions of the dataset:", iris_data.shape)
+```
+
+## Previewing the Data
+
+Let's take a look at the first few rows of our dataset.
+
+```{python}
+iris_data.head()
+```
+
+## Descriptive Statistics
+
+We'll obtain some descriptive statistics to understand the dataset better.
+
+```{python}
+iris_data.describe()
+```
+
+## Adding Target Variables
+
+Now, we'll add target variables, including names of the species, to our dataset.
+
+```{python}
+iris_data['target'] = iris['target']
+iris_data['target_names'] = iris_data['target'].apply(lambda x: iris['target_names'][x])
+iris_data
+```
+
+## Checking for Missing Values
+
+Let's make sure that our dataset doesn't contain any missing values.
+
+```{python}
+print(iris_data.isnull().sum())
+```
+
+## Visualizing Pairwise Relationships
+
+Finally, we'll create a pair plot to visualize pairwise relationships between variables, separated by the species.
+
+
+```{python}
+sns.pairplot(iris_data, hue='target')
+```
+
+## Conclusion
+
+Through this tutorial, we explored the Iris dataset, transformed it into a convenient format, obtained descriptive statistics, and visualized pairwise relationships. This is a foundational step in any data analysis project.
