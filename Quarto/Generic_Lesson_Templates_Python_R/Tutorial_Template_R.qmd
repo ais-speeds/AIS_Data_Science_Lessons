@@ -1,0 +1,60 @@
+---
+title: "Tutorial Template R"
+description: "Exploring the Iris Dataset"
+format:
+  html:
+    code-fold: false
+---
+
+## Introduction
+
+This is a template tutorial. The Iris dataset is explored here as an example in R. 
+
+## Loading Iris Dataset
+
+In R, the Iris dataset comes preloaded, so we can directly start working with it.
+
+## Previewing the Data
+
+Let's take a look at the first few rows of our dataset.
+
+```{r}
+head(iris)
+```
+
+## Descriptive Statistics
+
+We'll obtain some descriptive statistics to understand the dataset better.
+
+```{r}
+summary(iris)
+```
+
+## Checking for Missing Values
+
+Let's make sure that our dataset doesn't contain any missing values.
+
+```{r}
+sum(is.na(iris))
+```
+
+## Checking the Dimensions of the Dataset
+
+We'll print the dimensions of our dataset to understand its structure.
+
+```{r}
+print(paste("Dimensions of the dataset:", paste(dim(iris), collapse = " x ")))
+```
+
+## Visualizing Pairwise Relationships
+
+Finally, we'll create a pair plot to visualize pairwise relationships between variables, separated by the species.
+
+```{r}
+library(ggplot2)
+pairs(iris[1:4], main = "Iris Data", pch = 21, bg = c("red", "green3", "blue")[unclass(iris$Species)])
+```
+
+## Conclusion
+
+Through this tutorial, we explored the Iris dataset, obtained descriptive statistics, and visualized pairwise relationships. This is a foundational step in any data analysis project.
