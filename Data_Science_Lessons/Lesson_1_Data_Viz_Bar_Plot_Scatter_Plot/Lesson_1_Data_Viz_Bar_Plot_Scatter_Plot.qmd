@@ -1,0 +1,1197 @@
+---
+title: "Lesson 1 - Data Visualization - Scatter and Bar Plots - FIFA Women's World Cup 2023 Data"
+author: "Sports Data Analytics Team, La Trobe University, Australia"
+date: "14-Sep-2023"
+format:
+  html:
+    code-fold: false
+editor: visual
+---
+
+```{css, echo = FALSE}
+.justify {
+  text-align: justify !important;
+}
+```
+
+::: justify
+**LESSON LEVEL: BRONZE**
+
+# Abstract
+
+This document offers a comprehensive, step-by-step lesson on data visualization techniques exploiting the powerful `ggplot2` library. Utilizing the StatsBomb open-source dataset from the FIFA Women's World Cup 2023, we explore an array of visualization tools to gain insights into team and player performance, and penalty shootout outcomes. The lesson focuses on **bar** and **scatter** **plots** and provides an in-depth guidance on creating **grouped and stacked bar plots**, as well as **regular, tiled scatter plots** and scatter plots enhanced with **kernel density estimations**. The R programming language serves as the backbone for our analysis, employed not just for computations but also for creating visually appealing and informative graphics. This lesson is aimed at sports and exercise science practitioners, sports analysts, and data science enthusiasts interested in working with sports data.
+
+**TIP:** This lesson includes annotated code blocks, where comments clarify the purpose and function of each code segment. However, to fully understand the impact of a specific plot customization function, the best way is to temporarily comment out that line of code and observe the resulting changes in the visualization. For those using RStudio on macOS, the keyboard shortcut for commenting out a line(s) of code is `Shift+Cmd+C`.
+
+**KEYWORDS:** bar plot, grouped bar plot, stacked bar plot, scatter plot, tiled scatter plot, density plot, ggplot, Matildas, StatsBomb, football (soccer)
+
+**Learning Outcomes:** by the end of this lesson, you will be proficient in:
+
+-   defining what bar and scatter plots are
+
+-   distinguishing between different types of bar and scatter plot
+
+-   identifying when bar and scatter plots are the most suitable forms of data visualization
+
+-   preparing data in the format suitable for bar and scatter plotting
+
+-   creating bar and scatter plots and customizing their appearance
+
+# Introducing `ggplot2`
+
+The ggplot2 library is the cornerstone of this lesson. This powerful R-based plotting system allows for a great degree of customization, making it an invaluable tool for anyone aiming to create sophisticated data visualizations. ggplot2 operates on the principle of layering: you start with a basic plot and add layers of aesthetics and geometry to enhance its functionality and appearance. Each layer adds depth, detail, or context, essentially building your plot one piece at a time. This makes the process not only flexible but also highly intuitive.
+
+# Introducing Bar Plots and Scatter Plots
+
+## Bar Plots
+
+A bar plot is a data visualization that represents the relationship between a numerical and a categorical variable, where each category is represented by a rectangular bar. The length or height of the bar is proportional to the numerical value it represents.
+
+### Types of Bar Plots
+
+-   **Grouped Bar Plot**: This type displays bars for multiple categories of data side by side, typically to compare different sub-groups. For example, in the context of football (soccer), this could be used to compare the number of goals, shots, and penalties for different teams in a tournament.
+
+-   **Stacked Bar Plot**: Here, the bars are stacked on top of each other, representing the total of the numerical values for each category. This is particularly useful for visualizing compositional data, such as the breakdown of goals scored via different methods---right foot, left foot, header, penalty etc.---for each team.
+
+### When to choose Bar Plots in Sports
+
+Bar plots are efficient for showing the relationship between numerical and categorical data. If you're interested in comparing specific metrics across different categories---like player performance in various matches---a bar plot can offer clear, immediate insights.
+
+### Comparison of functions for Bar Plots
+
+-   **`geom_bar`**: This `ggplot2` function is designed to create bar charts with powerful layering options. It defaults to counting the number of cases at each level of a given variable.
+
+-   **`geom_col`**: Also in `ggplot2`, this function assumes that your data is already summarized and displays the **`y`** values as the heights of the bars.
+
+-   **`barplot`**: A base R function that is less flexible and customizable compared to `ggplot`'s `geom_bar` and `geom_col`.
+
+**Note**: For more complex, multi-layered plots, **`geom_bar`** and **`geom_col`** are preferable due to their flexibility and compatibility with `ggplot2` layers.
+
+## Scatter Plots
+
+A scatter plot visualizes the relationship between two numerical variables by plotting points on a two-dimensional plane. Each point represents an observation in your dataset.
+
+### Types of Scatter Plots
+
+-   **Multidimensional Scatter Plot**: This extends the basic scatter plot by adding extra dimensions through the color, shape, or size of the points. For example, in football, you could use this to show player positions on the field while also encoding the number of goals or assists with color or shape.
+
+-   **Tiled Map of Scatter Plots**: This is essentially a grid of scatter plots, each showing a different subset of the data. For instance, you could have a tiled map displaying how different metrics like player ball possession time, passing accuracy, and shots on goal evolve over a season.
+
+-   **Scatter Plot with Kernel Density Estimation**: This adds a points distribution density over the scatter plot, giving you an idea of where data points are most concentrated. For example, this could show where on the field most goals are scored.
+
+### **When to Choose Scatter Plots in Sports**
+
+Scatter plots are best suited for exploring relationships between numerical variables. For instance, to understand the correlation between a player's number of shots on goal and the number of goals scored, a scatter plot can provide intuitive and actionable insights.
+
+**Note**: The primary function for creating scatter plots in ggplot2 is **`geom_point()`**, which offers great flexibility in customization, allowing for more detailed and insightful visualizations.
+
+#### Common Pitfalls
+
+-   For bar plots, it's important not to mistake them for histograms. Also, consider using horizontal orientation for long labels and sort your bars for better insight.
+
+By carefully choosing the appropriate type of bar or scatter plot, you can effectively communicate complex patterns and relationships in your sports data, offering valuable insights for decision-making in, e.g., player evaluation and team performance analysis.
+
+# Data loading and cleaning
+
+In this lesson, we will utilize open-access data provided by StatsBomb - a football analytics company and one of the world leading football data providers. We will exploit the `StatsBombR` package in R, which allows for efficient access to the StatsBomb data.
+
+In order to install R libraries required for this lesson (if they are not already installed on your computer), run the command `install.packages("NameOfPackage")` in your R console. Below is the list of R libraries that would be required for this lesson.
+:::
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+rm(list = ls()) # clean the workspace
+
+# Load required libraries
+library(StatsBombR)    # For accessing and handling StatsBomb football data
+library(tidyverse)     # For data manipulation and visualization
+library(ggrepel)       # To avoid label overlap in plots
+library(ggsoccer)      # For plotting soccer pitches
+library(RColorBrewer)  # For colorblind-friendly palettes
+library(grid)          # For lower-level graphics functions
+library(png)           # To read and write PNG images
+library(gridExtra)     # For arranging multiple grid-based plots
+library(cowplot)       # For enhancing and customizing ggplot figures
+library(forcats)       # For categorical variable (factor) manipulation
+```
+
+::: justify
+The very first step is to pull and load the StatsBomb dataset and extract data that we are interested in for this lesson. Below is the code that does exactly this.
+:::
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+# ---- Load and Tidy Up StatsBomb data ----
+
+#* Pull and load free StatsBomb data ----
+
+# Measure the time it takes to execute the code within the system.time brackets (for performance)
+system.time({ 
+  # Fetch list of all available competitions
+  all_comps <- FreeCompetitions() 
+  
+  # Filter to get only the 2023 FIFA Women's World Cup data (Competition ID 72, Season ID 107)
+  Comp <- all_comps %>%
+    filter(competition_id == 72 & season_id == 107) 
+  
+  # Fetch all matches of the selected competition
+  Matches <- FreeMatches(Comp) 
+  
+  # Download all match events and parallelize to speed up the process
+  StatsBombData <- free_allevents(MatchesDF = Matches, Parallel = T) 
+  
+  # Clean the data
+  StatsBombData = allclean(StatsBombData) 
+})
+
+# Show the column names of the final StatsBombData dataframe
+names(StatsBombData)
+```
+
+::: justify
+Once we've loaded the data we need and had a brief look at it to familiarize ourselves with the structure of the StatsBombData dataframe, we can tidy up the teams' names, like it's shown in the code below.
+:::
+
+```{r}
+#* Tidy up the teams' names ----
+
+# Create a dataframe containing unique names of all teams at FWWC23
+WWC_teams <- data.frame(team_name = unique(StatsBombData$team.name)) 
+
+# Remove the " Women's" part from team names for simplicity
+StatsBombData$team.name <- gsub(" Women's", "", StatsBombData$team.name) 
+
+# Rename and simplify team names in the 'Matches' data frame
+Matches <- Matches %>%
+  rename(
+    home_team = home_team.home_team_name, 
+    away_team = away_team.away_team_name  
+  ) %>%
+  mutate(
+    home_team = gsub(" Women's", "", home_team),
+    away_team = gsub(" Women's", "", away_team) 
+  )
+```
+
+::: justify
+Now we are all set to conduct data analysis and produce bar and scatter plot visualizations of the metrics we are interested in. We begin with a grouped bar plot.
+
+# Grouped bar plot
+
+## Libraries This Section Relies On
+
+-   **`ggplot2`**: For creating the bar plot and customizing its appearance.
+
+-   **`dplyr`**: For data manipulation such as filtering and summarizing.
+
+-   **`ggpubr`**: For adding the StatsBomb logo using **`ggdraw()`**.
+
+## Data Preprocessing
+
+### Data Filtering
+
+The code filters out unnecessary columns from the StatsBombData data frame and focuses only on shots that are not penalties. It also narrows down the shot outcomes to specific categories: Goal, Off T, Saved, Saved to Post, and Post.
+:::
+
+```{r}
+# ---- Grouped Bar Plot ----
+### Shot Outcome by Distance
+
+#* Filter the data ----
+
+# Select only relevant columns and filter the dataset to include only shots that are not penalties
+shot_outcomes <- StatsBombData%>%
+  select(player.name, team.name, type.name, shot.type.name, shot.outcome.name, DistToGoal)%>%
+  filter(type.name == "Shot" & (shot.type.name != "Penalty"|is.na(shot.type.name)))%>%
+  filter(shot.outcome.name %in% c("Goal", "Off T", "Saved", "Saved to Post", "Post"))
+```
+
+::: justify
+### **Consolidating Shot Outcomes**
+
+Certain similar shot outcomes are merged into broader categories, making the data easier to understand. For example, "Saved to Post" is re-categorized as "Saved".
+:::
+
+```{r}
+# Consolidate similar shot outcomes into broader categories
+shot_outcomes <- shot_outcomes %>%
+  mutate(shot.outcome.name = case_when(
+    shot.outcome.name == "Saved to Post" ~ "Saved",
+    shot.outcome.name == "Post" ~ "Off T",
+    TRUE ~ shot.outcome.name
+  ))
+```
+
+::: justify
+## Data Transformation
+
+### Binning the Shot Distance to Goal
+
+The code segments the distance to the goal (DistToGoal) into bins. It first calculates the minimum and maximum distances for all shots and then creates bins of 10-meter intervals.
+:::
+
+```{r}
+# Calculate min and max distance to goal
+min_dist <- min(shot_outcomes$DistToGoal, na.rm = TRUE)
+max_dist <- max(shot_outcomes$DistToGoal, na.rm = TRUE)
+
+# Display min and max distances
+cat("Minimal distance of a shot to goal is: ", min_dist, "\n")
+cat("Maximal distance of a shot to goal is: ", max_dist, "\n")
+
+# Create bins for DistToGoal
+bin_size = 10
+shot_outcomes <- shot_outcomes%>%
+  mutate(DistToGoal_Binned = cut(DistToGoal, breaks = seq(0, max(DistToGoal) + 10, by = 10)))
+```
+
+::: justify
+## Data Visualization
+
+### Creating the Grouped Bar Plot
+
+The code uses **`ggplot`** to create a bar plot, where the x-axis represents the binned distances to the goal and the y-axis represents the count of shots. The bars are colored based on the outcome of the shot.
+
+**TIP:** You can view all the colour palettes by calling **`display.brewer.all()`** from the **`RColorBrewer`** package.
+:::
+
+```{r}
+# Create the bar plot
+shot_dist_viz <- ggplot(shot_outcomes) +
+  geom_bar(aes(x = DistToGoal_Binned, fill = shot.outcome.name), width = 0.7, position = "dodge",
+           color = "black", size = 0.5) +
+  scale_y_continuous(
+    limits = c(0, 210),
+    breaks = seq(0, 210, by = 50), 
+    expand = c(0, 0), 
+    position = "left"
+  ) + 
+  scale_x_discrete(expand = expansion(add = c(0, 0)), labels = function(x) gsub("\\((.*),(.*)\\]", "\\1 - \\2", x)) +
+  theme(
+    # Set background color to white
+    panel.background = element_rect(fill = "white"),
+    # Set the color and the width of the grid lines
+    panel.grid.major.y = element_line(color = "#A8BAC480", size = 0.3),
+    # Remove tick marks by setting their length to 0
+    axis.ticks.length = unit(0, "mm"),
+    # Customize the title for both axes
+    axis.title = element_text(family = "sans", size = 16, color = "black", face = "bold"),
+    # Only bottom line is painted in black
+    axis.line.x.bottom = element_line(color = "black"),
+    # Remove labels from the horizontal axis
+    axis.text.x = element_text(family = "sans", size = 16, color = "black"),
+    # Customize labels for the vertical axis
+    axis.text.y = element_text(family = "sans", size = 16, color = "black"),
+    legend.title = element_blank(),
+    legend.text = element_text(family = "sans", size = 16, color = "black"), 
+    legend.position = c(0.9, 0.85)
+  ) + 
+  labs(title = "Shot Outcome by Distance",
+       subtitle = "Counts of non-penalty shot outcomes binned by distance at FIFA Women's World Cup 2023",
+       x = "Distance to Goal [m]",
+       y = "Count of Shots") +
+  theme(
+    plot.title = element_text(
+      family = "sans", 
+      face = "bold",
+      size = 22,
+      color = "black"
+    ),
+    plot.subtitle = element_text(
+      family = "sans",
+      size = 20,
+      color = "black"
+    )
+  ) +
+  scale_fill_manual(values=c("#DC2228", "#3371AC", "gold"), labels = c("Goal","Off Target","Saved"))
+
+```
+
+::: justify
+### **Adding Count Labels**
+
+After grouping the data by distance bins and shot outcomes, the code annotates each bar in the histogram with the count of occurrences.
+:::
+
+```{r}
+# Calculate the count of each shot outcome for each distance bin
+shot_outcomes_sum <- shot_outcomes %>%
+  group_by(DistToGoal_Binned, shot.outcome.name) %>%
+  summarise(count = n(), .groups = 'drop')
+
+# Add count labels to the bars
+shot_dist_viz <- shot_dist_viz +
+  geom_text(data = shot_outcomes_sum, 
+          aes(x = DistToGoal_Binned, y = count, label = count, group = shot.outcome.name), 
+          vjust = -0.5, 
+          position = position_dodge(width = 0.7),
+          size = 4,
+          color = "black")
+
+```
+
+::: justify
+**Note:** Using **`.groups = 'drop'`** effectively ungroups the data, making the data frame easier to manage and the code more explicit.
+
+### **Final Touches**
+
+The StatsBomb logo is inserted into the bottom right corner of the plot.
+:::
+
+```{r}
+# Specify the path to the StatsBomb logo
+img_path <- "/Users/yausa/LTU_Projects/Data_Science_Lessons/Lesson_1_Data_Viz_Bar_Plot_Scatter_Plot/SB_logo.png"
+
+# Add the StatsBomb logo to the plot
+shot_dist_viz_sb <- ggdraw(shot_dist_viz) +
+  draw_image(img_path, x = 0.87, y = 0, width = 0.12, height = 0.06)
+
+shot_dist_viz_sb <- ggdraw(shot_dist_viz_sb) +
+  draw_label("Data:", x = 0.84, y = 0.03, size = 14)
+
+# Show the finalized plot with the StatsBomb logo
+print(shot_dist_viz_sb)
+
+```
+
+::: justify
+The finalized plot is saved as a PNG file.
+:::
+
+```{r}
+# ggsave("shot_dist_viz_final.png", plot = shot_dist_viz_sb, width = 10, height = 8, dpi = 300)
+```
+
+::: justify
+### Final Note
+
+The code above is well-structured, modular, and follows a logical flow from data preprocessing to final output. Vectorized operations via **`dplyr`** make the data manipulation efficient.
+
+# Scatter plot 1
+
+## Libraries This Section Relies On
+
+-   `ggplot2`: For creating the scatter plot and all associated layers.
+
+-   `ggrepel`: For creating text labels that do not overlap with other elements on the plot.
+
+-   `dplyr`: For data manipulation and preparation.
+
+## Data Preprocessing
+
+#### Filter Data for Matildas' Shots
+
+The code filters the main dataframe (StatsBombData) to only include shots taken by the Matildas. It also filters out penalties. The selected columns focus on player and team information, shot outcomes, and distance to goal.
+:::
+
+```{r}
+# Select relevant columns and filter out only the rows for Matildas and shot types
+shots_Matildas <- StatsBombData%>%
+  select(player.name, player.id, team.name, team.id, type.name, shot.type.name, shot.outcome.name, shot.statsbomb_xg, location.x, location.y, DistToGoal)%>%
+  filter(team.name == "Australia")%>%
+  filter(type.name == "Shot" & (shot.type.name != "Penalty"|is.na(shot.type.name)))%>%
+  filter(shot.outcome.name %in% c("Goal", "Off T", "Saved", "Saved to Post", "Post"))
+```
+
+::: justify
+### Extract Last Names of Players
+
+Here, a function **`extract_last_name`** is defined to extract the last name of players. The function accounts for names that include "van". This new column is then added to shots_Matildas.
+:::
+
+```{r}
+# Function to extract the last name from a full name string
+extract_last_name <- function(full_name) {
+  name_parts <- strsplit(full_name, " ")[[1]]
+  
+  # Check if the name contains "van"
+  if ("van" %in% name_parts) {
+    # Concatenate "van" with the last name
+    return(paste("van", tail(name_parts, 1), collapse = " "))
+  } else {
+    # Just return the last name
+    return(tail(name_parts, 1))
+  }
+}
+
+# Add a new column for players' last names
+shots_Matildas$last_name <- sapply(shots_Matildas$player.name, extract_last_name)
+
+# Reorder the columns to have last_name after player.name
+shots_Matildas <- shots_Matildas %>%
+  select(player.name, last_name, everything())
+```
+
+::: justify
+### Compute Stats Per Player
+
+This section calculates statistics like the number of shots (shots), non-penalty expected goals (npxg), and the average distance of shots (avg_dist) for each player. It also checks whether the player has scored a goal (scored_goal). Please note that only non-penalty shots are taken into account.
+:::
+
+```{r}
+# Calculate stats for each player
+# Group by player and summarize the number of shots, NPxG, average distance, and whether they scored a goal
+shots_Matildas_stats <- shots_Matildas%>%
+  group_by(player.name, player.id, last_name)%>%
+  summarise(shots=sum(type.name=="Shot", na.rm=TRUE),
+            npxg=sum(shot.statsbomb_xg),
+            avg_dist = mean(DistToGoal, na.rm = TRUE),
+            scored_goal = any(shot.outcome.name == "Goal"),
+            .groups = "drop")
+```
+
+::: justify
+### Normalize Metrics Per 90 Minutes of Play
+
+The code here calculates per 90-minute metrics (shots_p90, npxg_p90) using the total minutes played by each player. Additionally, average distances are binned into categories (avg_dist_binned).
+:::
+
+```{r}
+# Get the total minutes played by all players
+all_players_minutes = get.minutesplayed(StatsBombData)
+
+# Extract Australia's team ID
+Australia_team_id <- unique(shots_Matildas$team.id)
+
+# Sum up the total minutes played by each Matilda
+Matildas_minutes <- all_players_minutes %>%
+  filter(team.id == Australia_team_id) %>%
+  group_by(player.id) %>%  # Group data by player.id
+  summarise(total_minutes_played = round(sum(MinutesPlayed), digits = 2), # Sum up the total minutes played
+            .groups = "drop")  
+
+# Join the minutes data to the shot stats data
+shots_Matildas_stats <- shots_Matildas_stats%>%
+  left_join(Matildas_minutes, by = "player.id")
+
+# Calculate per 90-minute metrics for shots and NPxG
+shots_Matildas_stats <- shots_Matildas_stats%>%
+  mutate(nineties = round(total_minutes_played/90, digits=2))
+
+shots_Matildas_stats <- shots_Matildas_stats%>%
+  mutate(shots_p90 = shots/nineties,
+         npxg_p90 = npxg/nineties)
+
+# Bin the average distance
+shots_Matildas_stats <- shots_Matildas_stats %>%
+  mutate(avg_dist_binned = cut(avg_dist, breaks = seq(0, max(avg_dist) + 10, by = 10)))
+
+# Convert to factors for easier plotting
+shots_Matildas_stats$avg_dist_binned <- as.factor(shots_Matildas_stats$avg_dist_binned)
+shots_Matildas_stats$scored_goal <- as.factor(shots_Matildas_stats$scored_goal)
+```
+
+::: justify
+## Data Visualization
+
+Here, a scatter plot is generated using ggplot2. The x-axis represents the frequency of shots per 90 minutes (shots_p90), and the y-axis represents the non-penalty expected goals per 90 minutes (npxg_p90). The size of the points represents the xG (shot.statsbomb_xg), while the color indicates the average distance to the goal (avg_dist_binned). Point shapes differentiate between players who have scored and those who haven't.
+
+**TIP:** This function illustrates the different point shape values. First install the `ggpubr` package (`install.packages("ggpubr")`), and then type `show_point_shapes().`
+:::
+
+```{r}
+shot_effic_viz <- ggplot(data=shots_Matildas_stats,
+       aes(x = shots_p90,
+           y = npxg_p90)) +
+  geom_point(aes(fill = avg_dist_binned,
+                 shape = scored_goal),
+             size = 6,
+             stroke = 0.6,
+             colour = "black",
+             alpha = 0.8) +
+  geom_text_repel(data = shots_Matildas_stats,
+                  aes(x = shots_p90,
+                      y = npxg_p90,
+                      label = last_name),
+                  size = 4.5,
+                  box.padding = 0.5,
+                  point.padding = 0.5) +
+  xlim(0, 4) +
+  ylim(0, 0.3) +
+  scale_shape_manual(values = c("FALSE" = 21, "TRUE" = 24), name ="", 
+                     labels = c("Not Scored", "Scored")) +
+  scale_fill_manual(values = c("#1abc9c", "#e74c3c", "#9b59b6", "#f1c40f"), name = "Av. Shot Dist. [m]",   
+                    labels = c("0-10", "10-20", "20-30", "30-40")) +
+  guides(fill = guide_legend(override.aes = list(shape = 22)),
+         shape = guide_legend(override.aes = list(fill = "black"))) +
+  theme(
+    # Set background color to white
+    panel.background = element_rect(fill = "white"),
+    # Set the color and the width of the grid lines
+    panel.grid.major.y = element_line(color = "#A8BAC480", size = 0.3),
+    # Set the color and the width of the grid lines
+    panel.grid.major.x = element_line(color = "#A8BAC480", size = 0.3),
+    # Remove tick marks by setting their length to 0
+    axis.ticks.length = unit(0, "mm"),
+    # Customize the title for both axes
+    axis.title = element_text(family = "sans", size = 16, color = "black"),
+    # Labels for the horizontal axis
+    axis.text.x = element_text(family = "sans", size = 16, color = "black"),
+    # Labels for the vertical axis
+    axis.text.y = element_text(family = "sans", size = 16, color = "black"),
+    legend.text = element_text(family = "sans", size = 12, color = "black"), 
+    legend.position = "right",
+    legend.key = element_blank(),
+    legend.title = element_text(family = "sans", size = 14, face = "bold", color = "black")
+  ) + 
+  labs(title = "Matildas' Shooting Efficiency at FIFA Women's World Cup 2023",
+       subtitle = "Non-Penalty Expected Goals per 90 Minutes (NPxG P90) vs Shots per 90 Minutes\nColored by Average Shot Distance and Shaped by Goal Scoring",
+       x = "Shots P90",
+       y = "NPxG P90") +
+  theme(
+    plot.title = element_text(
+      family = "sans", 
+      face = "bold",
+      size = 20,
+      color = "black"
+    ),
+    plot.subtitle = element_text(
+      family = "sans",
+      size = 15,
+      color = "black"
+    )
+  )
+```
+
+::: justify
+### Final Touches and Plot Saving
+
+The StatsBomb logo is added to the plot, that is saved as a PNG file with specified dimensions and resolution.
+:::
+
+```{r}
+# Specify the path to the StatsBomb logo image
+img_path <- "/Users/yausa/LTU_Projects/Data_Science_Lessons/Lesson_1_Data_Viz_Bar_Plot_Scatter_Plot/SB_logo.png"
+
+# Add the StatsBomb logo to the existing plot
+shot_effic_viz_sb <- ggdraw(shot_effic_viz) +
+  draw_image(img_path, x = 0.87, y = 0, width = 0.12, height = 0.06)
+
+# Add a label to indicate the data source
+shot_effic_viz_sb <- ggdraw(shot_effic_viz_sb) +
+  draw_label("Data:", x = 0.84, y = 0.03, size = 14)
+
+# Display the finalized plot
+print(shot_effic_viz_sb)
+
+#* Save the visualization to png ----
+
+# ggsave("shot_effic_viz_sb_final.png", plot = shot_effic_viz_sb, width = 10, height = 8, dpi = 300)
+```
+
+::: justify
+# Scatter plot 2
+
+## Libraries This Section Relies On
+
+-   `ggplot2`: For creating the scatter plot and all associated layers, as well as drawing the soccer pitch using custom functions.
+
+-   `dplyr`: For data manipulation and preparation.
+
+## Data Preprocessing
+
+Adds a new column shot_outcome to categorize each shot as either "Goal" or "No Goal" based on the value in shot.outcome.name.
+
+```{r}
+# Add a new column to categorize each shot as either a "Goal" or "No Goal"
+shots_Matildas <- shots_Matildas %>% 
+  mutate(shot_outcome = ifelse(shot.outcome.name == "Goal", "Goal", "No Goal"))
+```
+
+## Data Visualization
+
+To draw a football pitch, here we use the `ggsoccer` library. However, it is possible to draw a football pitch manually by repetitively calling the `annotate()` function of `ggplot2` with various values of the first argument which specifies the kind of shape to be used. Some of the suitable values of the first argument for `annotate()` are `rect`, `segment`, `point`, and `path`.
+:::
+
+```{r}
+# Initialize an empty ggplot
+shot_map_viz <- ggplot() +
+  # Draw the soccer pitch
+  annotate_pitch(dimensions = pitch_statsbomb,
+                 colour = "white",
+                 fill = "springgreen4",
+                 limits = FALSE) +
+  theme_pitch() +
+  # Set background color
+  theme(panel.background = element_rect(fill = "springgreen4")) +
+  # Flip x and y axes to orient the pitch vertically
+  coord_flip(xlim = c(60, 120)) +
+  # Reverse y-axis
+  scale_y_reverse() +
+  # Plot each Matildas' shot
+  geom_point(data = shots_Matildas,
+             aes(x = location.x,
+                 y = 80 - location.y,
+                 fill = shot_outcome,
+                 size = shot.statsbomb_xg),
+             shape = 21, # Circle shape
+             stroke = 0.3, # Circle border thickness
+             colour = "black") + # Circle border color
+  # Manually set the colors for shot outcomes
+  scale_fill_manual(values = c("Goal" = "#e74c3c", "No Goal" = "#f1c40f"), 
+                      name = "Shot Outcome", 
+                      labels = c("Goal", "No Goal")) +
+  guides(size = guide_legend(override.aes = list(fill = "#f1c40f")),
+         fill = guide_legend(override.aes = list(size = 3))) +
+  # Create panels for each player's shot map
+  facet_wrap(~last_name) +
+  # Add statistics for shots per 90 minutes, NPxG per 90 minutes, and average shot distance
+  geom_text(data = shots_Matildas_stats,
+            aes(x=80,
+                y=80-15,
+                label = paste("Shots P90:", round(shots_p90, digits=3))),
+            size = 2.2) +
+  geom_text(data = shots_Matildas_stats,
+            aes(x=74,
+                y=80-15,
+                label = paste("NPxG P90:", round(npxg_p90, digits=3))),
+            size = 2.2) +
+  geom_text(data = shots_Matildas_stats,
+            aes(x=68,
+                y=80-15,
+                label = paste("Avg. Dist.:", round(avg_dist, digits=3))),
+            size = 2.2) +
+  theme(
+    # Set background color to white
+    panel.background = element_rect(fill = "white"),
+    # Set the color and the width of the grid lines
+    panel.grid.major.y = element_blank(),
+    # Set the color and the width of the grid lines
+    panel.grid.major.x = element_blank(),
+    # Remove tick marks by setting their length to 0
+    axis.ticks.length = unit(0, "mm"),
+    # Customize the title for both axes
+    axis.title = element_blank(),
+    # Labels for the horizontal axis
+    axis.text.x = element_blank(),
+    # Labels for the vertical axis
+    axis.text.y = element_blank(),
+    legend.text = element_text(family = "sans", size = 12, color = "black"), 
+    legend.position = "top",
+    legend.key = element_blank(),
+    legend.title = element_text(family = "sans", size = 14, face = "bold", color = "black"),
+    strip.text = element_text(hjust = 0.5, size = 12, face = "bold"),
+    strip.background = element_blank()
+  ) + 
+  labs(title = "Matildas' Shot Maps at FIFA Women's World Cup 2023",
+       subtitle = "Only Non-Penalty Shots That Reached the Goal",
+       size = "Non-Penalty xG") +
+  theme(
+    plot.title = element_text(
+      family = "sans", 
+      face = "bold",
+      size = 20,
+      color = "black",
+      hjust = 0.5
+    ),
+    plot.subtitle = element_text(
+      family = "sans",
+      size = 15,
+      color = "black",
+      hjust = 0.5
+    )
+  )
+```
+
+::: justify
+### Final Touches
+
+Add the StatsBomb logo and save the plot.
+:::
+
+```{r}
+# Insert the StatsBomb logo ----
+img_path <- "/Users/yausa/LTU_Projects/Data_Science_Lessons/Lesson_1_Data_Viz_Bar_Plot_Scatter_Plot/SB_logo.png"
+
+shot_map_viz_sb <- ggdraw(shot_map_viz) +
+  draw_image(img_path, x = 0.7, y = 0, width = 0.13, height = 0.065)
+
+# Add a label indicating the data source
+shot_map_viz_sb <- ggdraw(shot_map_viz_sb) +
+  draw_label("Data:", x = 0.67, y = 0.033, size = 14)
+
+# Display the final plot
+print(shot_map_viz_sb)
+
+#* Save the visualization to png ----
+
+# ggsave("shot_map_viz_sb_final.png", plot = shot_map_viz_sb, width = 10, height = 8, dpi = 300)
+```
+
+::: justify
+# Stacked bar plot
+
+This section produces a horizontally-oriented stacked bar plot representing the offensive contributions of the Matildas during the FIFA Women's World Cup 2023. The visualization showcases two key metrics for each player: shots per 90 minutes (shots_p90) and key passes per 90 minutes (key_passes_p90). These metrics are summed to indicate the player's total "value added in attack" per 90 minutes.
+
+In the plot, each horizontal bar represents a player. The bar is segmented into two parts: one for 'shots_p90' and another for 'key_passes_p90'. The length of each segment is proportional to the player's contributions in those respective categories. Additionally, numeric labels inside each segment display the specific number of shots or key passes per 90 minutes for that player.
+
+## Libraries This Section Relies On
+
+-   `ggplot2`: For creating the stacked bar plot and all associated layers.
+
+-   `dplyr`: For data manipulation.
+
+-   `ggpubr`: For additional ggplot capabilities.
+
+## Data Preprocessing
+
+### Data Filtering
+
+Filter only for Matildas and passes that resulted in either a shot or a goal.
+:::
+
+```{r}
+# Select relevant columns and filter the data to only include Matildas and passes that resulted in a shot or goal
+passes_Matildas <- StatsBombData%>%
+  select(player.name, player.id, team.name, team.id, type.name, pass.shot_assist, pass.goal_assist)%>%
+  filter(team.name == "Australia")%>%
+  filter(pass.shot_assist==TRUE | pass.goal_assist==TRUE)
+```
+
+::: justify
+### Extract Last Names of Players and Reorder Columns
+
+Add a new column containing players' last names. Use the `extract_last_name` function that we created in the 'Scatter Plot 1' section. Reorder columns so that last_name appears after player.name.
+:::
+
+```{r}
+# Create a new column for players' last names
+passes_Matildas$last_name <- sapply(passes_Matildas$player.name, extract_last_name)
+
+# Reorder columns to have last_name appear after player.name
+passes_Matildas <- passes_Matildas %>%
+  select(player.name, last_name, everything())
+```
+
+::: justify
+### Normalized Metrics Per 90 Minutes
+
+Group the data by players and compute the total number of key passes for each player normalized per 90 minutes of play. Then compute 'value_added_attack_p90' that represents the total number of offensive actions for each player per 90 minutes. Offensive actions are key passes (passes in the final third of a football pitch that resulted in either a shot on goal or a goal) or shots on goal.
+:::
+
+```{r}
+# Group by player and calculate total key passes (shot assists + goal assists)
+key_passes_Matildas <- passes_Matildas %>%
+  group_by(player.id, player.name, last_name) %>% 
+  summarise(total_key_passes = sum(pass.shot_assist, na.rm = TRUE) + sum(pass.goal_assist, na.rm = TRUE))
+
+# Merge key_passes_Matildas data with shots_Matildas_stats data
+complete_stats_Matildas <- full_join(shots_Matildas_stats, key_passes_Matildas, by = "player.id")
+
+# Calculate key passes per 90 minutes
+complete_stats_Matildas <- complete_stats_Matildas %>%
+  mutate(key_passes_p90 = total_key_passes / nineties)
+
+# Calculate value added in attack per 90 minutes
+complete_stats_Matildas <- complete_stats_Matildas %>%
+  mutate(value_added_attack_p90 = shots_p90 + key_passes_p90)
+
+# Handle any NAs by setting them to zero
+complete_stats_Matildas <- complete_stats_Matildas %>%
+  mutate(
+    shots_p90 = coalesce(shots_p90, 0),  # Replace NA with 0 if any
+    key_passes_p90 = coalesce(key_passes_p90, 0),  # Replace NA with 0 if any
+    value_added_attack_p90 = shots_p90 + key_passes_p90  # Now this should work correctly
+  )
+```
+
+::: justify
+## Data Visualization
+
+### Converting Data to Long Format
+
+In the context of ggplot, converting data to long format means reshaping the dataset so that variables and their values become two columns: one for the variable names and one for the corresponding values. This structure is especially useful for creating complex visualizations, as it allows ggplot to easily map variables to aesthetic elements like color, shape, or size.
+:::
+
+```{r}
+# Convert data to long format for plotting ----
+chart_data <- complete_stats_Matildas %>%
+  ungroup() %>%
+  select(last_name.x, shots_p90, key_passes_p90, value_added_attack_p90) %>% 
+  arrange(desc(value_added_attack_p90)) %>% # Sorting players by value_added_attack_p90
+  pivot_longer(c(shots_p90, key_passes_p90), names_to = "variable", values_to = "value")
+```
+
+::: justify
+### Create the Stacked Bar Plot
+:::
+
+```{r}
+# Create the ggplot object
+attack_viz <- ggplot(chart_data, aes(x = reorder(last_name.x, value), y = value, fill=fct_rev(variable))) +
+  geom_bar(stat="identity", position = "stack", color = "black", size = 0.5) +
+  geom_text(aes(label = ifelse(value > 0, round(value, 2), "")), colour = "black", size = 4, hjust = 0.35, position = position_stack(vjust = 0.61)) + # Labels inside bars
+  coord_flip() +
+  scale_y_continuous(position = "right",
+                     limits = c(0,6.3),
+                     breaks = seq(0, 6, by = 1),
+                     expand = c(0,0)) +
+  scale_x_discrete(expand = c(0, 0.7)) +
+  theme(
+    # Set background color to white
+    panel.background = element_rect(fill = "white"),
+    # Set the color and the width of the grid lines
+    panel.grid.major.x = element_line(color = "#A8BAC480", size = 0.3),
+    # Remove tick marks by setting their length to 0
+    axis.ticks.length = unit(0, "mm"),
+    # Customize the title for both axes
+    axis.title = element_blank(),
+    # Only left line of the vertical axis is painted in black
+    axis.line.y.left = element_line(color = "black"),
+    # Customize labels
+    axis.text.y = element_text(family = "sans", size = 16, color = "black"),
+    axis.text.x = element_text(family = "sans", size = 16, color = "black"),
+    # Customize legend
+    legend.title = element_blank(),
+    legend.text = element_text(family = "sans", size = 16, color = "black"), 
+    legend.position = c(0.8, 0.5)
+  ) +
+  scale_fill_manual(
+    values = c("shots_p90" = "#f1c40f", "key_passes_p90" = "#1abc9c"),
+    labels = c("Shots P90", "Key Passes P90")
+  ) +
+  labs(title = "Matildas' Offensive Prowess",
+         subtitle = "Shots Per 90 and Key Passes Per 90 at FIFA Women's World Cup 2023") +
+  theme(
+    plot.title = element_text(
+      family = "sans", 
+      face = "bold",
+      size = 22,
+      color = "black"
+    ),
+    plot.subtitle = element_text(
+      family = "sans",
+      size = 18,
+      color = "black"
+    )
+  )
+```
+
+::: justify
+### Final Touches
+
+Insert the StatsBomb logo and save the plot.
+:::
+
+```{r}
+# Insert the Statsbomb logo ----
+img_path <- "/Users/yausa/LTU_Projects/Data_Science_Lessons/Lesson_1_Data_Viz_Bar_Plot_Scatter_Plot/SB_logo.png"
+
+attack_viz_sb <- ggdraw(attack_viz) +
+  draw_image(img_path, x = 0.8, y = 0, width = 0.13, height = 0.065)
+
+attack_viz_sb <- ggdraw(attack_viz_sb) +
+  draw_label("Data:", x = 0.77, y = 0.033, size = 14)
+
+# Show the final plot
+print(attack_viz_sb)
+
+#* Save the visualization to png ----
+
+# ggsave("attack_viz_sb_final.png", plot = attack_viz_sb, width = 10, height = 8, dpi = 300)
+```
+
+::: justify
+# Scatter plot 3
+
+This section processes and visualizes all penalty shots taken throughout the FIFA Women's World Cup 2023 - both in-game penalties and penalty shootouts. It processes the data to plot a 2D density graph, identifying where successful (scored) penalties tend to land within the goal frame. Additional annotations and layers, like text labels, are added for context and clarity.
+
+## Libraries This Section Relies On
+
+-   `ggplot2`: For creating the scatter plot and all associated layers.
+
+-   `ggrepel`: For creating text labels that do not overlap with other elements on the plot.
+
+-   `png`: For reading the PNG images.
+
+-   `ggpubr`: For additional ggplot capabilities.
+
+-   `dplyr`: For data manipulation.
+
+## Data Preprocessing
+
+### Data Filtering - All Penalties
+
+Identify all penalties taken throughout the FIFA Women's World Cup 2023 - both in-game penalties and penalty shootouts - and subset the StatsBombData datset to get all relevant information that pertains to penalty shots.
+:::
+
+```{r}
+# Measure time taken to find columns containing "Penalty" in StatsBombData
+# This is useful for performance benchmarking
+system.time({
+  # Check each column to see if it contains the word "Penalty"
+  penalty_columns <- sapply(StatsBombData, function(x) any(x == "Penalty", na.rm=TRUE))
+  # Keep the names of columns where "Penalty" is found
+  penalty_columns <- names(penalty_columns[penalty_columns == TRUE])
+})
+# Display columns containing "Penalty"
+penalty_columns
+
+# Select specific columns to keep for the penalty analysis
+selected_columns <- c("match_id", "player.name", "team.name", penalty_columns,
+                      "shot.outcome.name", "shot.end_location.x",
+                      "shot.end_location.y", "shot.end_location.z", "period")
+
+# Filter only the rows where shot type is "Penalty"
+all_penalties <- StatsBombData%>%
+  select(all_of(selected_columns))%>%
+  filter(shot.type.name == "Penalty")
+
+# Rename columns to be more readable
+all_penalties <- all_penalties %>%
+  rename(
+    penalty_taker = player.name,
+    penalty_taker_team = team.name,
+    match_phase = period
+  )
+```
+
+::: justify
+### Feature Engineering
+
+Here, we categorize the penalties based on what match phase they were taken in (in-game or penalty shootout) and what the outcome was.
+:::
+
+```{r}
+# Add a new column 'match_phase' to indicate when the penalty was taken (In-game or Shootout)
+all_penalties <- all_penalties%>%
+  mutate(
+    match_phase = case_when(
+      match_phase %in% 1:4 ~ "In-Game",
+      match_phase == 5 ~ "Penalty Shootout",
+      TRUE ~ as.character(match_phase)
+    )
+  )
+
+# Join 'Matches' data to get home and away teams
+all_penalties <- all_penalties%>%
+  left_join(Matches %>% select(match_id, home_team, away_team), by = "match_id")
+
+# Create a column 'shot_outcome' to simplify shot outcome into "Goal" or "Missed"
+all_penalties <- all_penalties %>%
+  mutate(shot_outcome = ifelse(shot.outcome.name == "Goal", "Goal", "Missed"))
+
+# Reorder the columns
+all_penalties <- all_penalties %>%
+  select(match_id, home_team, away_team, 
+         penalty_taker, penalty_taker_team, 
+         shot.type.name, match_phase, 
+         shot.outcome.name, shot_outcome, shot.end_location.x, 
+         shot.end_location.y, shot.end_location.z)
+```
+
+::: justify
+## Data Visualization
+
+### Initialize the Plot
+
+Set up the initial ggplot object.
+:::
+
+```{r}
+# Filter successful and unsuccessful penalties
+scored_penalties <- all_penalties %>% filter(shot.outcome.name == "Goal")
+missed_penalties <- all_penalties %>% filter(shot.outcome.name != "Goal")
+
+# Define dimensions for the goal and plot area
+floor = 0
+x_left = 36
+x_right = 44
+y_crossbar = 2.8
+
+canvas_left = 34.9
+canvas_right = 45.2
+canvas_top = 6.5
+canvas_bottom = -0.9
+
+# Initialize ggplot
+pen_viz <- ggplot() + 
+  xlim(canvas_left, canvas_right) + ylim(canvas_bottom, canvas_top) +
+  coord_fixed(ratio = 0.9) +
+  labs(title="Penalty Shots Map",
+       subtitle = "All penalty shots (both in-game and shootouts) at FIFA Women's World Cup 2023") +
+  # Customize plot appearance
+  theme(plot.title = element_text(color="black", size=20, face="bold", hjust = 0.5),
+        plot.subtitle = element_text(color="black", size=15, hjust = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white"))
+
+# Define line thickness for the goal frame
+goal_frame_thick <- 4
+```
+
+::: justify
+### Create a Density Plot
+
+Add a density plot for the successful (scored) penalties visualizing the distribution of the scored penalties within the goal frame.
+:::
+
+```{r}
+# Add density plot for successful penalties
+pen_viz <- pen_viz +
+  stat_density_2d(data=scored_penalties, geom = "polygon",
+                  aes(x=shot.end_location.y, y=shot.end_location.z, fill = after_stat(level)),
+                  alpha = 0.2, bins = 500) + 
+  scale_fill_gradientn(name = "Penalty Scoring Density",
+                       colours=rev(brewer.pal(7, "RdYlBu"))) + #Spectral
+  theme(legend.position = c(0.58, 0.06),
+        legend.direction = "horizontal",
+        legend.title = element_text(size = 14, color = "black"),
+        legend.key.size = unit(0.7, "cm"),
+        legend.text = element_blank(),
+        legend.key = element_blank(),
+        legend.background = element_rect(fill = "white")) +
+  guides(fill = guide_colourbar(title.position="top", title.hjust = 0.5))
+
+# Clip density plot to the goal frame dimensions
+pen_viz <- pen_viz +
+  geom_rect(aes(xmin = canvas_left, xmax = x_left, ymin = canvas_bottom, ymax = canvas_top),
+            fill = "white") +
+  geom_rect(aes(xmin = x_right, xmax = canvas_right, ymin = canvas_bottom, ymax = canvas_top),
+            fill = "white") +
+  geom_rect(aes(xmin = x_left, xmax = x_right, ymin = y_crossbar, ymax = canvas_top),
+            fill = "white") +
+  geom_rect(aes(xmin = x_left, xmax = x_right, ymin = canvas_bottom, ymax = floor),
+            fill = "white")
+
+# Define data for drawing the goal frame
+goal_frame_data <- data.frame(
+  x = c(x_left, x_left, x_right, x_right),
+  y = c(floor, y_crossbar, y_crossbar, floor)
+)
+
+# Draw the goal frame
+pen_viz <- pen_viz +
+  geom_path(data=goal_frame_data, aes(x=x, y=y), 
+            color="black", size=goal_frame_thick)
+
+# Load a ball symbol png file
+img <- readPNG("/Users/yausa/LTU_Projects/Data_Science_Lessons/Lesson_1_Data_Viz_Bar_Plot_Scatter_Plot/ball_symbol.png")
+
+# Create a raster graphical object
+ball <- rasterGrob(img, interpolate=TRUE)
+
+ball_size = 0.15
+
+# Add the red crosses for the 'Missed' penalties
+pen_viz <- pen_viz + geom_point(data = missed_penalties,
+                                aes(x=shot.end_location.y, y=shot.end_location.z),
+                                shape = 4, color = '#e74c3c', size = 3, stroke = 2)
+
+# Loop through each row in the dataframe with 'Goal' penalties
+for(i in 1:nrow(scored_penalties)) {
+  
+  # Extract the current shot's coordinates
+  x <- scored_penalties$shot.end_location.y[i]
+  y <- scored_penalties$shot.end_location.z[i]
+  
+  # Annotate with the ball image
+  pen_viz <- pen_viz + annotation_custom(ball, 
+                                         xmin = x - ball_size, xmax = x + ball_size, 
+                                         ymin = y - ball_size, ymax = y + ball_size)
+}
+```
+
+::: justify
+### Add Annotations
+
+Here, we annotate two particular penalty shots from the Australia v France FWWC23 quarterfinal. One penalty is by Mackenzie Arnold and the other one is by Cortnee Vine - two memorable penalty shots for all Aussies.
+:::
+
+```{r}
+# Coordinates for both penalties
+symbol_x_scored = 42.2
+symbol_y_scored = 0.2
+
+symbol_x_missed = 44.0
+symbol_y_missed = 1.6
+
+
+# Create a data frame containing the points to be annotated
+annotate_data <- data.frame(
+  x = c(symbol_x_scored, symbol_x_missed),
+  y = c(symbol_y_scored, symbol_y_missed),
+  label = c("C. Vine", "M. Arnold")
+)
+
+pen_viz <- pen_viz +
+  geom_text_repel(data = annotate_data,
+                   aes(x = x, y = y, label = label),
+                   box.padding = 0.5,  # Space around each label
+                   point.padding = 0.5,  # Space around each point
+                   segment.color = "#9b59b6",
+                   segment.size = 1.5,
+                   nudge_x = 0.9,  # Horizontal adjustment
+                   nudge_y = -0.4,  # Vertical adjustment
+                   direction = "both",  # ('x' or 'y'): Direction in which to move labels
+                   arrow = arrow(type = "closed", length = unit(2.1, "mm")),
+                   size = 6,
+                   color = "#9b59b6") # Text size and color
+```
+
+::: justify
+### Final Touches
+
+Add the StatsBomb logo, a legend for scored and missed penalties, and save the plot.
+:::
+
+```{r}
+# Insert the Statsbomb logo and the legend ----
+img_path_SB_logo <- "/Users/yausa/LTU_Projects/Data_Science_Lessons/Lesson_1_Data_Viz_Bar_Plot_Scatter_Plot/SB_logo.png"
+img_path_ball <- "/Users/yausa/LTU_Projects/Data_Science_Lessons/Lesson_1_Data_Viz_Bar_Plot_Scatter_Plot/ball_symbol.png"
+
+pen_viz_sb <- ggdraw(pen_viz) +
+  draw_image(img_path_SB_logo, x = 0.735, y = 0.06, width = 0.13, height = 0.065)
+pen_viz_sb <- ggdraw(pen_viz_sb) +
+  draw_label("Data:", x = 0.71, y = 0.09, size = 14)
+
+pen_viz_sb <- ggdraw(pen_viz_sb) +
+  draw_image(img_path_ball, x = 0.27, y = 0.07, width = 0.07, height = 0.035)
+pen_viz_sb <- ggdraw(pen_viz_sb) +
+  draw_label("Scored", x = 0.25, y = 0.09, size = 14)
+
+
+x_center <- 0.43  # x-coordinate of the center of the cross
+y_center <- 0.09  # y-coordinate of the center of the cross
+length <- 0.02    # length of each arm of the cross from the center
+x1 <- x_center - length / sqrt(2)
+y1 <- y_center - length / sqrt(2)
+x2 <- x_center + length / sqrt(2)
+y2 <- y_center + length / sqrt(2)
+
+pen_viz_sb <- pen_viz_sb +
+  geom_point() +  
+  annotate("segment", x = x1, xend = x2, y = y1, yend = y2, color = "#e74c3c", size = 1) +
+  annotate("segment", x = x1, xend = x2, y = y2, yend = y1, color = "#e74c3c", size = 1)
+
+
+pen_viz_sb <- ggdraw(pen_viz_sb) +
+  draw_label("Missed", x = 0.38, y = 0.09, size = 14)
+
+# Show the final visualization
+print(pen_viz_sb)
+
+#* Save the visualization to png ----
+# ggsave("pen_viz_sb_final.png", plot = pen_viz_sb, width = 10, height = 8, dpi = 300)
+```
+
+::: .{justify}
+# Conclusion
+
+This lesson equips learners with the practical skills to create and customize bar and scatter plots in R using ggplot2. Through a step-by-step approach and real-world examples, learners master data manipulation, plot annotation, and layering techniques, enabling them to not only visualize but also interpret complex data effectively.
+
+# Knowledge Spot Check
+
+-   In what situations are bar and scatter plots the most suitable forms of data visualization?
+
+-   What data format is the most suitable for a stacked bar plot visualization?
+
+-   How do you implement customization of ggplot objects?
+:::
+
+# 
