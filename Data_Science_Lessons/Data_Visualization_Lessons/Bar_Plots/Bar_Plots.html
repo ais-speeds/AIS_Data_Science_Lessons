@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Exploratory Data Visualization: Bar Plots</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Bar_Plots_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Bar_Plots_files/libs/quarto-html/quarto.js"></script>
+<script src="Bar_Plots_files/libs/quarto-html/popper.min.js"></script>
+<script src="Bar_Plots_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Bar_Plots_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Bar_Plots_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Bar_Plots_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Bar_Plots_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Bar_Plots_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Bar_Plots_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="Bar_Plots_files/libs/quarto-contrib/kbd/kbd.js"></script>
+<link href="Bar_Plots_files/libs/quarto-contrib/kbd/kbd.css" rel="stylesheet">
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">1</span> Learning Outcomes</a></li>
+  <li><a href="#introduction-data-exploration-in-sport-and-exercise-science" id="toc-introduction-data-exploration-in-sport-and-exercise-science" class="nav-link" data-scroll-target="#introduction-data-exploration-in-sport-and-exercise-science"><span class="header-section-number">2</span> Introduction: Data Exploration in Sport and Exercise Science</a>
+  <ul class="collapse">
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><span class="header-section-number">2.1</span> Exploratory Data Analysis</a></li>
+  <li><a href="#exploratory-data-visualizations" id="toc-exploratory-data-visualizations" class="nav-link" data-scroll-target="#exploratory-data-visualizations"><span class="header-section-number">2.2</span> Exploratory Data Visualizations</a></li>
+  <li><a href="#distributions---the-starting-point-of-eda" id="toc-distributions---the-starting-point-of-eda" class="nav-link" data-scroll-target="#distributions---the-starting-point-of-eda"><span class="header-section-number">2.3</span> Distributions - The Starting Point of EDA</a></li>
+  </ul></li>
+  <li><a href="#bar-plots" id="toc-bar-plots" class="nav-link" data-scroll-target="#bar-plots"><span class="header-section-number">3</span> Bar Plots</a>
+  <ul class="collapse">
+  <li><a href="#what-are-bar-plots" id="toc-what-are-bar-plots" class="nav-link" data-scroll-target="#what-are-bar-plots"><span class="header-section-number">3.1</span> What Are Bar Plots?</a></li>
+  <li><a href="#types-of-bar-plots" id="toc-types-of-bar-plots" class="nav-link" data-scroll-target="#types-of-bar-plots"><span class="header-section-number">3.2</span> Types of Bar Plots</a></li>
+  <li><a href="#strengths-of-bar-plots" id="toc-strengths-of-bar-plots" class="nav-link" data-scroll-target="#strengths-of-bar-plots"><span class="header-section-number">3.3</span> Strengths of Bar Plots</a></li>
+  <li><a href="#making-the-most-of-ggplot2-in-bar-plots" id="toc-making-the-most-of-ggplot2-in-bar-plots" class="nav-link" data-scroll-target="#making-the-most-of-ggplot2-in-bar-plots"><span class="header-section-number">3.4</span> Making the Most of <code>ggplot2</code> in Bar Plots</a>
+  <ul class="collapse">
+  <li><a href="#functions-for-bar-plots-in-ggplot2" id="toc-functions-for-bar-plots-in-ggplot2" class="nav-link" data-scroll-target="#functions-for-bar-plots-in-ggplot2"><span class="header-section-number">3.4.1</span> Functions for Bar Plots in <code>ggplot2</code></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#case-study---offensive-metrics-at-the-fifa-womens-world-cup-2023" id="toc-case-study---offensive-metrics-at-the-fifa-womens-world-cup-2023" class="nav-link" data-scroll-target="#case-study---offensive-metrics-at-the-fifa-womens-world-cup-2023"><span class="header-section-number">4</span> Case Study - Offensive Metrics at the FIFA Women’s World Cup 2023</a>
+  <ul class="collapse">
+  <li><a href="#what-to-expect" id="toc-what-to-expect" class="nav-link" data-scroll-target="#what-to-expect"><span class="header-section-number">4.1</span> What to Expect</a></li>
+  <li><a href="#data-loading-and-cleaning" id="toc-data-loading-and-cleaning" class="nav-link" data-scroll-target="#data-loading-and-cleaning"><span class="header-section-number">4.2</span> Data Loading and Cleaning</a>
+  <ul class="collapse">
+  <li><a href="#installing-basic-libraries" id="toc-installing-basic-libraries" class="nav-link" data-scroll-target="#installing-basic-libraries"><span class="header-section-number">4.2.1</span> Installing Basic Libraries</a></li>
+  <li><a href="#installing-from-github" id="toc-installing-from-github" class="nav-link" data-scroll-target="#installing-from-github"><span class="header-section-number">4.2.2</span> Installing From GitHub</a></li>
+  <li><a href="#pulling-and-organizing-statsbomb-data" id="toc-pulling-and-organizing-statsbomb-data" class="nav-link" data-scroll-target="#pulling-and-organizing-statsbomb-data"><span class="header-section-number">4.2.3</span> Pulling and Organizing StatsBomb Data</a></li>
+  </ul></li>
+  <li><a href="#grouped-bar-plot" id="toc-grouped-bar-plot" class="nav-link" data-scroll-target="#grouped-bar-plot"><span class="header-section-number">4.3</span> Grouped bar plot</a>
+  <ul class="collapse">
+  <li><a href="#data-filtering" id="toc-data-filtering" class="nav-link" data-scroll-target="#data-filtering"><span class="header-section-number">4.3.1</span> Data Filtering</a></li>
+  <li><a href="#consolidating-shot-outcomes" id="toc-consolidating-shot-outcomes" class="nav-link" data-scroll-target="#consolidating-shot-outcomes"><span class="header-section-number">4.3.2</span> Consolidating Shot Outcomes</a></li>
+  <li><a href="#binning-the-shot-distance-to-goal" id="toc-binning-the-shot-distance-to-goal" class="nav-link" data-scroll-target="#binning-the-shot-distance-to-goal"><span class="header-section-number">4.3.3</span> Binning the ‘Shot Distance To Goal’</a></li>
+  <li><a href="#creating-the-grouped-bar-plot" id="toc-creating-the-grouped-bar-plot" class="nav-link" data-scroll-target="#creating-the-grouped-bar-plot"><span class="header-section-number">4.3.4</span> Creating the Grouped Bar Plot</a></li>
+  <li><a href="#adding-count-labels" id="toc-adding-count-labels" class="nav-link" data-scroll-target="#adding-count-labels"><span class="header-section-number">4.3.5</span> Adding Count Labels</a></li>
+  <li><a href="#adding-the-statsbomb-logo" id="toc-adding-the-statsbomb-logo" class="nav-link" data-scroll-target="#adding-the-statsbomb-logo"><span class="header-section-number">4.3.6</span> Adding the StatsBomb Logo</a></li>
+  </ul></li>
+  <li><a href="#stacked-bar-plot" id="toc-stacked-bar-plot" class="nav-link" data-scroll-target="#stacked-bar-plot"><span class="header-section-number">4.4</span> Stacked Bar Plot</a>
+  <ul class="collapse">
+  <li><a href="#data-filtering-1" id="toc-data-filtering-1" class="nav-link" data-scroll-target="#data-filtering-1"><span class="header-section-number">4.4.1</span> Data Filtering</a></li>
+  <li><a href="#extracting-players-last-names" id="toc-extracting-players-last-names" class="nav-link" data-scroll-target="#extracting-players-last-names"><span class="header-section-number">4.4.2</span> Extracting Players’ Last Names</a></li>
+  <li><a href="#computing-metrics-and-normalizing-them-to-90-minutes" id="toc-computing-metrics-and-normalizing-them-to-90-minutes" class="nav-link" data-scroll-target="#computing-metrics-and-normalizing-them-to-90-minutes"><span class="header-section-number">4.4.3</span> Computing Metrics and Normalizing Them to 90 Minutes</a></li>
+  <li><a href="#converting-data-to-long-format" id="toc-converting-data-to-long-format" class="nav-link" data-scroll-target="#converting-data-to-long-format"><span class="header-section-number">4.4.4</span> Converting Data to Long Format</a></li>
+  <li><a href="#creating-the-stacked-bar-plot" id="toc-creating-the-stacked-bar-plot" class="nav-link" data-scroll-target="#creating-the-stacked-bar-plot"><span class="header-section-number">4.4.5</span> Creating the Stacked Bar Plot</a></li>
+  <li><a href="#adding-the-statsbomb-logo-1" id="toc-adding-the-statsbomb-logo-1" class="nav-link" data-scroll-target="#adding-the-statsbomb-logo-1"><span class="header-section-number">4.4.6</span> Adding the StatsBomb Logo</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#conclusion-and-reflection" id="toc-conclusion-and-reflection" class="nav-link" data-scroll-target="#conclusion-and-reflection"><span class="header-section-number">5</span> Conclusion and Reflection</a></li>
+  <li><a href="#knowledge-spot-check" id="toc-knowledge-spot-check" class="nav-link" data-scroll-target="#knowledge-spot-check"><span class="header-section-number">6</span> Knowledge Spot-Check</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Bar_Plots.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exploratory Data Visualization: Bar Plots</h1>
+<p class="subtitle lead">Unraveling Performance Patterns at the FIFA Women’s World Cup 2023: A Dive into the Matildas’ Offensive Metrics and Beyond</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="abstract-title">Abstract</div>
+    Numbers offer specificity, but visualizations grant perspective. This lesson underscores the vital role of Exploratory Data Visualizations (EDV) within the broader realm of Exploratory Data Analysis (EDA), using the FIFA Women’s World Cup 2023 data as our canvas. Dive into the versatility of <em>bar plots</em>, one of the key EDV tools, and grasp how they illuminate intricate facets of team and player performance. Tailored for sports and exercise science practitioners, sports analysts, and those eager to harness the power of sports data.
+  </div>
+</div>
+
+</header>
+
+<div class="cell">
+<style type="text/css">
+p {
+  text-align: justify;
+}
+</style>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Keywords">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Exploratory data analysis (EDA), exploratory data visualization (EDV), bar plot, grouped bar plot, stacked bar plot, ggplot2, football, The Matildas, StatsBomb.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lesson's Level">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorized as <span style="color:#CD7F32">BRONZE</span>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Lesson's Main Idea**">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Lesson’s Main Idea</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Exploratory Data Analysis is about asking the right questions and using the appropriate visuals to glean insights.</li>
+<li>While numbers give us specifics, visualizations offer us perspective. Use visuals as a first step to understand your dataset.</li>
+</ul>
+</div>
+</div>
+<p>Data used in this lesson is provided by <img src="SB_logo.png" width="100px"></p>
+<section id="learning-outcomes" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning Outcomes</h1>
+<p>By the end of this lesson, you will be proficient in:</p>
+<ul>
+<li><p><strong>Extracting and Preprocessing Sports Data</strong>: Efficiently pull, load, and refine datasets, like the StatsBomb dataset, ensuring they are tailored for specific analyses.</p></li>
+<li><p><strong>Understanding the Role of EDV in EDA</strong>: Grasping the critical relationship between Exploratory Data Visualizations (EDV) and Exploratory Data Analysis (EDA), and recognizing how visuals serve as the foundation of data exploration.</p></li>
+<li><p><strong>Constructing Versatile Bar Plots</strong>: Crafting intricate bar plot visualizations tailored for sports data, showcasing metrics such as team and player performance and key offensive contributions.</p></li>
+<li><p><strong>Implementing Advanced <code>ggplot2</code> Techniques</strong>: Applying advanced plotting techniques in <code>ggplot2</code> to enhance and customize your visualizations, including annotations, segmentations, and logo integrations.</p></li>
+<li><p><strong>Interpreting Sports Data Visualizations</strong>: Developing the acumen to draw actionable insights from visual representations of sports data, aiding in performance analysis and strategic planning.</p></li>
+</ul>
+</section>
+<section id="introduction-data-exploration-in-sport-and-exercise-science" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction: Data Exploration in Sport and Exercise Science</h1>
+<section id="exploratory-data-analysis" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="exploratory-data-analysis"><span class="header-section-number">2.1</span> Exploratory Data Analysis</h2>
+<p>In sport and exercise science (SES), there are numerous ways to generate data. To name a few, vast arrays of data can be generated during games, training sessions, clinical trials and so on. Exploratory Data Analysis (EDA) plays a pivotal role in helping uncover rich insights from data, as well as recognize patterns, anomalies, and the intricate relationships between variables hidden within the data. EDA is fundamental not only for understanding the current state of affairs but also for predicting future trends, optimizing training regimes, improving athletic performance, and much more.</p>
+</section>
+<section id="exploratory-data-visualizations" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="exploratory-data-visualizations"><span class="header-section-number">2.2</span> Exploratory Data Visualizations</h2>
+<p>In sports, diverse datasets abound, from heart rate dynamics and expired gas analysis in physiology to player performance metrics in football. While numbers give us specifics, visualizations offer perspective. At the heart of EDA lies the power of exploratory data visualizations (EDV). These visual tools simplify complex datasets and make the data speak, allowing us to interpret patterns, outliers, and relationships within the data. By converting raw numbers into meaningful insights with the right visualization, an SES practitioner can immediately discern a standout performer, identify recurring injury patterns, or gauge the effectiveness of a training module. EDV paves the way for data-driven decisions, providing both context and a structured approach to understanding data.</p>
+</section>
+<section id="distributions---the-starting-point-of-eda" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="distributions---the-starting-point-of-eda"><span class="header-section-number">2.3</span> Distributions - The Starting Point of EDA</h2>
+<p>The journey of data exploration often commences with understanding its distribution. Whether it is for gauging rehabilitation progress in physiotherapy or analyzing athletic performance metrics, distributions are foundational. Recognizing patterns, such as the frequency of specific heart rates or the prevalence of a particular movement pattern in biomechanics, offers foundational insights into the data’s story. While more comprehensive details on various types of data distributions can be explored in our dedicated lesson, the emphasis of this lesson remains on EDV.</p>
+<p>Bridging the understanding of distributions to visualization tools, in this lesson we focus on bar plots. These straightforward visuals efficiently reveal important aspects of data distributions, like centrality and spread, which are especially relevant in sports metrics. As we delve deeper, our aim is to blend essential EDA concepts with hands-on techniques of crafting bar plots. This approach provides SES practitioners with a solid foundation and practical tools for their data exploration journey.</p>
+</section>
+</section>
+<section id="bar-plots" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Bar Plots</h1>
+<p>Distributions form the cornerstone of EDA, and bar plots are indispensable tools that bring these distributions to life. By rendering numerical data against categorical variables, bar plots become especially valuable. Whether we are comparing the performance metrics of athletes, understanding the frequencies of physiological responses, or assessing survey results regarding athletes’ mental well-being, bar plots emerge as versatile assets.</p>
+<section id="what-are-bar-plots" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="what-are-bar-plots"><span class="header-section-number">3.1</span> What Are Bar Plots?</h2>
+<p>A bar plot represents the relationship between a numerical value and a categorical variable. Each category is depicted by a rectangular bar, with its length or height proportional to the value it signifies.</p>
+</section>
+<section id="types-of-bar-plots" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="types-of-bar-plots"><span class="header-section-number">3.2</span> Types of Bar Plots</h2>
+<ul>
+<li><p><strong>Grouped Bar Plot</strong>: Perfect for juxtaposing multiple categories side by side, typically to compare different sub-groups. Imagine comparing metrics like goals, shots, and penalties across different football teams in a tournament.</p></li>
+<li><p><strong>Stacked Bar Plot</strong>: Bars are stacked atop each other, summing up the numerical values for each category. This is particularly useful for visualizing compositional data, such as a team’s goal breakdown by right foot, left foot, header, and penalty.</p></li>
+</ul>
+</section>
+<section id="strengths-of-bar-plots" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="strengths-of-bar-plots"><span class="header-section-number">3.3</span> Strengths of Bar Plots</h2>
+<p>Bar plots are excellent for:</p>
+<ul>
+<li><p><strong>Showcasing Aggregate Data</strong>: Their ability to encapsulate aggregate data ensures an efficient comparison of categories, emphasizing on central tendencies.</p></li>
+<li><p><strong>Quick Evaluation</strong>: In performance analysis, bar plots can expedite understanding player performance or team strategies, answering pivotal questions or shedding light on crucial patterns.</p></li>
+</ul>
+</section>
+<section id="making-the-most-of-ggplot2-in-bar-plots" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="making-the-most-of-ggplot2-in-bar-plots"><span class="header-section-number">3.4</span> Making the Most of <code>ggplot2</code> in Bar Plots</h2>
+<p><code>ggplot2</code> is an integral R-based plotting library that we will utilize throughout this lesson. What makes <code>ggplot2</code> stand out is its layering principle. Start with a rudimentary plot, then add layers of aesthetics and geometry to enrich both its utility and aesthetics. Each layer embeds more detail or context, crafting the plot progressively. The approach is not only adaptable, but also instinctive.</p>
+<section id="functions-for-bar-plots-in-ggplot2" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="functions-for-bar-plots-in-ggplot2"><span class="header-section-number">3.4.1</span> Functions for Bar Plots in <code>ggplot2</code></h3>
+<ul>
+<li><p><code>geom_bar</code>: Ideal for creating layered bar charts. By default, it counts cases at each level of a given variable.</p></li>
+<li><p><code>geom_col</code>: Assumes your data is pre-summarized, taking <code>y</code> values to determine bar heights.</p></li>
+<li><p><code>barplot</code>: A base R function that is less flexible and customizable compared to <code>geom_bar</code> and <code>geom_col</code>.</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For more intricate multilayered plots, <code>geom_bar</code> and <code>geom_col</code> are preferable due to their flexibility and compatibility with <code>ggplot2</code> layers.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Attention to Bar Plots">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Attention to Bar Plots
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Distinguishing from Histograms</strong>: Ensure you do not confuse bar plots with histograms; they serve different purposes.</li>
+<li><strong>Orientation</strong>: Opt for horizontal bars when dealing with lengthy labels to improve clarity.</li>
+<li><strong>Sorting Bars</strong>: Organize your bars in a meaningful order, often by size, for enhanced insights.</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="case-study---offensive-metrics-at-the-fifa-womens-world-cup-2023" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Case Study - Offensive Metrics at the FIFA Women’s World Cup 2023</h1>
+<p>Data visualization tools, such as bar plots, play a crucial role in transforming abstract numbers into actionable insights. By using these tools, we can gain a deeper understanding of complex datasets. Drawing from our prior discussion on bar plots, we will now turn our attention to the football data from the FIFA Women’s World Cup 2023. Our goal is to analyze teams’ offensive metrics such as shots and key passes, giving special attention to the performance of the Matildas - the Women’s Australian National Football Team. Through this case study, we aim to showcase the practical application and importance of bar plots in unveiling trends and patterns within sports data.</p>
+<section id="what-to-expect" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="what-to-expect"><span class="header-section-number">4.1</span> What to Expect</h2>
+<ul>
+<li><p><strong>Grouped Bar Plot - “Shot Outcome by Distance”</strong>: This visualization presents the frequency of shot outcomes relative to the distance from the goal. With central tendency highlighting the most common shot outcome for each distance bin, we can probe: “From which distance do teams shoot most frequently?” The spread, seen through the variety of outcomes, further asks: “Which distances yield higher success rates?” and “Are certain zones more favored for shooting?</p></li>
+<li><p><strong>Stacked Bar Plot - “Matildas’ Offensive Prowess”</strong>: Through this plot, we will peek into individual contributions of the Matildas. The central tendency in this context represents the average shots or key passes per player. This can guide us in determining: “Which players are the most offensive?”, and “Who takes the most shots or delivers key passes?”. Furthermore, the spread, highlighted by the variability of shots/key passes among players, complements the aforementioned insights, offering a deeper understanding of each player’s unique contribution.</p></li>
+</ul>
+<p>Without further ado, let’s delve into the data.</p>
+</section>
+<section id="data-loading-and-cleaning" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="data-loading-and-cleaning"><span class="header-section-number">4.2</span> Data Loading and Cleaning</h2>
+<p>In this lesson, we will utilize open-access data provided by StatsBomb - one of the world’s leading football analytics companies that provides high-quality football data. We will employ the <code>StatsBombR</code> package in R, which allows efficient access to the StatsBomb data.</p>
+<p>To ensure a smooth execution of the code in this lesson, follow the steps below to install the necessary R libraries.</p>
+<section id="installing-basic-libraries" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="installing-basic-libraries"><span class="header-section-number">4.2.1</span> Installing Basic Libraries</h3>
+<p>Most of the libraries are readily available on CRAN and can be installed using the command <code>install.packages("NameOfPackage")</code>, if they are not already installed on your computer:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"tidyverse"</span>, <span class="st">"ggrepel"</span>, <span class="st">"ggsoccer"</span>, <span class="st">"RColorBrewer"</span>, <span class="st">"grid"</span>, <span class="st">"png"</span>, <span class="st">"gridExtra"</span>, <span class="st">"cowplot"</span>, <span class="st">"forcats"</span>), <span class="at">repos=</span><span class="st">"https://cloud.r-project.org/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="installing-from-github" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="installing-from-github"><span class="header-section-number">4.2.2</span> Installing From GitHub</h3>
+<p>Some packages, such as <code>StatsBombR</code>, are not available on CRAN and need to be installed from GitHub. This can be achieved using the <code>devtools</code> package. If you have not already, please install <code>devtools</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>, <span class="at">repos=</span><span class="st">"https://cloud.r-project.org/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In order to install packages from GitHub, ensure Git is also set up on your machine<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. If it is not installed, <a href="https://git-scm.com/downloads">download and install Git</a>. This will allow <code>devtools</code> to clone and install packages from GitHub directly.</p>
+<p>Now, the <code>StatsBombR</code> package can be installed using the following command:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"statsbomb/StatsBombR"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After you have installed all the required packages, you can load them into your current R session as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co"># clean the workspace</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(StatsBombR)    <span class="co"># For accessing and handling StatsBomb football data</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)     <span class="co"># For data manipulation and visualization</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)       <span class="co"># To avoid label overlap in plots</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsoccer)      <span class="co"># For plotting soccer pitches</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)  <span class="co"># For colorblind-friendly palettes</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(grid)          <span class="co"># For lower-level graphics functions</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(png)           <span class="co"># To read and write PNG images</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)     <span class="co"># For arranging multiple grid-based plots</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)       <span class="co"># For enhancing and customizing ggplot figures</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forcats)       <span class="co"># For categorical variable (factor) manipulation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pulling-and-organizing-statsbomb-data" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="pulling-and-organizing-statsbomb-data"><span class="header-section-number">4.2.3</span> Pulling and Organizing StatsBomb Data</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Explore the Code">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Explore the Code
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This lesson features annotated code sections, with comments elucidating the intent and operation of every code snippet. Nonetheless, to genuinely grasp the influence of a particular plot customization function, it is advisable to momentarily comment out that specific code line and see the consequent modifications in the graphic. For RStudio users on macOS, the keyboard shortcut to comment out a line or multiple lines of code is <kbd data-mac="Shift-Command-C"></kbd>.</p>
+</div>
+</div>
+<p>The initial step involves retrieving and loading the StatsBomb dataset, followed by the extraction of relevant data for this lesson. The code provided below accomplishes this task.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Load and Tidy Up StatsBomb data ----</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#* Pull and load free StatsBomb data ----</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Measure the time it takes to execute the code within the system.time brackets (for performance)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>({ </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fetch list of all available competitions</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  all_comps <span class="ot">&lt;-</span> <span class="fu">FreeCompetitions</span>() </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter to get only the 2023 FIFA Women's World Cup data (Competition ID 72, Season ID 107)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  Comp <span class="ot">&lt;-</span> all_comps <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(competition_id <span class="sc">==</span> <span class="dv">72</span> <span class="sc">&amp;</span> season_id <span class="sc">==</span> <span class="dv">107</span>) </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fetch all matches of the selected competition</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  Matches <span class="ot">&lt;-</span> <span class="fu">FreeMatches</span>(Comp) </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Download all match events and parallelize to speed up the process</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  StatsBombData <span class="ot">&lt;-</span> <span class="fu">free_allevents</span>(<span class="at">MatchesDF =</span> Matches, <span class="at">Parallel =</span> T) </span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Clean the data</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  StatsBombData <span class="ot">=</span> <span class="fu">allclean</span>(StatsBombData) </span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the column names of the final StatsBombData dataframe</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(StatsBombData)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After loading the data and briefly examining it to acquaint ourselves with the structure of the StatsBombData dataframe, we can proceed to refine the team names.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#* Tidy up the teams' names ----</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataframe containing unique names of all teams at FWWC23</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>WWC_teams <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">team_name =</span> <span class="fu">unique</span>(StatsBombData<span class="sc">$</span>team.name)) </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the " Women's" part from team names for simplicity</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>StatsBombData<span class="sc">$</span>team.name <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">" Women's"</span>, <span class="st">""</span>, StatsBombData<span class="sc">$</span>team.name) </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename and simplify team names in the 'Matches' dataframe</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>Matches <span class="ot">&lt;-</span> Matches <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">home_team =</span> home_team.home_team_name, </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">away_team =</span> away_team.away_team_name  </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">home_team =</span> <span class="fu">gsub</span>(<span class="st">" Women's"</span>, <span class="st">""</span>, home_team),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">away_team =</span> <span class="fu">gsub</span>(<span class="st">" Women's"</span>, <span class="st">""</span>, away_team) </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With preparations complete, we can now delve into data analysis and craft bar plot visualizations for our target metrics. We will commence with a grouped bar plot.</p>
+</section>
+</section>
+<section id="grouped-bar-plot" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="grouped-bar-plot"><span class="header-section-number">4.3</span> Grouped bar plot</h2>
+<section id="data-filtering" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="data-filtering"><span class="header-section-number">4.3.1</span> Data Filtering</h3>
+<p>The code below filters out unnecessary columns from the StatsBombData dataframe and focuses only on shots that are not penalties. Additionally, it consolidates shot outcomes into distinct categories: Goal, Off T (Off Target), Saved, Saved to Post, and Post.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Grouped Bar Plot ----</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="do">### Shot Outcome by Distance</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#* Filter the data ----</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Select only relevant columns and filter the dataset to include only shots that are not penalties</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>shot_outcomes <span class="ot">&lt;-</span> StatsBombData<span class="sc">%&gt;%</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player.name, team.name, type.name, shot.type.name, shot.outcome.name, DistToGoal)<span class="sc">%&gt;%</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type.name <span class="sc">==</span> <span class="st">"Shot"</span> <span class="sc">&amp;</span> (shot.type.name <span class="sc">!=</span> <span class="st">"Penalty"</span><span class="sc">|</span><span class="fu">is.na</span>(shot.type.name)))<span class="sc">%&gt;%</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(shot.outcome.name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Goal"</span>, <span class="st">"Off T"</span>, <span class="st">"Saved"</span>, <span class="st">"Saved to Post"</span>, <span class="st">"Post"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="consolidating-shot-outcomes" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="consolidating-shot-outcomes"><span class="header-section-number">4.3.2</span> Consolidating Shot Outcomes</h3>
+<p>Specific similar shot outcomes are amalgamated into more general categories to simplify data interpretation. For instance, “Saved to Post” is reclassified as “Saved”.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Consolidate similar shot outcomes into broader categories</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>shot_outcomes <span class="ot">&lt;-</span> shot_outcomes <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">shot.outcome.name =</span> <span class="fu">case_when</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    shot.outcome.name <span class="sc">==</span> <span class="st">"Saved to Post"</span> <span class="sc">~</span> <span class="st">"Saved"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    shot.outcome.name <span class="sc">==</span> <span class="st">"Post"</span> <span class="sc">~</span> <span class="st">"Off T"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> shot.outcome.name</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="binning-the-shot-distance-to-goal" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="binning-the-shot-distance-to-goal"><span class="header-section-number">4.3.3</span> Binning the ‘Shot Distance To Goal’</h3>
+<p>The code divides the distance to goal (DistToGoal) into bins. It initially determines the minimum and maximum distances for all shots and then creates bins in 10-meter intervals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate min and max distance to goal</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>min_dist <span class="ot">&lt;-</span> <span class="fu">min</span>(shot_outcomes<span class="sc">$</span>DistToGoal, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>max_dist <span class="ot">&lt;-</span> <span class="fu">max</span>(shot_outcomes<span class="sc">$</span>DistToGoal, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display min and max distances</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Minimal distance of a shot to goal is: "</span>, min_dist, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Minimal distance of a shot to goal is:  1.860108 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Maximal distance of a shot to goal is: "</span>, max_dist, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Maximal distance of a shot to goal is:  55.34781 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create bins for DistToGoal</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>bin_size <span class="ot">=</span> <span class="dv">10</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>shot_outcomes <span class="ot">&lt;-</span> shot_outcomes<span class="sc">%&gt;%</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DistToGoal_Binned =</span> <span class="fu">cut</span>(DistToGoal, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(DistToGoal) <span class="sc">+</span> <span class="dv">10</span>, <span class="at">by =</span> <span class="dv">10</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-the-grouped-bar-plot" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="creating-the-grouped-bar-plot"><span class="header-section-number">4.3.4</span> Creating the Grouped Bar Plot</h3>
+<p>The code employs <code>ggplot</code> to generate a bar plot with the x-axis denoting binned distances to goal and the y-axis indicating shot counts. Bars are distinguished by color according to the shot outcomes.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You can view all available colour palettes by calling <code>display.brewer.all()</code> from the <code>RColorBrewer</code> package.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the bar plot</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>shot_dist_viz <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(shot_outcomes) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> DistToGoal_Binned, <span class="at">fill =</span> shot.outcome.name), <span class="at">width =</span> <span class="fl">0.7</span>, <span class="at">position =</span> <span class="st">"dodge"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">210</span>),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">210</span>, <span class="at">by =</span> <span class="dv">50</span>), </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.05</span>)), </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"left"</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)), <span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">((.*),(.*)</span><span class="sc">\\</span><span class="st">]"</span>, <span class="st">"</span><span class="sc">\\</span><span class="st">1 - </span><span class="sc">\\</span><span class="st">2"</span>, x)) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set background color to white</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the color and the width of the grid lines</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"#A8BAC480"</span>, <span class="at">size =</span> <span class="fl">0.3</span>),</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove tick marks by setting their length to 0</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.length =</span> <span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"mm"</span>),</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize the title for both axes</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Only bottom line is painted in black</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.line.x.bottom =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove labels from the horizontal axis</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize labels for the vertical axis</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>), </span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.9</span>, <span class="fl">0.85</span>)</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Shot Outcome by Distance"</span>,</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Counts of non-penalty shot outcomes binned by distance at FIFA Women's World Cup 2023"</span>,</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Distance to Goal [m]"</span>,</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count of Shots"</span>) <span class="sc">+</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">"sans"</span>, </span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">"bold"</span>,</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">"sans"</span>,</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"#DC2228"</span>, <span class="st">"#3371AC"</span>, <span class="st">"gold"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Goal"</span>,<span class="st">"Off Target"</span>,<span class="st">"Saved"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adding-count-labels" class="level3" data-number="4.3.5">
+<h3 data-number="4.3.5" class="anchored" data-anchor-id="adding-count-labels"><span class="header-section-number">4.3.5</span> Adding Count Labels</h3>
+<p>Upon grouping the data by distance bins and shot outcomes, the code appends each bar with the corresponding count of shot occurrences.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the count of each shot outcome for each distance bin</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>shot_outcomes_sum <span class="ot">&lt;-</span> shot_outcomes <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(DistToGoal_Binned, shot.outcome.name) <span class="sc">%&gt;%</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">'drop'</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Add count labels to the bars</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>shot_dist_viz <span class="ot">&lt;-</span> shot_dist_viz <span class="sc">+</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> shot_outcomes_sum, </span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>          <span class="fu">aes</span>(<span class="at">x =</span> DistToGoal_Binned, <span class="at">y =</span> count, <span class="at">label =</span> count, <span class="at">group =</span> shot.outcome.name), </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.7</span>),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">size =</span> <span class="fl">5.5</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">color =</span> <span class="st">"black"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Using <code>.groups = 'drop'</code> effectively ungroups the data, making the dataframe easier to manage and the code more explicit.</p>
+</div>
+</div>
+</section>
+<section id="adding-the-statsbomb-logo" class="level3" data-number="4.3.6">
+<h3 data-number="4.3.6" class="anchored" data-anchor-id="adding-the-statsbomb-logo"><span class="header-section-number">4.3.6</span> Adding the StatsBomb Logo</h3>
+<p>The StatsBomb logo is inserted into the bottom right corner of the plot.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To ensure the code below runs smoothly, download the required StatsBomb logo from <a href="https://statsbomb.com/media-pack/">here</a> and save it in the same directory as your R script file. In the script, you can then use a relative path to load the image (e.g., ‘img_path’ for a filename like ‘SB_logo.png’). Remember, for the relative path to work, the working directory should be set to where the script is. In R, use <code>getwd()</code> to check the current directory and <code>setwd("/path/to/directory")</code> to set it.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify the path to the StatsBomb logo</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>img_path <span class="ot">&lt;-</span> <span class="st">"SB_logo.png"</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the StatsBomb logo to the plot</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>shot_dist_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(shot_dist_viz) <span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_image</span>(img_path, <span class="at">x =</span> <span class="fl">0.87</span>, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">width =</span> <span class="fl">0.12</span>, <span class="at">height =</span> <span class="fl">0.06</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>shot_dist_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(shot_dist_viz_sb) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">"Data:"</span>, <span class="at">x =</span> <span class="fl">0.84</span>, <span class="at">y =</span> <span class="fl">0.03</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the finalized plot with the StatsBomb logo</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(shot_dist_viz_sb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Bar_Plots_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="1056"></p>
+</div>
+</div>
+<p>The finalized plot is saved as a PNG file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ggsave("Shot_Outcome_by_Distance.png", plot = shot_dist_viz_sb, width = 10, height = 8, dpi = 300)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="stacked-bar-plot" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="stacked-bar-plot"><span class="header-section-number">4.4</span> Stacked Bar Plot</h2>
+<p>In this section, we generate a horizontal stacked bar plot that illustrates the offensive contributions of the Matildas’ players during the FIFA Women’s World Cup 2023. The visualization highlights two primary metrics for each player: shots per 90 minutes (shots_p90) and key passes per 90 minutes (key_passes_p90). Combined, these metrics convey the total “value added in attack” per 90 minutes for every player.</p>
+<p>On the plot, each horizontal bar signifies a player. This bar is divided into two segments: one representing ‘shots_p90’ and the other ‘key_passes_p90’. The extent of each segment mirrors the player’s contributions in the said categories. Numeric labels within these segments further specify the count of shots or key passes per 90 minutes attributed to the respective player.</p>
+<section id="data-filtering-1" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="data-filtering-1"><span class="header-section-number">4.4.1</span> Data Filtering</h3>
+<p>Filter the StatsBomb data to include only shots and passes performed by the Matildas players. For shots, we are interested in non-penalty attempts with specific outcomes, including goals, shots that were saved, off-target shots, and shots hitting the post. For passes, our focus is on those that led directly to a shot or resulted in a goal. In our analysis, we choose to create two separate dataframes for shots and passes, processing them individually before merging them later. This method aligns with the data analysis paradigm of ‘split-apply-combine’.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select relevant columns and filter the StatsBomb data to only include non-penalty shots taken by the Matildas players. Also, select only the particular types of shots we are interested in.</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>shots_Matildas <span class="ot">&lt;-</span> StatsBombData<span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player.name, player.id, team.name, team.id, type.name, shot.type.name, shot.outcome.name, shot.statsbomb_xg, location.x, location.y, DistToGoal)<span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team.name <span class="sc">==</span> <span class="st">"Australia"</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type.name <span class="sc">==</span> <span class="st">"Shot"</span> <span class="sc">&amp;</span> (shot.type.name <span class="sc">!=</span> <span class="st">"Penalty"</span><span class="sc">|</span><span class="fu">is.na</span>(shot.type.name)))<span class="sc">%&gt;%</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(shot.outcome.name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Goal"</span>, <span class="st">"Off T"</span>, <span class="st">"Saved"</span>, <span class="st">"Saved to Post"</span>, <span class="st">"Post"</span>))</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Select relevant columns and filter the StatsBomb data to only include passes by the Matildas players that resulted in a shot or a goal.</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>passes_Matildas <span class="ot">&lt;-</span> StatsBombData<span class="sc">%&gt;%</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player.name, player.id, team.name, team.id, type.name, pass.shot_assist, pass.goal_assist)<span class="sc">%&gt;%</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team.name <span class="sc">==</span> <span class="st">"Australia"</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pass.shot_assist<span class="sc">==</span><span class="cn">TRUE</span> <span class="sc">|</span> pass.goal_assist<span class="sc">==</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="extracting-players-last-names" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="extracting-players-last-names"><span class="header-section-number">4.4.2</span> Extracting Players’ Last Names</h3>
+<p>Incorporate a new column that captures players’ last names, derived using the <code>extract_last_name</code> function provided below. This function also accounts for names incorporating “van”. Subsequently, adjust the column sequence to position ‘last_name’ immediately after ‘player.name’.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to extract the last name from a full name string</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>extract_last_name <span class="ot">&lt;-</span> <span class="cf">function</span>(full_name) {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  name_parts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(full_name, <span class="st">" "</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the name contains "van"</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"van"</span> <span class="sc">%in%</span> name_parts) {</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Concatenate "van" with the last name</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">paste</span>(<span class="st">"van"</span>, <span class="fu">tail</span>(name_parts, <span class="dv">1</span>), <span class="at">collapse =</span> <span class="st">" "</span>))</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Just return the last name</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">tail</span>(name_parts, <span class="dv">1</span>))</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a new column for players' last names</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>shots_Matildas<span class="sc">$</span>last_name <span class="ot">&lt;-</span> <span class="fu">sapply</span>(shots_Matildas<span class="sc">$</span>player.name, extract_last_name)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder the columns to have last_name appear after player.name</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>shots_Matildas <span class="ot">&lt;-</span> shots_Matildas <span class="sc">%&gt;%</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player.name, last_name, <span class="fu">everything</span>())</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new column for players' last names</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>passes_Matildas<span class="sc">$</span>last_name <span class="ot">&lt;-</span> <span class="fu">sapply</span>(passes_Matildas<span class="sc">$</span>player.name, extract_last_name)</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder the columns to have last_name appear after player.name</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>passes_Matildas <span class="ot">&lt;-</span> passes_Matildas <span class="sc">%&gt;%</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player.name, last_name, <span class="fu">everything</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="computing-metrics-and-normalizing-them-to-90-minutes" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="computing-metrics-and-normalizing-them-to-90-minutes"><span class="header-section-number">4.4.3</span> Computing Metrics and Normalizing Them to 90 Minutes</h3>
+<p>First, we organize our data based on individual players, tallying the number of non-penalty shots each player has taken. Using the total minutes each player has been on the pitch, we then normalize these shot metrics to 90 minutes of play, a common normalization factor in football analysis.</p>
+<p>Moving on, we calculate the cumulative number of key passes (passes made in the final third of the football pitch leading to a shot on goal or an actual goal) for each player, again normalized to 90 minutes. With these metrics in hand, we introduce the ‘value_added_attack_p90’ statistic, representing the total offensive contribution of each player per 90 minutes.</p>
+<p>In essence, this series of calculations provides a robust, normalized metric that encapsulates a player’s offensive potency.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate stats for each player</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Group by player and count the number of shots they have taken</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas<span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(player.name, player.id, last_name)<span class="sc">%&gt;%</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">shots=</span><span class="fu">sum</span>(type.name<span class="sc">==</span><span class="st">"Shot"</span>, <span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co">#* Normalize all metrics to 90 minutes ----</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the total minutes played by all players</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>all_players_minutes <span class="ot">=</span> <span class="fu">get.minutesplayed</span>(StatsBombData)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract Australia's team ID</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>Australia_team_id <span class="ot">&lt;-</span> <span class="fu">unique</span>(shots_Matildas<span class="sc">$</span>team.id)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Sum up the total minutes played by each Matilda</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>Matildas_minutes <span class="ot">&lt;-</span> all_players_minutes <span class="sc">%&gt;%</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team.id <span class="sc">==</span> Australia_team_id) <span class="sc">%&gt;%</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(player.id) <span class="sc">%&gt;%</span>  <span class="co"># Group data by player.id</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_minutes_played =</span> <span class="fu">round</span>(<span class="fu">sum</span>(MinutesPlayed), <span class="at">digits =</span> <span class="dv">2</span>), <span class="co"># Sum up the total minutes played</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>)  </span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Join the minutes data to the shot stats data</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas_stats<span class="sc">%&gt;%</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(Matildas_minutes, <span class="at">by =</span> <span class="st">"player.id"</span>)</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate per 90-minute metrics for shots</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas_stats<span class="sc">%&gt;%</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nineties =</span> <span class="fu">round</span>(total_minutes_played<span class="sc">/</span><span class="dv">90</span>, <span class="at">digits=</span><span class="dv">2</span>))</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas_stats<span class="sc">%&gt;%</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">shots_p90 =</span> shots<span class="sc">/</span>nineties)</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Group by player and calculate total key passes (shot assists + goal assists)</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>key_passes_Matildas <span class="ot">&lt;-</span> passes_Matildas <span class="sc">%&gt;%</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(player.id, player.name, last_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_key_passes =</span> <span class="fu">sum</span>(pass.shot_assist, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">sum</span>(pass.goal_assist, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge key_passes_Matildas data with shots_Matildas_stats data - we need this step here to get access to the 'nineties' column in the 'shots_Matildas_stats' dataframe</span></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>complete_stats_Matildas <span class="ot">&lt;-</span> <span class="fu">full_join</span>(shots_Matildas_stats, key_passes_Matildas, <span class="at">by =</span> <span class="st">"player.id"</span>)</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate key passes per 90 minutes</span></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>complete_stats_Matildas <span class="ot">&lt;-</span> complete_stats_Matildas <span class="sc">%&gt;%</span></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">key_passes_p90 =</span> total_key_passes <span class="sc">/</span> nineties)</span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate value added in attack per 90 minutes</span></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>complete_stats_Matildas <span class="ot">&lt;-</span> complete_stats_Matildas <span class="sc">%&gt;%</span></span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value_added_attack_p90 =</span> shots_p90 <span class="sc">+</span> key_passes_p90)</span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Handle any NAs by setting them to zero</span></span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>complete_stats_Matildas <span class="ot">&lt;-</span> complete_stats_Matildas <span class="sc">%&gt;%</span></span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">shots_p90 =</span> <span class="fu">coalesce</span>(shots_p90, <span class="dv">0</span>),  <span class="co"># Replace NA with 0 if any</span></span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">key_passes_p90 =</span> <span class="fu">coalesce</span>(key_passes_p90, <span class="dv">0</span>),  <span class="co"># Replace NA with 0 if any</span></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">value_added_attack_p90 =</span> shots_p90 <span class="sc">+</span> key_passes_p90  <span class="co"># Now this should work correctly</span></span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="converting-data-to-long-format" class="level3" data-number="4.4.4">
+<h3 data-number="4.4.4" class="anchored" data-anchor-id="converting-data-to-long-format"><span class="header-section-number">4.4.4</span> Converting Data to Long Format</h3>
+<p>Within the framework of <code>ggplot2</code>, transforming data to the long format involves restructuring the dataset such that variables and their values form two columns: one representing the variable names and the other their associated values. Adopting this format proves advantageous for crafting intricate visualizations, as it facilitates the effortless mapping of variables to aesthetic features in <code>ggplot2</code>, be it color, shape, or size.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data to long format for plotting ----</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>chart_data <span class="ot">&lt;-</span> complete_stats_Matildas <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(last_name.x, shots_p90, key_passes_p90, value_added_attack_p90) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(value_added_attack_p90)) <span class="sc">%&gt;%</span> <span class="co"># Sorting players by value_added_attack_p90</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">c</span>(shots_p90, key_passes_p90), <span class="at">names_to =</span> <span class="st">"variable"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-the-stacked-bar-plot" class="level3" data-number="4.4.5">
+<h3 data-number="4.4.5" class="anchored" data-anchor-id="creating-the-stacked-bar-plot"><span class="header-section-number">4.4.5</span> Creating the Stacked Bar Plot</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the ggplot object</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>attack_viz <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(chart_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(last_name.x, value), <span class="at">y =</span> value, <span class="at">fill=</span><span class="fu">fct_rev</span>(variable))) <span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">ifelse</span>(value <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="fu">round</span>(value, <span class="dv">2</span>), <span class="st">""</span>)), <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">hjust =</span> <span class="fl">0.35</span>, <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.61</span>)) <span class="sc">+</span> <span class="co"># Labels inside bars</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">position =</span> <span class="st">"right"</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">6.3</span>),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">6</span>, <span class="at">by =</span> <span class="dv">1</span>),</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.7</span>)) <span class="sc">+</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set background color to white</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the color and the width of the grid lines</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"#A8BAC480"</span>, <span class="at">size =</span> <span class="fl">0.3</span>),</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove tick marks by setting their length to 0</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.length =</span> <span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"mm"</span>),</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize the title for both axes</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Only left line of the vertical axis is painted in black</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.line.y.left =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize labels</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize legend</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>), </span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.5</span>)</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"shots_p90"</span> <span class="ot">=</span> <span class="st">"#f1c40f"</span>, <span class="st">"key_passes_p90"</span> <span class="ot">=</span> <span class="st">"#1abc9c"</span>),</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Shots P90"</span>, <span class="st">"Key Passes P90"</span>)</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Matildas' Offensive Prowess"</span>,</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>         <span class="at">subtitle =</span> <span class="st">"Shots Per 90 and Key Passes Per 90 at FIFA Women's World Cup 2023"</span>) <span class="sc">+</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">"sans"</span>, </span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">"bold"</span>,</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">"sans"</span>,</span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adding-the-statsbomb-logo-1" class="level3" data-number="4.4.6">
+<h3 data-number="4.4.6" class="anchored" data-anchor-id="adding-the-statsbomb-logo-1"><span class="header-section-number">4.4.6</span> Adding the StatsBomb Logo</h3>
+<p>Insert the StatsBomb logo and save the plot.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To ensure the code below runs smoothly, download the required StatsBomb logo from <a href="https://statsbomb.com/media-pack/">here</a> and save it in the same directory as your R script file. In the script, you can then use a relative path to load the image (e.g., ‘img_path’ for a filename like ‘SB_logo.png’). Remember, for the relative path to work, the working directory should be set to where the script is. In R, use <code>getwd()</code> to check the current directory and <code>setwd("/path/to/directory")</code> to set it.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Insert the Statsbomb logo ----</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>img_path <span class="ot">&lt;-</span> <span class="st">"SB_logo.png"</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>attack_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(attack_viz) <span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_image</span>(img_path, <span class="at">x =</span> <span class="fl">0.8</span>, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">width =</span> <span class="fl">0.13</span>, <span class="at">height =</span> <span class="fl">0.065</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>attack_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(attack_viz_sb) <span class="sc">+</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">"Data:"</span>, <span class="at">x =</span> <span class="fl">0.77</span>, <span class="at">y =</span> <span class="fl">0.033</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the final plot</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(attack_viz_sb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Bar_Plots_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="1056"></p>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#* Save the visualization to png ----</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ggsave("Matildas_Offensive_Prowess.png", plot = attack_viz_sb, width = 10, height = 8, dpi = 300)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Challenge for the Learner">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Challenge for the Learner
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Deepen your grasp of bar plots and the FIFA Women’s World Cup 2023 data by:</p>
+<ol type="1">
+<li>Creating a grouped bar plot specifically for the Matildas players.</li>
+<li>Generating a stacked bar plot that includes players from all teams, but only those who played more than 2 “nineties”.</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="conclusion-and-reflection" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Conclusion and Reflection</h1>
+<p>Sports data, be it performance metrics or physiological readings, share universal principles. The application of Exploratory Data Analysis (EDA) is the foundational step when working with data of any type and origin. Exploratory Data Visualizations (EDV) serve as a backbone of EDA, regardless of the specific sport or exercise science discipline. Visualizing data, whether in performance analysis or physiology, follows consistent principles — it is all about asking pertinent questions and using suitable visuals for answers. As demonstrated with the football data from the FIFA Women’s World Cup 2023 in this lesson, visual tools like bar plots are versatile. Applied to sports data, they can illustrate player performance as effectively as they depict average heart rates across different exercise regimes. Understanding such aggregates, whether it is discerning the frequency of key passes or assessing average heart rates, lays the groundwork for subsequent analyses and modeling.</p>
+<p>The journey of EDA is sequential: after recognizing patterns and distributions, the focus shifts to deciphering relationships between variables and underlying patterns. This progression underpins the broader scope of EDA — commencing with understanding distributions and culminating in predicting outcomes, enhancing strategies, and fortifying performance. To learn about more EDA and EDV tools, please explore further lessons on our portal.</p>
+</section>
+<section id="knowledge-spot-check" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Knowledge Spot-Check</h1>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Why is exploratory data visualization crucial for data analysis?** <br> <br> A) It makes data colorful. <br> B) It offers an easy way to detect errors in data. <br> C) It simplifies complex statistical measures into understandable visuals. <br> D) It's an alternative to traditional statistics. <br> <br> Expand the see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Why is exploratory data visualization crucial for data analysis?</strong> <br> <br> A) It makes data colorful. <br> B) It offers an easy way to detect errors in data. <br> C) It simplifies complex statistical measures into understandable visuals. <br> D) It’s an alternative to traditional statistics. <br> <br> Expand the see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) It simplifies complex statistical measures into understandable visuals.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**How can bar plots provide insights into your data?** <br> <br> A) They represent the frequency of categorical data. <br> B) They show the relationship between two numerical variables. <br> C) They visualize time series data trends. <br> D) They highlight the hierarchical structure of data. <br> <br> Expand the see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>How can bar plots provide insights into your data?</strong> <br> <br> A) They represent the frequency of categorical data. <br> B) They show the relationship between two numerical variables. <br> C) They visualize time series data trends. <br> D) They highlight the hierarchical structure of data. <br> <br> Expand the see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is A) They represent the frequency of categorical data.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**In the context of the lesson, what purpose do bar plots serve?** <br> <br> A) Display relationships between two continuous variables. <br> B) Display the distribution of a single categorical variable. <br> C) Compare the values of different groups. <br> D) Showcase time series data. <br> <br> Expand the see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>In the context of the lesson, what purpose do bar plots serve?</strong> <br> <br> A) Display relationships between two continuous variables. <br> B) Display the distribution of a single categorical variable. <br> C) Compare the values of different groups. <br> D) Showcase time series data. <br> <br> Expand the see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) Compare the values of different groups.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**What data format is the most suitable for a stacked bar plot visualization?** <br> <br> A) A wide format with columns representing categories. <br> B) A long format where one column specifies the categories and another column provides the values. <br> C) Data with only numerical variables. <br> D) Data with only one categorical variable. <br> <br> Expand the see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>What data format is the most suitable for a stacked bar plot visualization?</strong> <br> <br> A) A wide format with columns representing categories. <br> B) A long format where one column specifies the categories and another column provides the values. <br> C) Data with only numerical variables. <br> D) Data with only one categorical variable. <br> <br> Expand the see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is B) A long format where one column specifies the categories and another column provides the values.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**How do you implement customization of ggplot objects?** <br> <br> A) By directly editing the original data. <br> B) By using the theme() function and other scale functions. <br> C) By using external software to modify the visualization after export. <br> D) By using the coord_flip() function. <br> <br> Expand the see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>How do you implement customization of ggplot objects?</strong> <br> <br> A) By directly editing the original data. <br> B) By using the theme() function and other scale functions. <br> C) By using external software to modify the visualization after export. <br> D) By using the coord_flip() function. <br> <br> Expand the see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is B) By using the theme() function and other scale functions.</p>
+</div>
+</div>
+</div>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The easiest way to check if Git is installed on your computer is by using the terminal (on macOS or Linux) or the command prompt (on Windows).</p>
+<ol type="1">
+<li><p><strong>macOS and Linux</strong>:</p>
+<ol type="1">
+<li>Open the Terminal.</li>
+<li>Type <strong><code>git --version</code></strong> and press Return.</li>
+<li>If you see a version number, it means Git is installed. If you see a message like “command not found,” then Git is not installed.</li>
+</ol></li>
+<li><p><strong>Windows</strong>:</p>
+<ol type="1">
+<li>Open the Command Prompt.</li>
+<li>Type <strong><code>git --version</code></strong> and press Enter.</li>
+<li>If you see a version number, it means Git is installed. If you see a message like ” ‘git’ is not recognized as an internal or external command”, then Git is not installed.</li>
+</ol></li>
+</ol>
+<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+<script src="Bar_Plots_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
