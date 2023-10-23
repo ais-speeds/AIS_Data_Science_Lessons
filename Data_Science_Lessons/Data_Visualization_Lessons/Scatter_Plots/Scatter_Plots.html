@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Exploratory Data Visualization: Scatter Plots</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Scatter_Plots_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Scatter_Plots_files/libs/quarto-html/quarto.js"></script>
+<script src="Scatter_Plots_files/libs/quarto-html/popper.min.js"></script>
+<script src="Scatter_Plots_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Scatter_Plots_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Scatter_Plots_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Scatter_Plots_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Scatter_Plots_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Scatter_Plots_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Scatter_Plots_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="Scatter_Plots_files/libs/quarto-contrib/kbd/kbd.js"></script>
+<link href="Scatter_Plots_files/libs/quarto-contrib/kbd/kbd.css" rel="stylesheet">
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">1</span> Learning Outcomes</a></li>
+  <li><a href="#introduction-exploring-connections-between-variables-in-sports-science" id="toc-introduction-exploring-connections-between-variables-in-sports-science" class="nav-link" data-scroll-target="#introduction-exploring-connections-between-variables-in-sports-science"><span class="header-section-number">2</span> Introduction: Exploring Connections Between Variables in Sports Science</a>
+  <ul class="collapse">
+  <li><a href="#exploratory-data-analysis-and-variable-relationships" id="toc-exploratory-data-analysis-and-variable-relationships" class="nav-link" data-scroll-target="#exploratory-data-analysis-and-variable-relationships"><span class="header-section-number">2.1</span> Exploratory Data Analysis and Variable Relationships</a></li>
+  <li><a href="#unveiling-correlations-and-trends-through-data-visualizations" id="toc-unveiling-correlations-and-trends-through-data-visualizations" class="nav-link" data-scroll-target="#unveiling-correlations-and-trends-through-data-visualizations"><span class="header-section-number">2.2</span> Unveiling Correlations and Trends Through Data Visualizations</a></li>
+  </ul></li>
+  <li><a href="#scatter-plots" id="toc-scatter-plots" class="nav-link" data-scroll-target="#scatter-plots"><span class="header-section-number">3</span> Scatter Plots</a>
+  <ul class="collapse">
+  <li><a href="#what-are-scatter-plots" id="toc-what-are-scatter-plots" class="nav-link" data-scroll-target="#what-are-scatter-plots"><span class="header-section-number">3.1</span> What Are Scatter Plots?</a></li>
+  <li><a href="#types-of-scatter-plots" id="toc-types-of-scatter-plots" class="nav-link" data-scroll-target="#types-of-scatter-plots"><span class="header-section-number">3.2</span> Types of Scatter Plots</a></li>
+  <li><a href="#strengths-of-scatter-plots" id="toc-strengths-of-scatter-plots" class="nav-link" data-scroll-target="#strengths-of-scatter-plots"><span class="header-section-number">3.3</span> Strengths of Scatter Plots</a></li>
+  <li><a href="#harnessing-ggplot2-for-scatter-plots" id="toc-harnessing-ggplot2-for-scatter-plots" class="nav-link" data-scroll-target="#harnessing-ggplot2-for-scatter-plots"><span class="header-section-number">3.4</span> Harnessing <code>ggplot2</code> for Scatter Plots</a></li>
+  <li><a href="#functions-for-scatter-plots-in-ggplot2" id="toc-functions-for-scatter-plots-in-ggplot2" class="nav-link" data-scroll-target="#functions-for-scatter-plots-in-ggplot2"><span class="header-section-number">3.5</span> Functions for Scatter Plots in <code>ggplot2</code></a></li>
+  </ul></li>
+  <li><a href="#case-study---performance-insights-from-scatter-plots-at-the-fifa-womens-world-cup-2023" id="toc-case-study---performance-insights-from-scatter-plots-at-the-fifa-womens-world-cup-2023" class="nav-link" data-scroll-target="#case-study---performance-insights-from-scatter-plots-at-the-fifa-womens-world-cup-2023"><span class="header-section-number">4</span> Case Study - Performance Insights from Scatter Plots at the FIFA Women’s World Cup 2023</a>
+  <ul class="collapse">
+  <li><a href="#what-to-expect" id="toc-what-to-expect" class="nav-link" data-scroll-target="#what-to-expect"><span class="header-section-number">4.1</span> What to Expect</a></li>
+  <li><a href="#data-loading-and-cleaning" id="toc-data-loading-and-cleaning" class="nav-link" data-scroll-target="#data-loading-and-cleaning"><span class="header-section-number">4.2</span> Data Loading and Cleaning</a>
+  <ul class="collapse">
+  <li><a href="#installing-basic-libraries" id="toc-installing-basic-libraries" class="nav-link" data-scroll-target="#installing-basic-libraries"><span class="header-section-number">4.2.1</span> Installing Basic Libraries</a></li>
+  <li><a href="#installing-from-github" id="toc-installing-from-github" class="nav-link" data-scroll-target="#installing-from-github"><span class="header-section-number">4.2.2</span> Installing From GitHub</a></li>
+  <li><a href="#pulling-and-organizing-statsbomb-data" id="toc-pulling-and-organizing-statsbomb-data" class="nav-link" data-scroll-target="#pulling-and-organizing-statsbomb-data"><span class="header-section-number">4.2.3</span> Pulling and Organizing StatsBomb Data</a></li>
+  </ul></li>
+  <li><a href="#multidimensional-scatter-plot" id="toc-multidimensional-scatter-plot" class="nav-link" data-scroll-target="#multidimensional-scatter-plot"><span class="header-section-number">4.3</span> Multidimensional Scatter Plot</a>
+  <ul class="collapse">
+  <li><a href="#data-filtering" id="toc-data-filtering" class="nav-link" data-scroll-target="#data-filtering"><span class="header-section-number">4.3.1</span> Data Filtering</a></li>
+  <li><a href="#extracting-players-last-names" id="toc-extracting-players-last-names" class="nav-link" data-scroll-target="#extracting-players-last-names"><span class="header-section-number">4.3.2</span> Extracting Players’ Last Names</a></li>
+  <li><a href="#computing-stats-per-player" id="toc-computing-stats-per-player" class="nav-link" data-scroll-target="#computing-stats-per-player"><span class="header-section-number">4.3.3</span> Computing Stats Per Player</a></li>
+  <li><a href="#normalizing-metrics-to-90-minutes-of-play" id="toc-normalizing-metrics-to-90-minutes-of-play" class="nav-link" data-scroll-target="#normalizing-metrics-to-90-minutes-of-play"><span class="header-section-number">4.3.4</span> Normalizing Metrics to 90 Minutes of Play</a></li>
+  <li><a href="#creating-the-multidimensional-scatter-plot" id="toc-creating-the-multidimensional-scatter-plot" class="nav-link" data-scroll-target="#creating-the-multidimensional-scatter-plot"><span class="header-section-number">4.3.5</span> Creating the Multidimensional Scatter Plot</a></li>
+  <li><a href="#adding-the-statsbomb-logo" id="toc-adding-the-statsbomb-logo" class="nav-link" data-scroll-target="#adding-the-statsbomb-logo"><span class="header-section-number">4.3.6</span> Adding the StatsBomb Logo</a></li>
+  </ul></li>
+  <li><a href="#tiled-map-of-scatter-plots" id="toc-tiled-map-of-scatter-plots" class="nav-link" data-scroll-target="#tiled-map-of-scatter-plots"><span class="header-section-number">4.4</span> Tiled Map of Scatter Plots</a>
+  <ul class="collapse">
+  <li><a href="#refining-data" id="toc-refining-data" class="nav-link" data-scroll-target="#refining-data"><span class="header-section-number">4.4.1</span> Refining Data</a></li>
+  <li><a href="#creating-the-tiled-map-of-scatter-plots" id="toc-creating-the-tiled-map-of-scatter-plots" class="nav-link" data-scroll-target="#creating-the-tiled-map-of-scatter-plots"><span class="header-section-number">4.4.2</span> Creating the Tiled Map of Scatter Plots</a></li>
+  <li><a href="#adding-the-statsbomb-logo-1" id="toc-adding-the-statsbomb-logo-1" class="nav-link" data-scroll-target="#adding-the-statsbomb-logo-1"><span class="header-section-number">4.4.3</span> Adding the StatsBomb Logo</a></li>
+  </ul></li>
+  <li><a href="#scatter-plot-with-kernel-density-estimation" id="toc-scatter-plot-with-kernel-density-estimation" class="nav-link" data-scroll-target="#scatter-plot-with-kernel-density-estimation"><span class="header-section-number">4.5</span> Scatter Plot with Kernel Density Estimation</a>
+  <ul class="collapse">
+  <li><a href="#data-filtering---all-penalties" id="toc-data-filtering---all-penalties" class="nav-link" data-scroll-target="#data-filtering---all-penalties"><span class="header-section-number">4.5.1</span> Data Filtering - All Penalties</a></li>
+  <li><a href="#feature-engineering" id="toc-feature-engineering" class="nav-link" data-scroll-target="#feature-engineering"><span class="header-section-number">4.5.2</span> Feature Engineering</a></li>
+  <li><a href="#building-the-scatter-plot-with-kernel-density-estimation" id="toc-building-the-scatter-plot-with-kernel-density-estimation" class="nav-link" data-scroll-target="#building-the-scatter-plot-with-kernel-density-estimation"><span class="header-section-number">4.5.3</span> Building the Scatter Plot with Kernel Density Estimation</a></li>
+  <li><a href="#adding-the-statsbomb-logo-2" id="toc-adding-the-statsbomb-logo-2" class="nav-link" data-scroll-target="#adding-the-statsbomb-logo-2"><span class="header-section-number">4.5.4</span> Adding the StatsBomb Logo</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#conclusion-and-reflection" id="toc-conclusion-and-reflection" class="nav-link" data-scroll-target="#conclusion-and-reflection"><span class="header-section-number">5</span> Conclusion and Reflection</a></li>
+  <li><a href="#knowledge-spot-check" id="toc-knowledge-spot-check" class="nav-link" data-scroll-target="#knowledge-spot-check"><span class="header-section-number">6</span> Knowledge Spot-Check</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Scatter_Plots.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exploratory Data Visualization: Scatter Plots</h1>
+<p class="subtitle lead">Analyzing the Target: Scatter Plots Break Down the Matildas’ Shots at the FIFA Women’s World Cup 2023</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="abstract-title">Abstract</div>
+    Visual insights drive decision-making, and scatter plots transform raw numbers into tangible patterns. This lesson highlights the invaluable utility of scatter plots within the expansive domain of Exploratory Data Analysis (EDA), with the FIFA Women’s World Cup 2023 data serving as our guiding dataset. Embark on a journey to understand the dynamics of scatter plots, a foundational EDA instrument, and unravel the nuances of the Matildas’ shooting strategies and tendencies. Designed for sports and exercise science practitioners, sports analysts, and anyone keen on mastering the art of sports data interpretation.
+  </div>
+</div>
+
+</header>
+
+<div class="cell">
+<style type="text/css">
+p {
+  text-align: justify;
+}
+</style>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Keywords">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Exploratory data analysis (EDA), exploratory data visualization (EDV), scatter plot, multidimensional scatter plot, tiled map of scatter plots, kernel density estimation, ggplot2, football, The Matildas, StatsBomb.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lesson's Level">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorized as <span style="color:#CD7F32">BRONZE</span>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Lesson's Main Idea**">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Lesson’s Main Idea</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Exploratory Data Analysis is about asking the right questions and using the appropriate visuals to glean insights.</li>
+<li>While numbers give us specifics, visualizations offer us perspective. Use visuals as a first step to understand your dataset.</li>
+<li>Scatter plots offer a visual representation of two variables and their relationships, enabling insights into patterns, trends, and potential anomalies.</li>
+<li>By harnessing scatter plots with additional layers, such as density estimations or aesthetics like shape and color, we can derive deeper insights and tell a more comprehensive story about the data.</li>
+</ul>
+</div>
+</div>
+<p>Data used in this lesson is provided by <img src="SB_logo.png" width="100px"></p>
+<section id="learning-outcomes" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning Outcomes</h1>
+<p>By the end of this lesson, you will be proficient in:</p>
+<ul>
+<li><p><strong>Data Extraction and Preprocessing</strong>: Efficiently sourcing, processing, and refining datasets to ensure they are tailored for specific scatter plot visualizations.</p></li>
+<li><p><strong>Understanding Scatter Plots’ Role in EDA</strong>: Recognizing the unique capabilities of scatter plots in Exploratory Data Analysis (EDA) to visualize relationships and distributions of diverse variables.</p></li>
+<li><p><strong>Crafting Comprehensive Scatter Plots</strong>: Designing detailed scatter plot visualizations that effectively convey data points’ relationships, trends, and concentrations.</p></li>
+<li><p><strong>Implementing Advanced Scatter Plot Techniques</strong>: Leveraging advanced plotting methodologies and <code>ggplot2</code> functionalities to enhance scatter plot representations with layered insights, annotations, and custom aesthetics.</p></li>
+<li><p><strong>Analyzing and Drawing Conclusions from Scatter Plots</strong>: Cultivating the ability to extract meaningful insights from scatter plot data visualizations, underpinning data-driven decision-making across various domains.</p></li>
+</ul>
+</section>
+<section id="introduction-exploring-connections-between-variables-in-sports-science" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction: Exploring Connections Between Variables in Sports Science</h1>
+<section id="exploratory-data-analysis-and-variable-relationships" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="exploratory-data-analysis-and-variable-relationships"><span class="header-section-number">2.1</span> Exploratory Data Analysis and Variable Relationships</h2>
+<p>In every discipline of sport and exercise science (SES), from biomechanics to physiology, variables do not operate in isolation. Their interactions, influences, and the outcomes they directly determine are the bedrock of these disciplines. For instance, consider the relationship between stride frequency and sprint speed in biomechanics, or the correlation between oxygen uptake and heart rate in physiology. Grasping how these variables correlate and interact is pivotal.</p>
+<p>Exploratory Data Analysis (EDA) stands at the forefront of this understanding, serving as a tool to unravel these interactions. Once we comprehend the distribution of an individual variable, the progression in EDA involves delving into the relationships and impacts between variables. It prompts essential questions: How does a change in one variable affect another? Do they have a linear relationship, or is it more nuanced? Is there a discernible threshold where the impact shifts markedly?</p>
+<p>The insights we glean from EDA, particularly when represented visually, empower sports and exercise science professionals. They can then anticipate patterns, fine-tune training regimes, adapt interventions, and ultimately elevate performance and well-being.</p>
+</section>
+<section id="unveiling-correlations-and-trends-through-data-visualizations" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="unveiling-correlations-and-trends-through-data-visualizations"><span class="header-section-number">2.2</span> Unveiling Correlations and Trends Through Data Visualizations</h2>
+<p>In SES, effectively converting intricate interactions into discernible insights is often achieved through data visualizations, and scatter plots are a prime tool in this endeavor.</p>
+<p>Consider the domain of physiology. A scatter plot can vividly depict the relationship between exertion and heart rate recovery, granting a snapshot of an athlete’s cardiovascular efficiency. In biomechanics, a plot can illuminate the correlation between force exerted and muscle fatigue. These visual representations unearth insights that might otherwise remain obscured in dense data.</p>
+<p>Scatter plots are lauded for their directness. By juxtaposing two variables, they elucidate the nature of their interaction. This clarity is instrumental in formulating hypotheses and lays the foundation for in-depth statistical analyses. With a glance at a scatter plot, one can ascertain the type of relationship variables share and whether advanced modeling might be warranted. Consequently, scatter plots can catalyze predictive modeling and facilitate more intricate analyses.</p>
+<p>In essence, scatter plots are an evolutionary step in EDA. While EDA deciphers the intricate dance of variables, scatter plots bring that dance to life, spotlighting patterns, relationships, and outliers, all invaluable assets in SES.</p>
+</section>
+</section>
+<section id="scatter-plots" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Scatter Plots</h1>
+<p>Scatter plots are foundational in data visualization for sport and exercise science, illuminating relationships between two numerical variables. When probing into the correlation between an athlete’s training duration and their subsequent performance or unveiling the ties between muscle exertion and recovery time, scatter plots shine as the instrument of choice.</p>
+<section id="what-are-scatter-plots" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="what-are-scatter-plots"><span class="header-section-number">3.1</span> What Are Scatter Plots?</h2>
+<p>A scatter plot is a graphical representation that displays individual data points on a two-dimensional plane. Each point corresponds to values from both the horizontal (X) and vertical (Y) variables. By visualizing these points, we can discern potential correlations, trends, or outliers between the two variables.</p>
+</section>
+<section id="types-of-scatter-plots" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="types-of-scatter-plots"><span class="header-section-number">3.2</span> Types of Scatter Plots</h2>
+<ul>
+<li><p><strong>Multidimensional Scatter Plot</strong>: An enhancement of the basic scatter plot, it introduces additional dimensions through attributes like the color, shape, or size of the points. In football, for instance, this might manifest as visualizing player positions on the pitch, while color-coding them based on metrics such as goals scored or distance run.</p></li>
+<li><p><strong>Tiled Map of Scatter Plots</strong>: Essentially, this is a matrix of scatter plots, each capturing a distinct subset of your data. Imagine a grid layout elucidating the evolution of player metrics like ball possession duration, passing accuracy, and shots on target over a series of matches or an entire season.</p></li>
+<li><p><strong>Scatter Plot with Kernel Density Estimation</strong>: By superimposing a density layer, it provides insights into areas of the plot with the highest concentration of data points. For a sport like football, this could illustrate zones on the field where most goals originate.</p></li>
+</ul>
+</section>
+<section id="strengths-of-scatter-plots" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="strengths-of-scatter-plots"><span class="header-section-number">3.3</span> Strengths of Scatter Plots</h2>
+<p>Scatter plots excel in:</p>
+<ul>
+<li><p><strong>Identifying Correlations</strong>: Whether there’s a positive, negative, or no correlation, scatter plots offer clarity at a glance.</p></li>
+<li><p><strong>Spotting Outliers</strong>: They are adept at highlighting anomalies in your data, which can be crucial for sports analysis.</p></li>
+<li><p><strong>Diving Deep into Patterns</strong>: Scatter plots can reveal clusters or patterns, offering insights into, say, performance peaks or fatigue thresholds.</p></li>
+</ul>
+</section>
+<section id="harnessing-ggplot2-for-scatter-plots" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="harnessing-ggplot2-for-scatter-plots"><span class="header-section-number">3.4</span> Harnessing <code>ggplot2</code> for Scatter Plots</h2>
+<p>The <code>ggplot2</code> library, a paramount tool in the R plotting ecosystem, will be our primary instrument in this lesson. Grounded in a layering principle, you initiate with a basic plot and progressively incorporate layers to refine both its utility and visual appeal. Each layer embeds more context or detail, making your plot progressively richer.</p>
+</section>
+<section id="functions-for-scatter-plots-in-ggplot2" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="functions-for-scatter-plots-in-ggplot2"><span class="header-section-number">3.5</span> Functions for Scatter Plots in <code>ggplot2</code></h2>
+<ul>
+<li><code>geom_point</code>: The keystone function for scatter plots. Known for its adaptability, it enables detailed visual explorations, tailored to your dataset’s demands.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled" title="Attention to Scatter Plots">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Attention to Scatter Plots
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Density Over Clutter</strong>: When dealing with dense datasets, consider the scatter plot with Kernel Density Estimation to avoid clutter.</li>
+<li><strong>Scalability</strong>: As data volume grows, ensure clarity isn’t compromised by overcrowding.</li>
+<li><strong>Axes Interpretation</strong>: Always ensure that the axes are correctly labeled and the scale is apt, ensuring accurate interpretation.</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="case-study---performance-insights-from-scatter-plots-at-the-fifa-womens-world-cup-2023" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Case Study - Performance Insights from Scatter Plots at the FIFA Women’s World Cup 2023</h1>
+<p>Scatter plots, as powerful data visualization tools, transform seemingly complex numerical relationships into clear, interpretable patterns. With the assistance of these plots, intricate data can be demystified, enabling us to glean deeper insights. Turning our gaze towards the football statistics from the FIFA Women’s World Cup 2023, our objective becomes analyzing relationships in player performance metrics. We’ll particularly spotlight the Matildas - the Women’s Australian National Football Team. Through this exploration, we’ll highlight the essential role of scatter plots in elucidating connections and trends in sports statistics.</p>
+<section id="what-to-expect" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="what-to-expect"><span class="header-section-number">4.1</span> What to Expect</h2>
+<ul>
+<li><p><strong>Scatter Plot - “Matilda’s Shooting Efficiency at FIFA Women’s World Cup 2023”</strong>: This visualization showcases the correlation between Non-Penalty Expected Goals per 90 Minutes (NPxG P90) and Shots per 90 Minutes. By using color to indicate average shot distance and shapes for goal scoring, we can explore: “Is the relationship between shots and expected goals linear?”, “How does average shot distance factor in?”, and “Which patterns can be seen in shooting efficiency?”</p></li>
+<li><p><strong>Tiled Scatter Plot - “Matildas’ Shot Maps at FIFA Women’s World Cup 2023”</strong>: In this plot, we’ll present the shot locations preferred by each Matildas player. This will help answer: “Where do players commonly shoot from?”, “How do different positions relate to the shot’s success?”, and “Which players have distinct shooting positions?”</p></li>
+<li><p><strong>Scatter Plot - “Penalty Shots Map”</strong>: This visualization provides insights into penalty shots during the tournament. We’ll seek to understand: “Where are penalties typically placed?” and “Which areas have the best success rates?”</p></li>
+</ul>
+<p>With these visual tools, we’re ready to delve into the data and uncover the insights they offer.</p>
+</section>
+<section id="data-loading-and-cleaning" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="data-loading-and-cleaning"><span class="header-section-number">4.2</span> Data Loading and Cleaning</h2>
+<p>In this lesson, we will utilize open-access data provided by StatsBomb - one of the world’s leading football analytics companies that provides high-quality football data. We will employ the <code>StatsBombR</code> package in R, which allows efficient access to the StatsBomb data.</p>
+<p>To ensure a smooth execution of the code in this lesson, follow the steps below to install the necessary R libraries.</p>
+<section id="installing-basic-libraries" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="installing-basic-libraries"><span class="header-section-number">4.2.1</span> Installing Basic Libraries</h3>
+<p>Most of the libraries are readily available on CRAN and can be installed using the command <code>install.packages("NameOfPackage")</code>, if they are not already installed on your computer:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"tidyverse"</span>, <span class="st">"ggrepel"</span>, <span class="st">"ggsoccer"</span>, <span class="st">"RColorBrewer"</span>, <span class="st">"grid"</span>, <span class="st">"png"</span>, <span class="st">"gridExtra"</span>, <span class="st">"cowplot"</span>, <span class="st">"forcats"</span>), <span class="at">repos=</span><span class="st">"https://cloud.r-project.org/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="installing-from-github" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="installing-from-github"><span class="header-section-number">4.2.2</span> Installing From GitHub</h3>
+<p>Some packages, such as <code>StatsBombR</code>, are not available on CRAN and need to be installed from GitHub. This can be achieved using the <code>devtools</code> package. If you have not already, please install <code>devtools</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>, <span class="at">repos=</span><span class="st">"https://cloud.r-project.org/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In order to install packages from GitHub, ensure Git is also set up on your machine<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. If it is not installed, <a href="https://git-scm.com/downloads">download and install Git</a>. This will allow <code>devtools</code> to clone and install packages from GitHub directly.</p>
+<p>Now, the <code>StatsBombR</code> package can be installed using the following command:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"statsbomb/StatsBombR"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After you have installed all the required packages, you can load them into your current R session as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co"># clean the workspace</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(StatsBombR)    <span class="co"># For accessing and handling StatsBomb football data</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)     <span class="co"># For data manipulation and visualization</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)       <span class="co"># To avoid label overlap in plots</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsoccer)      <span class="co"># For plotting soccer pitches</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)  <span class="co"># For colorblind-friendly palettes</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(grid)          <span class="co"># For lower-level graphics functions</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(png)           <span class="co"># To read and write PNG images</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)     <span class="co"># For arranging multiple grid-based plots</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)       <span class="co"># For enhancing and customizing ggplot figures</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forcats)       <span class="co"># For categorical variable (factor) manipulation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pulling-and-organizing-statsbomb-data" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="pulling-and-organizing-statsbomb-data"><span class="header-section-number">4.2.3</span> Pulling and Organizing StatsBomb Data</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Explore the Code">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Explore the Code
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This lesson features annotated code sections, with comments elucidating the intent and operation of every code snippet. Nonetheless, to genuinely grasp the influence of a particular plot customization function, it is advisable to momentarily comment out that specific code line and see the consequent modifications in the graphic. For RStudio users on macOS, the keyboard shortcut to comment out a line or multiple lines of code is <kbd data-mac="Shift-Command-C"></kbd>.</p>
+</div>
+</div>
+<p>The initial step involves retrieving and loading the StatsBomb dataset, followed by the extraction of relevant data for this lesson. The code provided below accomplishes this task.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Load and Tidy Up StatsBomb data ----</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#* Pull and load free StatsBomb data ----</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Measure the time it takes to execute the code within the system.time brackets (for performance)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>({ </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fetch list of all available competitions</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  all_comps <span class="ot">&lt;-</span> <span class="fu">FreeCompetitions</span>() </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter to get only the 2023 FIFA Women's World Cup data (Competition ID 72, Season ID 107)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  Comp <span class="ot">&lt;-</span> all_comps <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(competition_id <span class="sc">==</span> <span class="dv">72</span> <span class="sc">&amp;</span> season_id <span class="sc">==</span> <span class="dv">107</span>) </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fetch all matches of the selected competition</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  Matches <span class="ot">&lt;-</span> <span class="fu">FreeMatches</span>(Comp) </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Download all match events and parallelize to speed up the process</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  StatsBombData <span class="ot">&lt;-</span> <span class="fu">free_allevents</span>(<span class="at">MatchesDF =</span> Matches, <span class="at">Parallel =</span> T) </span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Clean the data</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  StatsBombData <span class="ot">=</span> <span class="fu">allclean</span>(StatsBombData) </span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the column names of the final StatsBombData dataframe</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(StatsBombData)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After loading the data and briefly examining it to acquaint ourselves with the structure of the StatsBombData dataframe, we can proceed to refine the team names.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#* Tidy up the teams' names ----</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataframe containing unique names of all teams at FWWC23</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>WWC_teams <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">team_name =</span> <span class="fu">unique</span>(StatsBombData<span class="sc">$</span>team.name)) </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the " Women's" part from team names for simplicity</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>StatsBombData<span class="sc">$</span>team.name <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">" Women's"</span>, <span class="st">""</span>, StatsBombData<span class="sc">$</span>team.name) </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename and simplify team names in the 'Matches' dataframe</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>Matches <span class="ot">&lt;-</span> Matches <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">home_team =</span> home_team.home_team_name, </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">away_team =</span> away_team.away_team_name  </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">home_team =</span> <span class="fu">gsub</span>(<span class="st">" Women's"</span>, <span class="st">""</span>, home_team),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">away_team =</span> <span class="fu">gsub</span>(<span class="st">" Women's"</span>, <span class="st">""</span>, away_team) </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Having set the stage, we are now poised to delve into data analysis and construct scatter plot visualizations for our chosen metrics. We will kick off with the “Matildas’ Shooting Efficiency” scatter plot.</p>
+</section>
+</section>
+<section id="multidimensional-scatter-plot" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="multidimensional-scatter-plot"><span class="header-section-number">4.3</span> Multidimensional Scatter Plot</h2>
+<p>In this section, we craft a scatter plot contrasting shots per 90 minutes (shots_p90) against non-penalty expected goals per 90 minutes metric (npxg_p90). This visualization sheds light on a player’s shooting frequency relative to the quality of those shots, offering insights into overall shooting efficiency.</p>
+<section id="data-filtering" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="data-filtering"><span class="header-section-number">4.3.1</span> Data Filtering</h3>
+<p>The code below parses through the StatsBombData dataframe, selecting specific columns pertinent to our scatter plot analysis. It focuses on the shots taken by the Matildas, excluding penalty shots. The shot outcomes are categorized into five distinct types: Goal, Off T (Off Target), Saved, Saved to Post, and Post.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract relevant shot data for Matildas from StatsBombData</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>shots_Matildas <span class="ot">&lt;-</span> StatsBombData<span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player.name, player.id, team.name, team.id, type.name, shot.type.name, shot.outcome.name, shot.statsbomb_xg, location.x, location.y, DistToGoal)<span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team.name <span class="sc">==</span> <span class="st">"Australia"</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type.name <span class="sc">==</span> <span class="st">"Shot"</span> <span class="sc">&amp;</span> (shot.type.name <span class="sc">!=</span> <span class="st">"Penalty"</span><span class="sc">|</span><span class="fu">is.na</span>(shot.type.name)))<span class="sc">%&gt;%</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(shot.outcome.name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Goal"</span>, <span class="st">"Off T"</span>, <span class="st">"Saved"</span>, <span class="st">"Saved to Post"</span>, <span class="st">"Post"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Having refined our dataset, we can now efficiently analyze the Matildas’ shooting performance.</p>
+</section>
+<section id="extracting-players-last-names" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="extracting-players-last-names"><span class="header-section-number">4.3.2</span> Extracting Players’ Last Names</h3>
+<p>To streamline the dataframe with the Matildas’ shot data, we will add a column capturing players’ last names. This aids in annotating points on the scatter plot with player names. Using the <code>extract_last_name</code> function, we also cater to names that include “van”. Finally, we reposition the ‘last_name’ column to follow ‘player.name’.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to extract the last name from a full name string</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>extract_last_name <span class="ot">&lt;-</span> <span class="cf">function</span>(full_name) {</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  name_parts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(full_name, <span class="st">" "</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the name contains "van"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"van"</span> <span class="sc">%in%</span> name_parts) {</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Concatenate "van" with the last name</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">paste</span>(<span class="st">"van"</span>, <span class="fu">tail</span>(name_parts, <span class="dv">1</span>), <span class="at">collapse =</span> <span class="st">" "</span>))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Just return the last name</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">tail</span>(name_parts, <span class="dv">1</span>))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a new column for players' last names</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>shots_Matildas<span class="sc">$</span>last_name <span class="ot">&lt;-</span> <span class="fu">sapply</span>(shots_Matildas<span class="sc">$</span>player.name, extract_last_name)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder the columns to have last_name after player.name</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>shots_Matildas <span class="ot">&lt;-</span> shots_Matildas <span class="sc">%&gt;%</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player.name, last_name, <span class="fu">everything</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="computing-stats-per-player" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="computing-stats-per-player"><span class="header-section-number">4.3.3</span> Computing Stats Per Player</h3>
+<p>In this step, we structure our data around individual players. For each player, we count the number of non-penalty shots taken, sum up the non-penalty expected goals metric (npxg), and calculate the average distance to the goal (avg_dist) for their shots. Additionally, the code determines whether a player has scored a goal (scored_goal), considering only non-penalty shots.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate stats for each player</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Group by player and compute the following metrics: the number of shots they have taken, total NPxG, average distance to goal, and whether a player scored a goal</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas<span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(player.name, player.id, last_name)<span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">shots=</span><span class="fu">sum</span>(type.name<span class="sc">==</span><span class="st">"Shot"</span>, <span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">npxg=</span><span class="fu">sum</span>(shot.statsbomb_xg),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">avg_dist =</span> <span class="fu">mean</span>(DistToGoal, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">scored_goal =</span> <span class="fu">any</span>(shot.outcome.name <span class="sc">==</span> <span class="st">"Goal"</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Using <code>.groups = 'drop'</code> effectively ungroups the data, making the dataframe easier to manage and the code more explicit.</p>
+</div>
+</div>
+</section>
+<section id="normalizing-metrics-to-90-minutes-of-play" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="normalizing-metrics-to-90-minutes-of-play"><span class="header-section-number">4.3.4</span> Normalizing Metrics to 90 Minutes of Play</h3>
+<p>In this section, we first determine the total minutes played by each Matilda by leveraging the overall minutes played by all players. With the accumulated minutes, we then compute metrics normalized to a 90-minute game duration, notably shots_p90 and npxg_p90. Furthermore, to facilitate clearer visual representation, we categorize average shot distances into distinct bins (avg_dist_binned). This categorization aids in providing a structured overview of the players’ shooting distances.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the total minutes played by each player</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>all_players_minutes <span class="ot">=</span> <span class="fu">get.minutesplayed</span>(StatsBombData)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract Australia's team ID</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>Australia_team_id <span class="ot">&lt;-</span> <span class="fu">unique</span>(shots_Matildas<span class="sc">$</span>team.id)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Sum up the total minutes played by each Matilda</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>Matildas_minutes <span class="ot">&lt;-</span> all_players_minutes <span class="sc">%&gt;%</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team.id <span class="sc">==</span> Australia_team_id) <span class="sc">%&gt;%</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(player.id) <span class="sc">%&gt;%</span>  <span class="co"># Group data by player.id</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_minutes_played =</span> <span class="fu">round</span>(<span class="fu">sum</span>(MinutesPlayed), <span class="at">digits =</span> <span class="dv">2</span>), <span class="co"># Sum up total minutes played</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>)  </span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Join the minutes data with the shot stats data</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas_stats<span class="sc">%&gt;%</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(Matildas_minutes, <span class="at">by =</span> <span class="st">"player.id"</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalize shots and NPxG per 90 minutes of play</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas_stats<span class="sc">%&gt;%</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nineties =</span> <span class="fu">round</span>(total_minutes_played<span class="sc">/</span><span class="dv">90</span>, <span class="at">digits=</span><span class="dv">2</span>))</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas_stats<span class="sc">%&gt;%</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">shots_p90 =</span> shots<span class="sc">/</span>nineties,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>         <span class="at">npxg_p90 =</span> npxg<span class="sc">/</span>nineties)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Bin the average distance</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats <span class="ot">&lt;-</span> shots_Matildas_stats <span class="sc">%&gt;%</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">avg_dist_binned =</span> <span class="fu">cut</span>(avg_dist, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(avg_dist) <span class="sc">+</span> <span class="dv">10</span>, <span class="at">by =</span> <span class="dv">10</span>)))</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to factors for easier plotting</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats<span class="sc">$</span>avg_dist_binned <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(shots_Matildas_stats<span class="sc">$</span>avg_dist_binned)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>shots_Matildas_stats<span class="sc">$</span>scored_goal <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(shots_Matildas_stats<span class="sc">$</span>scored_goal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-the-multidimensional-scatter-plot" class="level3" data-number="4.3.5">
+<h3 data-number="4.3.5" class="anchored" data-anchor-id="creating-the-multidimensional-scatter-plot"><span class="header-section-number">4.3.5</span> Creating the Multidimensional Scatter Plot</h3>
+<p>Now we are ready to visualize the Matildas’ shooting efficiency with a scatter plot. The x-axis depicts shots_p90, indicating the frequency of shots taken per 90 minutes of play. On the y-axis, we have npxg_p90, showcasing the non-penalty expected goals metric also normalized to 90 minutes. Each point’s fill color corresponds to the average shot distance (avg_dist_binned), while its shape indicates whether the player has scored. The annotations on the scatter plot help identify each player by their last name.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Scatter Plot Point Shape Values">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Scatter Plot Point Shape Values
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To explore different point shape values, first install the <code>ggpubr</code> package using <code>install.packages("ggpubr")</code>. Then, call <code>show_point_shapes()</code>.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the scatter plot</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>shot_effic_viz <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>shots_Matildas_stats,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> shots_p90,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> npxg_p90)) <span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> avg_dist_binned,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">shape =</span> scored_goal),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">6</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">stroke =</span> <span class="fl">0.6</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> shots_Matildas_stats,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">x =</span> shots_p90,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                      <span class="at">y =</span> npxg_p90,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label =</span> last_name),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">size =</span> <span class="fl">5.5</span>, <span class="co">#4.5</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">box.padding =</span> <span class="fl">0.5</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">point.padding =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"FALSE"</span> <span class="ot">=</span> <span class="dv">21</span>, <span class="st">"TRUE"</span> <span class="ot">=</span> <span class="dv">24</span>), <span class="at">name =</span><span class="st">""</span>, </span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Not Scored"</span>, <span class="st">"Scored"</span>)) <span class="sc">+</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#1abc9c"</span>, <span class="st">"#e74c3c"</span>, <span class="st">"#9b59b6"</span>, <span class="st">"#f1c40f"</span>), <span class="at">name =</span> <span class="st">"Av. Shot Dist. [m]"</span>,   </span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0-10"</span>, <span class="st">"10-20"</span>, <span class="st">"20-30"</span>, <span class="st">"30-40"</span>)) <span class="sc">+</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">shape =</span> <span class="dv">22</span>)),</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>         <span class="at">shape =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">fill =</span> <span class="st">"black"</span>))) <span class="sc">+</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set background color to white</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the color and the width of the grid lines</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"#A8BAC480"</span>, <span class="at">size =</span> <span class="fl">0.3</span>),</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the color and the width of the grid lines</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"#A8BAC480"</span>, <span class="at">size =</span> <span class="fl">0.3</span>),</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove tick marks by setting their length to 0</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.length =</span> <span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"mm"</span>),</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize the title for both axes</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Labels for the horizontal axis</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Labels for the vertical axis</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>), <span class="co">#12</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.key =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="co">#14</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Matildas' Shooting Efficiency at FIFA Women's World Cup 2023"</span>,</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Non-Penalty Expected Goals per 90 Minutes (NPxG P90) vs Shots per 90 Minutes</span><span class="sc">\n</span><span class="st">Colored by Average Shot Distance and Shaped by Goal Scoring"</span>,</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Shots P90"</span>,</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"NPxG P90"</span>) <span class="sc">+</span></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">"sans"</span>, </span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">"bold"</span>,</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">"sans"</span>,</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adding-the-statsbomb-logo" class="level3" data-number="4.3.6">
+<h3 data-number="4.3.6" class="anchored" data-anchor-id="adding-the-statsbomb-logo"><span class="header-section-number">4.3.6</span> Adding the StatsBomb Logo</h3>
+<p>The StatsBomb logo is inserted into the bottom right corner of the plot.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To ensure the code below runs smoothly, download the required StatsBomb logo from <a href="https://statsbomb.com/media-pack/">here</a> and save it in the same directory as your R script file. In the script, you can then use a relative path to load the image (e.g., ‘img_path’ for a filename like ‘SB_logo.png’). Remember, for the relative path to work, the working directory should be set to where the script is. In R, use <code>getwd()</code> to check the current directory and <code>setwd("/path/to/directory")</code> to set it.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify the path to the StatsBomb logo image</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>img_path <span class="ot">&lt;-</span> <span class="st">"SB_logo.png"</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the StatsBomb logo to the existing plot</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>shot_effic_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(shot_effic_viz) <span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_image</span>(img_path, <span class="at">x =</span> <span class="fl">0.87</span>, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">width =</span> <span class="fl">0.12</span>, <span class="at">height =</span> <span class="fl">0.06</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a label to indicate the data source</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>shot_effic_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(shot_effic_viz_sb) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">"Data:"</span>, <span class="at">x =</span> <span class="fl">0.84</span>, <span class="at">y =</span> <span class="fl">0.03</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the finalized plot</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(shot_effic_viz_sb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Scatter_Plots_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="1056"></p>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#* Save the visualization to png ----</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ggsave("Matildas_Shooting_Efficiency.png", plot = shot_effic_viz_sb, width = 10, height = 8, dpi = 300)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="tiled-map-of-scatter-plots" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="tiled-map-of-scatter-plots"><span class="header-section-number">4.4</span> Tiled Map of Scatter Plots</h2>
+<p>In this section, we craft a tiled map of scatter plots showcasing the preferred shot locations of each Matildas player during the FIFA Women’s World Cup 2023. This visualization offers insights into common shooting positions, their correlation with shot success, and the unique shooting tendencies of individual players.</p>
+<section id="refining-data" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="refining-data"><span class="header-section-number">4.4.1</span> Refining Data</h3>
+<p>To differentiate between successful shots and misses, we introduce a new column, shot_outcome, that labels each shot as either “Goal” or “No Goal”, determined by the shot.outcome.name value.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a new column to categorize each shot as either a "Goal" or "No Goal"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>shots_Matildas <span class="ot">&lt;-</span> shots_Matildas <span class="sc">%&gt;%</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">shot_outcome =</span> <span class="fu">ifelse</span>(shot.outcome.name <span class="sc">==</span> <span class="st">"Goal"</span>, <span class="st">"Goal"</span>, <span class="st">"No Goal"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-the-tiled-map-of-scatter-plots" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="creating-the-tiled-map-of-scatter-plots"><span class="header-section-number">4.4.2</span> Creating the Tiled Map of Scatter Plots</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Football Pitch Visualization">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Football Pitch Visualization
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To visualize a football pitch, we employ the <code>ggsoccer</code> library. While this provides a convenient method, one can also craft a pitch using the <code>annotate()</code> function from <code>ggplot2</code>. By varying its first argument, shapes such as <em>rect</em>, <em>segment</em>, <em>point</em>, and <em>path</em> can be utilized to manually construct the pitch.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize an empty ggplot object</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>shot_map_viz <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Draw the soccer pitch</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate_pitch</span>(<span class="at">dimensions =</span> pitch_statsbomb,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="st">"white"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"springgreen4"</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">limits =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_pitch</span>() <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set background color</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"springgreen4"</span>)) <span class="sc">+</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Flip x and y axes to orient the pitch vertically</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">120</span>)) <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reverse y-axis</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reverse</span>() <span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Plot each Matildas' shot</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> shots_Matildas,</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> location.x,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> <span class="dv">80</span> <span class="sc">-</span> location.y,</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> shot_outcome,</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">size =</span> shot.statsbomb_xg),</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">21</span>, <span class="co"># Circle shape</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>             <span class="at">stroke =</span> <span class="fl">0.3</span>, <span class="co"># Circle border thickness</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"black"</span>) <span class="sc">+</span> <span class="co"># Circle border color</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Manually set the colors for shot outcomes</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Goal"</span> <span class="ot">=</span> <span class="st">"#e74c3c"</span>, <span class="st">"No Goal"</span> <span class="ot">=</span> <span class="st">"#f1c40f"</span>), </span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>                      <span class="at">name =</span> <span class="st">"Shot Outcome"</span>, </span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>                      <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Goal"</span>, <span class="st">"No Goal"</span>)) <span class="sc">+</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">size =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">fill =</span> <span class="st">"#f1c40f"</span>)),</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>         <span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">3</span>))) <span class="sc">+</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create panels for each player's shot map</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>last_name) <span class="sc">+</span></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add statistics for shots per 90 minutes, NPxG per 90 minutes, and average shot distance</span></span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> shots_Matildas_stats,</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x=</span><span class="dv">80</span>,</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>                <span class="at">y=</span><span class="dv">80-15</span>,</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"Shots P90:"</span>, <span class="fu">round</span>(shots_p90, <span class="at">digits=</span><span class="dv">3</span>))),</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">2.7</span>) <span class="sc">+</span> <span class="co">#2.2</span></span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> shots_Matildas_stats,</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x=</span><span class="dv">74</span>,</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>                <span class="at">y=</span><span class="dv">80-15</span>,</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"NPxG P90:"</span>, <span class="fu">round</span>(npxg_p90, <span class="at">digits=</span><span class="dv">3</span>))),</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">2.7</span>) <span class="sc">+</span></span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> shots_Matildas_stats,</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x=</span><span class="dv">68</span>,</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>                <span class="at">y=</span><span class="dv">80-15</span>,</span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"Avg. Dist.:"</span>, <span class="fu">round</span>(avg_dist, <span class="at">digits=</span><span class="dv">3</span>))),</span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">2.7</span>) <span class="sc">+</span></span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set background color to white</span></span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),</span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the color and the width of the grid lines</span></span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the color and the width of the grid lines</span></span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove tick marks by setting their length to 0</span></span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.length =</span> <span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"mm"</span>),</span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize the title for both axes</span></span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Labels for the horizontal axis</span></span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Labels for the vertical axis</span></span>
+<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"black"</span>), <span class="co">#12</span></span>
+<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.key =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"sans"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">color =</span> <span class="st">"black"</span>), <span class="co"># 14</span></span>
+<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">face =</span> <span class="st">"bold"</span>), <span class="co">#12</span></span>
+<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.background =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Matildas' Shot Maps at FIFA Women's World Cup 2023"</span>,</span>
+<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Only Non-Penalty Shots That Reached the Goal"</span>,</span>
+<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>       <span class="at">size =</span> <span class="st">"Non-Penalty xG"</span>) <span class="sc">+</span></span>
+<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">"sans"</span>, </span>
+<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">"bold"</span>,</span>
+<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a>      <span class="at">hjust =</span> <span class="fl">0.5</span></span>
+<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">"sans"</span>,</span>
+<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb15-85"><a href="#cb15-85" aria-hidden="true" tabindex="-1"></a>      <span class="at">hjust =</span> <span class="fl">0.5</span></span>
+<span id="cb15-86"><a href="#cb15-86" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adding-the-statsbomb-logo-1" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="adding-the-statsbomb-logo-1"><span class="header-section-number">4.4.3</span> Adding the StatsBomb Logo</h3>
+<p>The StatsBomb logo is inserted into the bottom right corner of the plot.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To ensure the code below runs smoothly, download the required StatsBomb logo from <a href="https://statsbomb.com/media-pack/">here</a> and save it in the same directory as your R script file. In the script, you can then use a relative path to load the image (e.g., ‘img_path’ for a filename like ‘SB_logo.png’). Remember, for the relative path to work, the working directory should be set to where the script is. In R, use <code>getwd()</code> to check the current directory and <code>setwd("/path/to/directory")</code> to set it.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Insert the StatsBomb logo ----</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>img_path <span class="ot">&lt;-</span> <span class="st">"SB_logo.png"</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>shot_map_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(shot_map_viz) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_image</span>(img_path, <span class="at">x =</span> <span class="fl">0.7</span>, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">width =</span> <span class="fl">0.13</span>, <span class="at">height =</span> <span class="fl">0.065</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a label indicating the data source</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>shot_map_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(shot_map_viz_sb) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">"Data:"</span>, <span class="at">x =</span> <span class="fl">0.67</span>, <span class="at">y =</span> <span class="fl">0.033</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the final plot</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(shot_map_viz_sb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Scatter_Plots_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="1440"></p>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#* Save the visualization to png ----</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ggsave("Matildas_Shot_Maps.png", plot = shot_map_viz_sb, width = 10, height = 8, dpi = 300)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="scatter-plot-with-kernel-density-estimation" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="scatter-plot-with-kernel-density-estimation"><span class="header-section-number">4.5</span> Scatter Plot with Kernel Density Estimation</h2>
+<p>In this section, we delve into a scatter plot enhanced with kernel density estimation, highlighting zones of the goal where penalty shots were most frequently placed during the FIFA Women’s World Cup 2023. This includes both in-game penalties and penalty shootouts. By identifying where successful (scored) penalties tend to land within the goal frame, we offer a clearer picture of player preferences and tendencies. Additional annotations and layers, like text labels, are incorporated for context and clarity.</p>
+<section id="data-filtering---all-penalties" class="level3" data-number="4.5.1">
+<h3 data-number="4.5.1" class="anchored" data-anchor-id="data-filtering---all-penalties"><span class="header-section-number">4.5.1</span> Data Filtering - All Penalties</h3>
+<p>First, we extract data on all penalties from the FIFA Women’s World Cup 2023, including in-game shots and shootouts, by refining the StatsBombData dataset to retain only pertinent penalty shot details.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check each column to see if it contains the word "Penalty"</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>penalty_columns <span class="ot">&lt;-</span> <span class="fu">sapply</span>(StatsBombData, <span class="cf">function</span>(x) <span class="fu">any</span>(x <span class="sc">==</span> <span class="st">"Penalty"</span>, <span class="at">na.rm=</span><span class="cn">TRUE</span>))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep the names of columns where "Penalty" is found</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>penalty_columns <span class="ot">&lt;-</span> <span class="fu">names</span>(penalty_columns[penalty_columns <span class="sc">==</span> <span class="cn">TRUE</span>])</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Display columns containing "Penalty"</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>penalty_columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "shot.type.name"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select specific columns to keep for the penalty analysis</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>selected_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"match_id"</span>, <span class="st">"player.name"</span>, <span class="st">"team.name"</span>, penalty_columns,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"shot.outcome.name"</span>, <span class="st">"shot.end_location.x"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"shot.end_location.y"</span>, <span class="st">"shot.end_location.z"</span>, <span class="st">"period"</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter only the rows where shot type is "Penalty"</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>all_penalties <span class="ot">&lt;-</span> StatsBombData<span class="sc">%&gt;%</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(selected_columns))<span class="sc">%&gt;%</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(shot.type.name <span class="sc">==</span> <span class="st">"Penalty"</span>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename columns to be more readable</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>all_penalties <span class="ot">&lt;-</span> all_penalties <span class="sc">%&gt;%</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">penalty_taker =</span> player.name,</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">penalty_taker_team =</span> team.name,</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">match_phase =</span> period</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="feature-engineering" class="level3" data-number="4.5.2">
+<h3 data-number="4.5.2" class="anchored" data-anchor-id="feature-engineering"><span class="header-section-number">4.5.2</span> Feature Engineering</h3>
+<p>Here, we categorize the penalties based on what match phase they were taken in (in-game or penalty shootout) and what the outcome was.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a new column 'match_phase' to indicate when the penalty was taken (In-game or Shootout)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>all_penalties <span class="ot">&lt;-</span> all_penalties<span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">match_phase =</span> <span class="fu">case_when</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>      match_phase <span class="sc">%in%</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> <span class="sc">~</span> <span class="st">"In-Game"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      match_phase <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">"Penalty Shootout"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(match_phase)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Join 'Matches' data to get home and away teams</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>all_penalties <span class="ot">&lt;-</span> all_penalties<span class="sc">%&gt;%</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(Matches <span class="sc">%&gt;%</span> <span class="fu">select</span>(match_id, home_team, away_team), <span class="at">by =</span> <span class="st">"match_id"</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a column 'shot_outcome' to simplify shot outcome into "Goal" or "Missed"</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>all_penalties <span class="ot">&lt;-</span> all_penalties <span class="sc">%&gt;%</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">shot_outcome =</span> <span class="fu">ifelse</span>(shot.outcome.name <span class="sc">==</span> <span class="st">"Goal"</span>, <span class="st">"Goal"</span>, <span class="st">"Missed"</span>))</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder the columns</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>all_penalties <span class="ot">&lt;-</span> all_penalties <span class="sc">%&gt;%</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(match_id, home_team, away_team, </span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>         penalty_taker, penalty_taker_team, </span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>         shot.type.name, match_phase, </span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>         shot.outcome.name, shot_outcome, shot.end_location.x, </span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>         shot.end_location.y, shot.end_location.z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="building-the-scatter-plot-with-kernel-density-estimation" class="level3" data-number="4.5.3">
+<h3 data-number="4.5.3" class="anchored" data-anchor-id="building-the-scatter-plot-with-kernel-density-estimation"><span class="header-section-number">4.5.3</span> Building the Scatter Plot with Kernel Density Estimation</h3>
+<section id="initializing-the-plot" class="level4" data-number="4.5.3.1">
+<h4 data-number="4.5.3.1" class="anchored" data-anchor-id="initializing-the-plot"><span class="header-section-number">4.5.3.1</span> Initializing the Plot</h4>
+<p>Set up the initial ggplot object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter successful and unsuccessful penalties</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>scored_penalties <span class="ot">&lt;-</span> all_penalties <span class="sc">%&gt;%</span> <span class="fu">filter</span>(shot.outcome.name <span class="sc">==</span> <span class="st">"Goal"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>missed_penalties <span class="ot">&lt;-</span> all_penalties <span class="sc">%&gt;%</span> <span class="fu">filter</span>(shot.outcome.name <span class="sc">!=</span> <span class="st">"Goal"</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Define dimensions for the goal and plot area</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>floor <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>x_left <span class="ot">=</span> <span class="dv">36</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>x_right <span class="ot">=</span> <span class="dv">44</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>y_crossbar <span class="ot">=</span> <span class="fl">2.8</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>canvas_left <span class="ot">=</span> <span class="fl">34.9</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>canvas_right <span class="ot">=</span> <span class="fl">45.2</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>canvas_top <span class="ot">=</span> <span class="fl">6.5</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>canvas_bottom <span class="ot">=</span> <span class="sc">-</span><span class="fl">0.9</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize ggplot</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>pen_viz <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(canvas_left, canvas_right) <span class="sc">+</span> <span class="fu">ylim</span>(canvas_bottom, canvas_top) <span class="sc">+</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>(<span class="at">ratio =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Penalty Shots Map"</span>,</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"All penalty shots (both in-game and shootouts) at FIFA Women's World Cup 2023"</span>) <span class="sc">+</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Customize plot appearance</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="dv">16</span>, <span class="at">face=</span><span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="dv">16</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>))</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Define line thickness for the goal frame</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>goal_frame_thick <span class="ot">&lt;-</span> <span class="dv">4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-a-density-plot" class="level4" data-number="4.5.3.2">
+<h4 data-number="4.5.3.2" class="anchored" data-anchor-id="creating-a-density-plot"><span class="header-section-number">4.5.3.2</span> Creating a Density Plot</h4>
+<p>Overlay a density plot to visualize the distribution of successful penalty shots within the goal frame.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A ball icon required for the code below can be downloaded <a href="https://fontawesome.com/v5/icons/futbol?f=classic&amp;s=regular">here</a>. After downloading, ensure you specify your own path to the ball icon in the code. If you’ve saved the ball icon in the same directory as your R script file, you can use a relative path. Alternatively, if you prefer not to use any images for your scatter plot points, simply omit the portion of the code that loads and applies the ball icon.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add density plot for successful penalties</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>pen_viz <span class="ot">&lt;-</span> pen_viz <span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_density_2d</span>(<span class="at">data=</span>scored_penalties, <span class="at">geom =</span> <span class="st">"polygon"</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">x=</span>shot.end_location.y, <span class="at">y=</span>shot.end_location.z, <span class="at">fill =</span> <span class="fu">after_stat</span>(level)),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">bins =</span> <span class="dv">500</span>) <span class="sc">+</span> </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">name =</span> <span class="st">"Penalty Scoring Density"</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">colours=</span><span class="fu">rev</span>(<span class="fu">brewer.pal</span>(<span class="dv">7</span>, <span class="st">"RdYlBu"</span>))) <span class="sc">+</span> <span class="co">#Spectral</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.58</span>, <span class="fl">0.06</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.direction =</span> <span class="st">"horizontal"</span>,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="fl">0.7</span>, <span class="st">"cm"</span>),</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.key =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>)) <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_colourbar</span>(<span class="at">title.position=</span><span class="st">"top"</span>, <span class="at">title.hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Clip density plot to the goal frame dimensions</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>pen_viz <span class="ot">&lt;-</span> pen_viz <span class="sc">+</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> canvas_left, <span class="at">xmax =</span> x_left, <span class="at">ymin =</span> canvas_bottom, <span class="at">ymax =</span> canvas_top),</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> x_right, <span class="at">xmax =</span> canvas_right, <span class="at">ymin =</span> canvas_bottom, <span class="at">ymax =</span> canvas_top),</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> x_left, <span class="at">xmax =</span> x_right, <span class="at">ymin =</span> y_crossbar, <span class="at">ymax =</span> canvas_top),</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> x_left, <span class="at">xmax =</span> x_right, <span class="at">ymin =</span> canvas_bottom, <span class="at">ymax =</span> floor),</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"white"</span>)</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Define data for drawing the goal frame</span></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>goal_frame_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(x_left, x_left, x_right, x_right),</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(floor, y_crossbar, y_crossbar, floor)</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw the goal frame</span></span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>pen_viz <span class="ot">&lt;-</span> pen_viz <span class="sc">+</span></span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">data=</span>goal_frame_data, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), </span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>            <span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span>goal_frame_thick)</span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Load a ball symbol png file</span></span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>img <span class="ot">&lt;-</span> <span class="fu">readPNG</span>(<span class="st">"ball_symbol.png"</span>)</span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a raster graphical object</span></span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>ball <span class="ot">&lt;-</span> <span class="fu">rasterGrob</span>(img, <span class="at">interpolate=</span><span class="cn">TRUE</span>)</span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>ball_size <span class="ot">=</span> <span class="fl">0.15</span></span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the red crosses for the 'Missed' penalties</span></span>
+<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a>pen_viz <span class="ot">&lt;-</span> pen_viz <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> missed_penalties,</span>
+<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">aes</span>(<span class="at">x=</span>shot.end_location.y, <span class="at">y=</span>shot.end_location.z),</span>
+<span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a>                                <span class="at">shape =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">'#e74c3c'</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke =</span> <span class="dv">2</span>)</span>
+<span id="cb23-52"><a href="#cb23-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-53"><a href="#cb23-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop through each row in the dataframe with 'Goal' penalties</span></span>
+<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(scored_penalties)) {</span>
+<span id="cb23-55"><a href="#cb23-55" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-56"><a href="#cb23-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract the current shot's coordinates</span></span>
+<span id="cb23-57"><a href="#cb23-57" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> scored_penalties<span class="sc">$</span>shot.end_location.y[i]</span>
+<span id="cb23-58"><a href="#cb23-58" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> scored_penalties<span class="sc">$</span>shot.end_location.z[i]</span>
+<span id="cb23-59"><a href="#cb23-59" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-60"><a href="#cb23-60" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate with the ball image</span></span>
+<span id="cb23-61"><a href="#cb23-61" aria-hidden="true" tabindex="-1"></a>  pen_viz <span class="ot">&lt;-</span> pen_viz <span class="sc">+</span> <span class="fu">annotation_custom</span>(ball, </span>
+<span id="cb23-62"><a href="#cb23-62" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">xmin =</span> x <span class="sc">-</span> ball_size, <span class="at">xmax =</span> x <span class="sc">+</span> ball_size, </span>
+<span id="cb23-63"><a href="#cb23-63" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">ymin =</span> y <span class="sc">-</span> ball_size, <span class="at">ymax =</span> y <span class="sc">+</span> ball_size)</span>
+<span id="cb23-64"><a href="#cb23-64" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adding-annotations" class="level4" data-number="4.5.3.3">
+<h4 data-number="4.5.3.3" class="anchored" data-anchor-id="adding-annotations"><span class="header-section-number">4.5.3.3</span> Adding Annotations</h4>
+<p>Here, we annotate two particular penalty shots from the Australia v France FWWC23 quarterfinal. One penalty is by Mackenzie Arnold and the other one is by Cortnee Vine - two memorable penalty shots for all Aussies!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Coordinates for both penalties</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>symbol_x_scored <span class="ot">=</span> <span class="fl">42.2</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>symbol_y_scored <span class="ot">=</span> <span class="fl">0.2</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>symbol_x_missed <span class="ot">=</span> <span class="fl">44.0</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>symbol_y_missed <span class="ot">=</span> <span class="fl">1.6</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a data frame containing the points to be annotated</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>annotate_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(symbol_x_scored, symbol_x_missed),</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(symbol_y_scored, symbol_y_missed),</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"C. Vine"</span>, <span class="st">"M. Arnold"</span>)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>pen_viz <span class="ot">&lt;-</span> pen_viz <span class="sc">+</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> annotate_data,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label),</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>                   <span class="at">box.padding =</span> <span class="fl">0.5</span>,  <span class="co"># Space around each label</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>                   <span class="at">point.padding =</span> <span class="fl">0.5</span>,  <span class="co"># Space around each point</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>                   <span class="at">segment.color =</span> <span class="st">"#9b59b6"</span>,</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>                   <span class="at">segment.size =</span> <span class="fl">1.5</span>,</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nudge_x =</span> <span class="fl">0.9</span>,  <span class="co"># Horizontal adjustment</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nudge_y =</span> <span class="sc">-</span><span class="fl">0.4</span>,  <span class="co"># Vertical adjustment</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>                   <span class="at">direction =</span> <span class="st">"both"</span>,  <span class="co"># ('x' or 'y'): Direction in which to move labels</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>                   <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">type =</span> <span class="st">"closed"</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">2.1</span>, <span class="st">"mm"</span>)),</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>                   <span class="at">size =</span> <span class="dv">6</span>,</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>                   <span class="at">color =</span> <span class="st">"#9b59b6"</span>) <span class="co"># Text size and color</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="adding-the-statsbomb-logo-2" class="level3" data-number="4.5.4">
+<h3 data-number="4.5.4" class="anchored" data-anchor-id="adding-the-statsbomb-logo-2"><span class="header-section-number">4.5.4</span> Adding the StatsBomb Logo</h3>
+<p>Add the StatsBomb logo, a legend for scored and missed penalties, and save the plot.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To ensure the code below runs smoothly, download the required StatsBomb logo from <a href="https://statsbomb.com/media-pack/">here</a> and save it in the same directory as your R script file. In the script, you can then use a relative path to load the image (e.g., ‘img_path’ for a filename like ‘SB_logo.png’). Remember, for the relative path to work, the working directory should be set to where the script is. In R, use <code>getwd()</code> to check the current directory and <code>setwd("/path/to/directory")</code> to set it.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Insert the Statsbomb logo and the legend ----</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>img_path_SB_logo <span class="ot">&lt;-</span> <span class="st">"SB_logo.png"</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>img_path_ball <span class="ot">&lt;-</span> <span class="st">"ball_symbol.png"</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>pen_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(pen_viz) <span class="sc">+</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_image</span>(img_path_SB_logo, <span class="at">x =</span> <span class="fl">0.735</span>, <span class="at">y =</span> <span class="fl">0.06</span>, <span class="at">width =</span> <span class="fl">0.13</span>, <span class="at">height =</span> <span class="fl">0.065</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>pen_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(pen_viz_sb) <span class="sc">+</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">"Data:"</span>, <span class="at">x =</span> <span class="fl">0.71</span>, <span class="at">y =</span> <span class="fl">0.09</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>pen_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(pen_viz_sb) <span class="sc">+</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_image</span>(img_path_ball, <span class="at">x =</span> <span class="fl">0.27</span>, <span class="at">y =</span> <span class="fl">0.07</span>, <span class="at">width =</span> <span class="fl">0.07</span>, <span class="at">height =</span> <span class="fl">0.035</span>)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>pen_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(pen_viz_sb) <span class="sc">+</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">"Scored"</span>, <span class="at">x =</span> <span class="fl">0.25</span>, <span class="at">y =</span> <span class="fl">0.09</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>x_center <span class="ot">&lt;-</span> <span class="fl">0.43</span>  <span class="co"># x-coordinate of the center of the cross</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>y_center <span class="ot">&lt;-</span> <span class="fl">0.09</span>  <span class="co"># y-coordinate of the center of the cross</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>length <span class="ot">&lt;-</span> <span class="fl">0.02</span>    <span class="co"># length of each arm of the cross from the center</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> x_center <span class="sc">-</span> length <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">2</span>)</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> y_center <span class="sc">-</span> length <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">2</span>)</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> x_center <span class="sc">+</span> length <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">2</span>)</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> y_center <span class="sc">+</span> length <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">2</span>)</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>pen_viz_sb <span class="ot">&lt;-</span> pen_viz_sb <span class="sc">+</span></span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  </span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"segment"</span>, <span class="at">x =</span> x1, <span class="at">xend =</span> x2, <span class="at">y =</span> y1, <span class="at">yend =</span> y2, <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"segment"</span>, <span class="at">x =</span> x1, <span class="at">xend =</span> x2, <span class="at">y =</span> y2, <span class="at">yend =</span> y1, <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">size =</span> <span class="dv">1</span>)</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>pen_viz_sb <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>(pen_viz_sb) <span class="sc">+</span></span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">"Missed"</span>, <span class="at">x =</span> <span class="fl">0.38</span>, <span class="at">y =</span> <span class="fl">0.09</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the final visualization</span></span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pen_viz_sb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Scatter_Plots_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="1152"></p>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#* Save the visualization to png ----</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ggsave("Penalty_Shots_Map.png", plot = pen_viz_sb, width = 10, height = 8, dpi = 300)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Challenge for the Learner">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Challenge for the Learner
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Strengthen your understanding of scatter plots and the FIFA Women’s World Cup 2023 data by:</p>
+<ol type="1">
+<li>Creating a scatter plot comparing shot accuracy (shots on target vs.&nbsp;total shots) for the top 10 players with the most shots.</li>
+<li>Visualizing a scatter plot with kernel density estimation for shots taken from outside the penalty box across all teams, highlighting zones with the highest goal conversion rates.</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="conclusion-and-reflection" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Conclusion and Reflection</h1>
+<p>Scatter plots, as we have seen, are powerful tools in sports data visualization. They excel in revealing relationships between variables, offering a depth of insight that surpasses basic statistical summaries. In this lesson, we delved into how these plots can shed light on the relationships between variables, such as the connection between shooting efficiency and the number of shots taken per game.</p>
+<p>But their utility isn’t confined to just performance metrics. Their foundational principle—visualizing relationships between variables—can be applied across various domains. For instance, in physiology, one might use scatter plots to study the link between heart rate variability and exercise intensity. Similarly, biomechanists could use them to investigate the connection between joint angles and performance.</p>
+<p>As we used the Matildas’ performance data from the FIFA Women’s World Cup 2023 as our primary example, it is essential to remember that the broader EDA techniques and principles remain consistent across different sports science disciplines. It’s about systematically identifying patterns, asking the right questions, and selecting the appropriate visualization tools to derive insights.</p>
+<p>Moving forward, understanding these relationships sets the stage for more advanced analyses, like regression and predictive modeling. As you continue your data analysis journey, leverage the capabilities of scatter plots and other visualization tools to unveil the stories within your datasets. For a deeper dive into EDA tools and methodologies, explore more lessons on our platform.</p>
+</section>
+<section id="knowledge-spot-check" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Knowledge Spot-Check</h1>
+<div class="callout callout-style-default callout-tip callout-titled" title="**In the context of scatter plots, what primary characteristic of the data do they highlight?** <br> <br> A) Distribution of a single variable. <br> B) Hierarchical ranking of data points. <br> C) Relationships between two continuous variables. <br> D) Frequency of categorical data. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>In the context of scatter plots, what primary characteristic of the data do they highlight?</strong> <br> <br> A) Distribution of a single variable. <br> B) Hierarchical ranking of data points. <br> C) Relationships between two continuous variables. <br> D) Frequency of categorical data. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) Relationships between two continuous variables.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Which of the following best describes the advantage of scatter plots over bar plots? <br> <br> A) They showcase discrete data values better. <br> B) They represent time series data. <br> C) They provide insights into correlations between two numerical variables. <br> D) They are better at visualizing categorical data. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Which of the following best describes the advantage of scatter plots over bar plots? <br> <br> A) They showcase discrete data values better. <br> B) They represent time series data. <br> C) They provide insights into correlations between two numerical variables. <br> D) They are better at visualizing categorical data. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) They provide insights into correlations between two numerical variables.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="What can be added to scatter plots to understand the general trend among the data points? <br> <br> A) A density plot. <br> B) A line of best fit. <br> C) A column chart. <br> D) A histogram. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What can be added to scatter plots to understand the general trend among the data points? <br> <br> A) A density plot. <br> B) A line of best fit. <br> C) A column chart. <br> D) A histogram. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is B) A line of best fit.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="In `ggplot2`, if data points on a scatter plot overlap, how can clarity be enhanced? <br> <br> A) By adjusting the plot dimensions. <br> B) By modifying the point size and adding transparency. <br> C) By flipping the axes using coord_flip(). <br> D) By changing the plot theme. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+In <code>ggplot2</code>, if data points on a scatter plot overlap, how can clarity be enhanced? <br> <br> A) By adjusting the plot dimensions. <br> B) By modifying the point size and adding transparency. <br> C) By flipping the axes using coord_flip(). <br> D) By changing the plot theme. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is B) By modifying the point size and adding transparency.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Beyond sports performance, in which field might scatter plots be particularly useful? <br> <br> A) To display the frequency distribution of an exercise regime. <br> B) To compare the sales of two products over time. <br> C) To explore the relationship between heart rate variability and exercise intensity. <br> D) To showcase the ranking of teams in a league. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Beyond sports performance, in which field might scatter plots be particularly useful? <br> <br> A) To display the frequency distribution of an exercise regime. <br> B) To compare the sales of two products over time. <br> C) To explore the relationship between heart rate variability and exercise intensity. <br> D) To showcase the ranking of teams in a league. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) To explore the relationship between heart rate variability and exercise intensity.</p>
+</div>
+</div>
+</div>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The easiest way to check if Git is installed on your computer is by using the terminal (on macOS or Linux) or the command prompt (on Windows).</p>
+<ol type="1">
+<li><p><strong>macOS and Linux</strong>:</p>
+<ol type="1">
+<li>Open the Terminal.</li>
+<li>Type <strong><code>git --version</code></strong> and press Return.</li>
+<li>If you see a version number, it means Git is installed. If you see a message like “command not found,” then Git is not installed.</li>
+</ol></li>
+<li><p><strong>Windows</strong>:</p>
+<ol type="1">
+<li>Open the Command Prompt.</li>
+<li>Type <strong><code>git --version</code></strong> and press Enter.</li>
+<li>If you see a version number, it means Git is installed. If you see a message like ” ‘git’ is not recognized as an internal or external command”, then Git is not installed.</li>
+</ol></li>
+</ol>
+<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+<script src="Scatter_Plots_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
