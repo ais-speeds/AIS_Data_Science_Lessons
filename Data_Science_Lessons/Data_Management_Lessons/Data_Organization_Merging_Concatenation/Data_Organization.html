@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Data Organization, Merging, and Concatenation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Data_Organization_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Data_Organization_files/libs/quarto-html/quarto.js"></script>
+<script src="Data_Organization_files/libs/quarto-html/popper.min.js"></script>
+<script src="Data_Organization_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Data_Organization_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Data_Organization_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Data_Organization_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Data_Organization_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Data_Organization_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Data_Organization_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">1</span> Learning Outcomes</a></li>
+  <li><a href="#introduction-data-organization" id="toc-introduction-data-organization" class="nav-link" data-scroll-target="#introduction-data-organization"><span class="header-section-number">2</span> Introduction: Data Organization</a>
+  <ul class="collapse">
+  <li><a href="#importance-of-efficient-data-organization-in-sports-analytics" id="toc-importance-of-efficient-data-organization-in-sports-analytics" class="nav-link" data-scroll-target="#importance-of-efficient-data-organization-in-sports-analytics"><span class="header-section-number">2.1</span> Importance of Efficient Data Organization in Sports Analytics</a></li>
+  <li><a href="#data-normalization-why-separate-tables-enhance-data-integrity-and-reduce-redundancy" id="toc-data-normalization-why-separate-tables-enhance-data-integrity-and-reduce-redundancy" class="nav-link" data-scroll-target="#data-normalization-why-separate-tables-enhance-data-integrity-and-reduce-redundancy"><span class="header-section-number">2.2</span> Data Normalization: Why Separate Tables Enhance Data Integrity And Reduce Redundancy</a></li>
+  <li><a href="#tools-for-data-merging-and-concatenation" id="toc-tools-for-data-merging-and-concatenation" class="nav-link" data-scroll-target="#tools-for-data-merging-and-concatenation"><span class="header-section-number">2.3</span> Tools for Data Merging and Concatenation</a>
+  <ul class="collapse">
+  <li><a href="#dplyr-package-in-r" id="toc-dplyr-package-in-r" class="nav-link" data-scroll-target="#dplyr-package-in-r"><span class="header-section-number">2.3.1</span> <code>dplyr</code> package in R</a></li>
+  <li><a href="#pandas-library-in-python" id="toc-pandas-library-in-python" class="nav-link" data-scroll-target="#pandas-library-in-python"><span class="header-section-number">2.3.2</span> <code>pandas</code> library in Python</a></li>
+  </ul></li>
+  <li><a href="#sec-dataset_overview" id="toc-sec-dataset_overview" class="nav-link" data-scroll-target="#sec-dataset_overview"><span class="header-section-number">2.4</span> Overview of the Multi-Table Sports Dataset for This Case Study</a></li>
+  </ul></li>
+  <li><a href="#data-merging-building-a-comprehensive-dataset" id="toc-data-merging-building-a-comprehensive-dataset" class="nav-link" data-scroll-target="#data-merging-building-a-comprehensive-dataset"><span class="header-section-number">3</span> Data Merging: Building a Comprehensive Dataset</a>
+  <ul class="collapse">
+  <li><a href="#inner-joinmerge" id="toc-inner-joinmerge" class="nav-link" data-scroll-target="#inner-joinmerge"><span class="header-section-number">3.1</span> Inner Join/Merge</a></li>
+  <li><a href="#leftright-joinmerge" id="toc-leftright-joinmerge" class="nav-link" data-scroll-target="#leftright-joinmerge"><span class="header-section-number">3.2</span> Left/Right Join/Merge</a></li>
+  <li><a href="#full-join-outer-merge" id="toc-full-join-outer-merge" class="nav-link" data-scroll-target="#full-join-outer-merge"><span class="header-section-number">3.3</span> Full Join / Outer Merge</a></li>
+  <li><a href="#how-to-choose-the-right-merge-method" id="toc-how-to-choose-the-right-merge-method" class="nav-link" data-scroll-target="#how-to-choose-the-right-merge-method"><span class="header-section-number">3.4</span> How to Choose the Right Merge Method</a></li>
+  </ul></li>
+  <li><a href="#concatenation-unifying-segmented-data-for-holistic-analysis" id="toc-concatenation-unifying-segmented-data-for-holistic-analysis" class="nav-link" data-scroll-target="#concatenation-unifying-segmented-data-for-holistic-analysis"><span class="header-section-number">4</span> Concatenation: Unifying Segmented Data for Holistic Analysis</a>
+  <ul class="collapse">
+  <li><a href="#managing-multiple-files-with-a-naming-pattern-in-r" id="toc-managing-multiple-files-with-a-naming-pattern-in-r" class="nav-link" data-scroll-target="#managing-multiple-files-with-a-naming-pattern-in-r"><span class="header-section-number">4.1</span> Managing Multiple Files With a Naming Pattern in R</a></li>
+  </ul></li>
+  <li><a href="#conclusion-and-reflection-advancing-sports-analysis-with-structured-data" id="toc-conclusion-and-reflection-advancing-sports-analysis-with-structured-data" class="nav-link" data-scroll-target="#conclusion-and-reflection-advancing-sports-analysis-with-structured-data"><span class="header-section-number">5</span> Conclusion and Reflection: Advancing Sports Analysis with Structured Data</a></li>
+  <li><a href="#knowledge-spot-check" id="toc-knowledge-spot-check" class="nav-link" data-scroll-target="#knowledge-spot-check"><span class="header-section-number">6</span> Knowledge Spot-Check</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Data_Organization.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Organization, Merging, and Concatenation</h1>
+<p class="subtitle lead">Mastering Data Integration in Sports Analytics</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="abstract-title">Abstract</div>
+    In the world of sports analytics, data organization is the linchpin for insightful analysis. This lesson delves into essential techniques of data merging and concatenation, using a comprehensive football dataset from Transfermarkt as our study model. Explore how to effectively utilize inner, left, right, and full joins in R and Python to bring coherence to multifaceted sports data. Designed for sport and exercise science practitioners, this lesson demystifies complex data structures, enabling a seamless transition from raw data to actionable insights. Engage with practical demonstrations that showcase these techniques in action, empowering you to tackle sports data with confidence and clarity.
+  </div>
+</div>
+
+</header>
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Keywords">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Data integration, data normalization, data structure, data integrity, data analysis, merging, concatenation, R, dplyr, Python, pandas, football, Transfermarkt.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lesson's Level">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorized as <span style="color:#CD7F32">BRONZE</span>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Lesson's Main Idea**">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Lesson’s Main Idea</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Effective data organization and merging techniques are crucial for creating comprehensive and insightful sports analytics datasets. Understanding how to join and concatenate data in R and Python empowers you to combine segmented datasets seamlessly, enhancing the depth and quality of your analysis.</p>
+</div>
+</div>
+<p>Data used in this lesson is available on <img src="kaggle_logo.png" width="70px">, a go-to platform for data science.</p>
+<section id="learning-outcomes" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning Outcomes</h1>
+<p>By the end of this lesson, you will have developed proficiency in:</p>
+<ul>
+<li><p><strong>Understanding Data Organization in Sports Analytics</strong>: Recognizing the importance of structured data organization in sports science, and how it impacts the accuracy and efficiency of data analysis.</p></li>
+<li><p><strong>Mastering Merging Techniques in R and Python</strong>: Gaining hands-on experience with key merging functions in <code>dplyr</code> (R) and <code>pandas</code> (Python), allowing you to combine datasets seamlessly based on shared keys.</p></li>
+<li><p><strong>Applying Various Merge Types for Comprehensive Analysis</strong>: Learning to choose and apply the most suitable merge type (inner, left, right, full) for different analytical scenarios in sports data, ensuring a holistic approach to dataset integration.</p></li>
+<li><p><strong>Implementing Concatenation for Time-Series Data</strong>: Utilizing concatenation techniques to unify segmented data, such as seasonal sports performance metrics, into a singular, coherent dataset for extensive analysis.</p></li>
+<li><p><strong>Enhancing Dataset Integrity Through Structured Merges</strong>: Developing the skills to maintain data integrity and reduce redundancy through effective data merging, which is essential for making informed decisions in sports analytics.</p></li>
+</ul>
+</section>
+<section id="introduction-data-organization" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction: Data Organization</h1>
+<section id="importance-of-efficient-data-organization-in-sports-analytics" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="importance-of-efficient-data-organization-in-sports-analytics"><span class="header-section-number">2.1</span> Importance of Efficient Data Organization in Sports Analytics</h2>
+<p>In sport and exercise science, data provides the backbone for understanding and enhancing athletic performance. Accurate data analysis hinges on how well we organize this information. Efficient organization enables practitioners to swiftly locate and utilize data — from monitoring an athlete’s training load to analyzing team performance trends. However, the true value is realized when it’s time to bring these disparate pieces of data together. Merging different tables for analysis should be seamless, allowing for a comprehensive view that informs strategy and decision-making.</p>
+</section>
+<section id="data-normalization-why-separate-tables-enhance-data-integrity-and-reduce-redundancy" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="data-normalization-why-separate-tables-enhance-data-integrity-and-reduce-redundancy"><span class="header-section-number">2.2</span> Data Normalization: Why Separate Tables Enhance Data Integrity And Reduce Redundancy</h2>
+<p>Data normalization is about smart storage — arranging your data across related tables to avoid unnecessary duplication and maintain consistency. Think of it as assigning each type of data a specific ‘locker’ within a well-organized gym. You store athlete profiles, performance stats, and health records separately, but when it’s time to develop a holistic training plan, you need to bring these elements together efficiently. This structure not only eliminates clutter (redundancy) but also ensures that each data point remains accurate and up-to-date (integrity). When you maintain clean, well-structured records, merging data becomes a straightforward task, paving the way for insights that can give athletes and teams a competitive edge.</p>
+<p>Having outlined the essentials of data normalization, let’s now explore the powerful tools in R and Python designed to streamline the merging of our structured datasets.</p>
+</section>
+<section id="tools-for-data-merging-and-concatenation" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="tools-for-data-merging-and-concatenation"><span class="header-section-number">2.3</span> Tools for Data Merging and Concatenation</h2>
+<section id="dplyr-package-in-r" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="dplyr-package-in-r"><span class="header-section-number">2.3.1</span> <code>dplyr</code> package in R</h3>
+<p>The <code>dplyr</code> package in R is an essential tool for data manipulation tasks. It provides a set of functions, akin to data manipulation verbs, such as <code>select</code>, <code>filter</code>, <code>mutate</code>, <code>arrange</code>, and <code>summarize</code>. These functions allow us to perform complex data transformations with ease. For data merging, the package includes several <code>join</code> functions, which enable precise combinations of datasets based on specified columns using the ‘by’ argument.</p>
+</section>
+<section id="pandas-library-in-python" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="pandas-library-in-python"><span class="header-section-number">2.3.2</span> <code>pandas</code> library in Python</h3>
+<p>The <code>pandas</code> library in Python stands out as a fundamental tool for data science, especially in handling and analyzing sports data. Its robust framework simplifies data manipulation through intuitive functions for selecting, filtering, and altering datasets. When it comes to merging data, <code>pandas</code> offers powerful functions like <code>merge</code>, which allow for the combination of different datasets by aligning them on common columns.</p>
+</section>
+</section>
+<section id="sec-dataset_overview" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="sec-dataset_overview"><span class="header-section-number">2.4</span> Overview of the Multi-Table Sports Dataset for This Case Study</h2>
+<p>For this lesson, we will be using a rich football dataset extracted from Transfermarkt, a comprehensive football database. The dataset is available <a href="https://www.kaggle.com/datasets/davidcariboo/player-scores/data">on Kaggle</a>, a go-to platform for data science. The selection of this dataset is particularly beneficial as it demonstrates how a comprehensive data collection can be efficiently stored across multiple interconnected tables, providing us a practical example of dataset structuring.</p>
+<p>The dataset is split across several CSV files, but what is special is how they are all connected. They are linked by something called keys, which are unique identifiers, like a special tag. They help keep the data organized and allow us to combine information from different files. For example, the main tags like <code>club_id</code> and <code>player_id</code> are used in more than one file to show how they are related.</p>
+<p>To demonstrate the relationships between the files, we are going to showcase just a few key columns and entries. This concise display is merely for illustration; you are encouraged to delve into the full depth of the data on your own.</p>
+<p>Let’s start with the <code>games.csv</code> file. It lists all games, each with its own <code>game_id</code>. The teams playing are shown with <code>home_club_id</code> and <code>away_club_id</code>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>games <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"games.csv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(games[, <span class="fu">c</span>(<span class="st">"game_id"</span>, <span class="st">"home_club_id"</span>, <span class="st">"away_club_id"</span>)], <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>games <span class="op">=</span> pd.read_csv(<span class="st">"games.csv"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>games[[<span class="st">'game_id'</span>, <span class="st">'home_club_id'</span>, <span class="st">'away_club_id'</span>]].head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="1">
+<div class="cell-output cell-output-stdout">
+<pre><code>   game_id  home_club_id  away_club_id
+0  2222597          3725           232
+1  2222627          2696          4128
+2  2222658          2410           121</code></pre>
+</div>
+</div>
+<p>The <code>clubs.csv</code> file contains information about football clubs, each having a <code>club_id</code>. Players in a club are connected using <code>current_club_id</code>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>clubs <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"clubs.csv"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(clubs[, <span class="fu">c</span>(<span class="st">"club_id"</span>, <span class="st">"name"</span>)], <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>clubs <span class="op">=</span> pd.read_csv(<span class="st">"clubs.csv"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>clubs[[<span class="st">'club_id'</span>, <span class="st">'name'</span>]].head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="cell-output cell-output-stdout">
+<pre><code>   club_id                name
+0      105     SV Darmstadt 98
+1    11127  Ural Yekaterinburg
+2      114         Besiktas JK</code></pre>
+</div>
+</div>
+<p>Next, the <code>players.csv</code> file gives details about players. Every player has a <code>player_id</code>, and the club they play for is shown using <code>current_club_id</code>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>players <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"players.csv"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(players[, <span class="fu">c</span>(<span class="st">"player_id"</span>, <span class="st">"current_club_id"</span>, <span class="st">"current_club_name"</span>)], <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>players <span class="op">=</span> pd.read_csv(<span class="st">"players.csv"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>players[[<span class="st">'player_id'</span>, <span class="st">'current_club_id'</span>, <span class="st">'current_club_name'</span>]].head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="cell-output cell-output-stdout">
+<pre><code>   player_id  current_club_id       current_club_name
+0        598               24     Eintracht Frankfurt
+1        670              714  RCD Espanyol Barcelona
+2       1323               24     Eintracht Frankfurt</code></pre>
+</div>
+</div>
+<p>Lastly, the <code>player_valuations.csv</code> file shows the market value of players. Each valuation is linked to a player using <code>player_id</code>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>player_valuations <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"player_valuations.csv"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(player_valuations[, <span class="fu">c</span>(<span class="st">"player_id"</span>, <span class="st">"market_value_in_eur"</span>, <span class="st">"current_club_id"</span>)], <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>player_valuations <span class="op">=</span> pd.read_csv(<span class="st">"player_valuations.csv"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>player_valuations[[<span class="st">'player_id'</span>, <span class="st">'market_value_in_eur'</span>, <span class="st">'current_club_id'</span>]].head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="cell-output cell-output-stdout">
+<pre><code>   player_id  market_value_in_eur  current_club_id
+0       3132               400000              126
+1       6893               900000              984
+2         10              7000000              398</code></pre>
+</div>
+</div>
+<p>To reiterate, the files are linked as follows:</p>
+<ul>
+<li><p>the dataset stores the data for each game in a table named <code>games.csv</code>, which records the identifiers for the home and away teams;</p></li>
+<li><p>the <code>clubs.csv</code> file holds the names and identifiers of the clubs, connecting to <code>games.csv</code> via the <code>home_club_id</code> and <code>away_club_id</code>;</p></li>
+<li><p>players are listed in <code>players.csv</code> with their identifiers and the clubs they currently play for, linking back to <code>clubs.csv</code> through <code>current_club_id</code>;</p></li>
+<li><p>lastly, <code>players_valuations.csv</code> carries the market values of the players, connected by <code>player_id</code> to the entries in <code>players.csv</code>.</p></li>
+</ul>
+<p><a href="#fig-dataset_hierarchy">Figure&nbsp;1</a> helps to visualize these connections:</p>
+<div id="fig-dataset_hierarchy" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="transfermarkt_dataset_hierarchy.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure&nbsp;1: Transfermarkt Dataset Hierarchy: Visual representation of the interconnectedness between the dataset files using unique keys.</figcaption>
+</figure>
+</div>
+<p>By using this key system, we can easily combine and analyze the data. This is a common way databases are set up, especially when there is a lot of related information.</p>
+<p>Building on our understanding of the dataset’s structure, we will now delve into the practical applications of merging techniques, which are crucial for combining these interrelated dataset tables.</p>
+</section>
+</section>
+<section id="data-merging-building-a-comprehensive-dataset" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Data Merging: Building a Comprehensive Dataset</h1>
+<section id="inner-joinmerge" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="inner-joinmerge"><span class="header-section-number">3.1</span> Inner Join/Merge</h2>
+<p>An “inner merge” is a data combination technique applied to two datasets, where the process hinges on a shared key or set of keys. The hallmark of an inner merge is its exclusivity; it only amalgamates records with matching key values across both datasets.</p>
+<p>Picture two data collections, each marked by distinct categories paired with values. An inner merge assesses these categories side by side and retains only those pairs that are recognized in both. For instance, if one dataset contains categories A and B and another holds categories B and C, the inner merge will synchronize on category B — this is the mutual category — and consolidate the related information from both datasets.</p>
+<p>This technique excels in its ability to distill data to a core intersection, ensuring any analysis conducted is based on fully corresponding records from both data sources. The inner merge thus acts as a filter, drawing out a subset of data that is consistently represented across combined datasets.</p>
+<p>Below is the syntax for performing an inner merge in R using the <code>dplyr</code> package and in Python using the <code>pandas</code> library.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">inner_join</span>(X, Y, <span class="at">by =</span> <span class="st">"Category"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># X: The first DataFrame (or tibble) to join.</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Y: The second DataFrame (or tibble) to join.</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># by: indicates the matching column "Category" that exists in both data frames. </span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Rows with the same "Category" value in both X and Y will be merged.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>pd.merge(left<span class="op">=</span>X, right<span class="op">=</span>Y, left_on<span class="op">=</span><span class="st">'Category'</span>, right_on<span class="op">=</span><span class="st">'Category'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># left: DataFrame on the left side of the merge.</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># right: DataFrame on the right side of the merge.</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># left_on: Column in left DataFrame to match with right_on in right DataFrame.</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># right_on: Column in right DataFrame to match with left_on in left DataFrame.</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># how: Merge method, set to 'inner' for inner merge.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>Let’s now demonstrate an inner merge using our Transfermarkt dataset. Since we have already loaded all data into dataframes in <a href="#sec-dataset_overview">Section&nbsp;2.4</a>, we can directly proceed with merging the datasets. In R, the piping operator <code>%&gt;%</code> from the <code>dplyr</code> package, and in Python, the method chaining ability of <code>pandas</code>, both allow for seamless integration of multiple operations. This functionality enables us to efficiently shape and manipulate our dataframes, avoiding repetitive and cluttered code.</p>
+<p>In this demonstration, we will merge three distinct datasets — <code>games</code>, <code>clubs</code>, and <code>players</code> — each initially stored in separate files. Once combined, we can carry out various data manipulation tasks on this unified dataset in both R and Python, such as filtering, selection, and aggregation. These operations allow us to focus our analysis on specific aspects, like the details of a particular match and the players involved.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'games' and 'clubs' dataframes, linking them by the 'home_club_id' from 'games' and 'club_id' from 'clubs'.</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We use the 'suffix' parameter to rename overlapping columns for clarity. Without 'suffix', we would have default names like 'name_x' and 'name_y', which can be ambiguous. With 'suffix', we get descriptive names like 'name_games' and 'name_clubs', indicating the origin of each column.</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>games_clubs <span class="ot">&lt;-</span> games <span class="sc">%&gt;%</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(clubs, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">'home_club_id'</span> <span class="ot">=</span> <span class="st">'club_id'</span>), <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">'_games'</span>, <span class="st">'_clubs'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering the data for a specific season, competition (English Premier League), matchday, and game.</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(season <span class="sc">==</span> <span class="dv">2023</span> <span class="sc">&amp;</span> competition_id <span class="sc">==</span> <span class="st">'GB1'</span> <span class="sc">&amp;</span> round <span class="sc">==</span> <span class="st">'2. Matchday'</span> <span class="sc">&amp;</span> game_id <span class="sc">==</span> <span class="dv">4087941</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining the resulting dataframe with 'players', linking them by 'home_club_id' from 'games_clubs' and 'current_club_id' from 'players'.</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(players, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">'home_club_id'</span> <span class="ot">=</span> <span class="st">'current_club_id'</span>), <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">'_games_clubs'</span>, <span class="st">'_players'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering the players' data to include only players from the current season.</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(last_season_players <span class="sc">==</span> <span class="dv">2023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining 'games' and 'clubs' dataframes, linking them by 'home_club_id' from 'games' and 'club_id' from 'clubs'.</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We use the 'suffixes' argument to rename overlapping columns for clarity. Without 'suffixes', we would have default names like 'name_x' and 'name_y', which can be ambiguous. With 'suffixes', we get descriptive names like 'name_games' and 'name_clubs', indicating the origin of each column.</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>games_clubs <span class="op">=</span> (</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    pd.merge(left <span class="op">=</span> games, right <span class="op">=</span> clubs, left_on <span class="op">=</span> <span class="st">"home_club_id"</span>, right_on <span class="op">=</span> <span class="st">"club_id"</span>, how <span class="op">=</span> <span class="st">"inner"</span>, suffixes <span class="op">=</span> (<span class="st">'_games'</span>, <span class="st">'_clubs'</span>))</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering the data for a specific season, competition (English Premier League), matchday, and game.</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"season == 2023 &amp; competition_id == 'GB1' &amp; round == '2. Matchday' &amp; game_id == 4087941"</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining the resulting dataframe with 'players', linking them by 'home_club_id' from 'games_clubs' and 'current_club_id' from 'players'.</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    .merge(players, left_on <span class="op">=</span> <span class="st">"home_club_id"</span>, right_on <span class="op">=</span> <span class="st">"current_club_id"</span>, how <span class="op">=</span> <span class="st">"inner"</span>, suffixes <span class="op">=</span> (<span class="st">'_games_clubs'</span>, <span class="st">'_players'</span>))</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering the players' data to include only players from the current season.</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"last_season_players == 2023"</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">game_id</th>
+<th data-quarto-table-cell-role="th">competition_id</th>
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th">round</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">home_club_id</th>
+<th data-quarto-table-cell-role="th">away_club_id</th>
+<th data-quarto-table-cell-role="th">home_club_goals</th>
+<th data-quarto-table-cell-role="th">away_club_goals</th>
+<th data-quarto-table-cell-role="th">home_club_position</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">foot</th>
+<th data-quarto-table-cell-role="th">height_in_cm</th>
+<th data-quarto-table-cell-role="th">market_value_in_eur</th>
+<th data-quarto-table-cell-role="th">highest_market_value_in_eur</th>
+<th data-quarto-table-cell-role="th">contract_expiration_date</th>
+<th data-quarto-table-cell-role="th">agent_name</th>
+<th data-quarto-table-cell-role="th">image_url</th>
+<th data-quarto-table-cell-role="th">url</th>
+<th data-quarto-table-cell-role="th">current_club_domestic_competition_id</th>
+<th data-quarto-table-cell-role="th">current_club_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>4087941</td>
+<td>GB1</td>
+<td>2023</td>
+<td>2. Matchday</td>
+<td>2023-08-19</td>
+<td>148</td>
+<td>985</td>
+<td>2</td>
+<td>0</td>
+<td>5.0</td>
+<td>...</td>
+<td>left</td>
+<td>186.0</td>
+<td>50000000.0</td>
+<td>55000000.0</td>
+<td>2028-06-30 00:00:00</td>
+<td>World Soccer Agency</td>
+<td>https://img.a.transfermarkt.technology/portrai...</td>
+<td>https://www.transfermarkt.co.uk/dejan-kulusevs...</td>
+<td>GB1</td>
+<td>Tottenham Hotspur</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>4087941</td>
+<td>GB1</td>
+<td>2023</td>
+<td>2. Matchday</td>
+<td>2023-08-19</td>
+<td>148</td>
+<td>985</td>
+<td>2</td>
+<td>0</td>
+<td>5.0</td>
+<td>...</td>
+<td>left</td>
+<td>188.0</td>
+<td>38000000.0</td>
+<td>38000000.0</td>
+<td>2027-06-30 00:00:00</td>
+<td>Football Service</td>
+<td>https://img.a.transfermarkt.technology/portrai...</td>
+<td>https://www.transfermarkt.co.uk/destiny-udogie...</td>
+<td>GB1</td>
+<td>Tottenham Hotspur</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4087941</td>
+<td>GB1</td>
+<td>2023</td>
+<td>2. Matchday</td>
+<td>2023-08-19</td>
+<td>148</td>
+<td>985</td>
+<td>2</td>
+<td>0</td>
+<td>5.0</td>
+<td>...</td>
+<td>right</td>
+<td>192.0</td>
+<td>2000000.0</td>
+<td>3000000.0</td>
+<td>2028-06-30 00:00:00</td>
+<td>NaN</td>
+<td>https://img.a.transfermarkt.technology/portrai...</td>
+<td>https://www.transfermarkt.co.uk/ashley-phillip...</td>
+<td>GB1</td>
+<td>Tottenham Hotspur</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8</td>
+<td>4087941</td>
+<td>GB1</td>
+<td>2023</td>
+<td>2. Matchday</td>
+<td>2023-08-19</td>
+<td>148</td>
+<td>985</td>
+<td>2</td>
+<td>0</td>
+<td>5.0</td>
+<td>...</td>
+<td>right</td>
+<td>185.0</td>
+<td>32000000.0</td>
+<td>45000000.0</td>
+<td>2025-06-30 00:00:00</td>
+<td>NaN</td>
+<td>https://img.a.transfermarkt.technology/portrai...</td>
+<td>https://www.transfermarkt.co.uk/pierre-emile-h...</td>
+<td>GB1</td>
+<td>Tottenham Hotspur</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>4087941</td>
+<td>GB1</td>
+<td>2023</td>
+<td>2. Matchday</td>
+<td>2023-08-19</td>
+<td>148</td>
+<td>985</td>
+<td>2</td>
+<td>0</td>
+<td>5.0</td>
+<td>...</td>
+<td>right</td>
+<td>187.0</td>
+<td>40000000.0</td>
+<td>50000000.0</td>
+<td>2026-06-30 00:00:00</td>
+<td>Back Sports S.A.</td>
+<td>https://img.a.transfermarkt.technology/portrai...</td>
+<td>https://www.transfermarkt.co.uk/rodrigo-bentan...</td>
+<td>GB1</td>
+<td>Tottenham Hotspur</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 62 columns</p>
+</div>
+</div>
+</div>
+<p>In this demonstration, using both R and Python, we’ve employed an inner merge to align and combine the <code>games</code> dataset with the <code>clubs</code> dataset. This ensures each game is accurately linked with its corresponding club details.</p>
+<p>We then applied a filter to the merged dataset, focusing on a specific event: the second matchday of the 2023 season in the ‘GB1’ competition, particularly game number 4087941. This filtering process narrows our dataset to concentrate solely on the specifics of this match.</p>
+<p>Subsequently, we executed another inner merge, this time integrating the <code>players</code> dataset. In both programming environments, this step significantly enriches our dataset by providing detailed information about each player, especially those who were active in the 2023 season.</p>
+<p>With the datasets successfully merged, a comprehensive dataset is now at your disposal for any form of statistical analysis, whether in R or Python.</p>
+</section>
+<section id="leftright-joinmerge" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="leftright-joinmerge"><span class="header-section-number">3.2</span> Left/Right Join/Merge</h2>
+<p>A “left join” in R or a “left merge” in Python prioritizes the left dataset by including all of its records in the final merged dataset. Where the right dataset has matching entries, these are combined with the left; if not, the left’s unmatched entries are still retained, with missing values filled in for the right dataset’s absent data. For instance, if Dataset 1 includes categories A and B, and Dataset 2 includes B and C, a left join (or merge) will preserve all entries A and B from Dataset 1. Category B will be paired with its corresponding value from Dataset 2, while category A will have missing values for Dataset 2’s columns since it does not have a match.</p>
+<p>Conversely, a “right join” in R or a “right merge” in Python ensures all records from the right dataset are preserved. Matching entries from the left dataset are merged where they exist; otherwise, the right’s records stand alone, with missing values for any unmatched left dataset columns. Continuing with our example, a right join (or merge) would keep all categories B and C from Dataset 2. Category B would have its data completed by the matched data from Dataset 1, while category C would be present with missing values for Dataset 1’s columns, given it has no counterpart in the left dataset.</p>
+<p>These merging strategies are essential when the goal is to preserve all records from the primary dataset, complementing them with any matching data from the other dataset. They are especially valuable for ensuring completeness of the primary dataset’s records, including those without corresponding matches in the secondary dataset.</p>
+<p>Below is the syntax for performing a left join in R using the <code>dplyr</code> package and a left merge in Python using the <code>pandas</code> library, as well as their respective right-sided counterparts.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For a left join:</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">left_join</span>(X, Y, <span class="at">by =</span> <span class="st">"Category"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># For a right join:</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">right_join</span>(X, Y, <span class="at">by =</span> <span class="st">"Category"</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters:</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># X: The first data frame (or tibble) to join.</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Y: The second data frame (or tibble) to join.</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># by: The column name(s) to join by, present in both X and Y.</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co"># The specific join function (left_join, right_join) determines the type of merge.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For a left merge, use 'left' in the 'how' parameter:</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>pd.merge(left<span class="op">=</span>X, right<span class="op">=</span>Y, left_on<span class="op">=</span><span class="st">'Category'</span>, right_on<span class="op">=</span><span class="st">'Category'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># For a right merge, use 'right' in the 'how' parameter:</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>pd.merge(left<span class="op">=</span>X, right<span class="op">=</span>Y, left_on<span class="op">=</span><span class="st">'Category'</span>, right_on<span class="op">=</span><span class="st">'Category'</span>, how<span class="op">=</span><span class="st">'right'</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters:</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># left: DataFrame to remain intact on the left side of the merge.</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co"># right: DataFrame to merge on the right side.</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># left_on: Column from the left DataFrame to match with right_on.</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># right_on: Column from the right DataFrame to match with left_on.</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co"># how: Specifies the merge type. Use 'left' to perform a left merge, 'right' for a right merge.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>Now, let’s explore the application of a left join/merge using our Transfermarkt dataset. This demonstration will illustrate how a left join/merge differs from an inner join/merge, particularly in handling non-matching data.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Modified Data for Demonstration">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Modified Data for Demonstration
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the following example, we’ve modified the <code>clubs</code> dataframe by sampling only 70% of its rows to demonstrate the specific behavior of a left join/merge. This introduces missing <code>club_id</code> values, crucial for illustrating how left joins/merges handle missing data in the right dataframe. Remember, this is an educational simplification and may not reflect typical real-world data scenarios. In practice, the choice of join/merge type should be based on the actual structure and completeness of your data, as well as the goals of your analysis.</p>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="sourceCode" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecting relevant columns and filtering the 'players' dataframe for the 2023 season.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>players_select <span class="ot">&lt;-</span> players <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player_id, name, last_season, current_club_id) <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(last_season <span class="sc">==</span> <span class="dv">2023</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a subset of 'clubs' and selecting specific columns for demonstration purposes.</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>clubs_subset <span class="ot">&lt;-</span> clubs[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(clubs), <span class="at">size =</span> <span class="fl">0.7</span> <span class="sc">*</span> <span class="fu">nrow</span>(clubs)), ] <span class="sc">%&gt;%</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(club_id, name, domestic_competition_id, squad_size, average_age, national_team_players)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Performing a left join to include all records from 'players_select', even if there's no matching 'club_id' in 'clubs_subset'.</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>players_clubs <span class="ot">&lt;-</span> players_select <span class="sc">%&gt;%</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(clubs_subset, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">'current_club_id'</span> <span class="ot">=</span> <span class="st">'club_id'</span>), <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">'_player'</span>, <span class="st">'_club'</span>))</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Identifying rows where club details are missing due to the nature of the left join.</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>players_clubs_na_left <span class="ot">&lt;-</span> players_clubs[<span class="fu">is.na</span>(players_clubs<span class="sc">$</span>name_club), ]</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co"># For comparison, performing an inner join, which only includes matching records.</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>players_clubs <span class="ot">&lt;-</span> players_select <span class="sc">%&gt;%</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(clubs_subset, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">'current_club_id'</span> <span class="ot">=</span> <span class="st">'club_id'</span>), <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">'_player'</span>, <span class="st">'_club'</span>))</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Checking for missing club details in the inner join result.</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>players_clubs_na_inner <span class="ot">&lt;-</span> players_clubs[<span class="fu">is.na</span>(players_clubs<span class="sc">$</span>name_club), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecting relevant columns and filtering the 'players' dataframe for the 2023 season.</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>players_select <span class="op">=</span> players[[<span class="st">'player_id'</span>, <span class="st">'name'</span>, <span class="st">'last_season'</span>, <span class="st">'current_club_id'</span>]]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>players_select <span class="op">=</span> players_select[players_select[<span class="st">'last_season'</span>] <span class="op">==</span> <span class="dv">2023</span>]</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a subset of 'clubs' and selecting specific columns for demonstration purposes.</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>clubs_subset <span class="op">=</span> clubs.sample(frac<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>clubs_subset <span class="op">=</span> clubs_subset[[<span class="st">'club_id'</span>, <span class="st">'name'</span>, <span class="st">'domestic_competition_id'</span>, <span class="st">'squad_size'</span>, <span class="st">'average_age'</span>, <span class="st">'national_team_players'</span>]]</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Performing a left join to include all records from 'players_select', even if there's no matching 'club_id' in 'clubs_subset'.</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>players_clubs <span class="op">=</span> pd.merge(left <span class="op">=</span> players_select, right <span class="op">=</span> clubs_subset, left_on <span class="op">=</span> <span class="st">"current_club_id"</span>, right_on <span class="op">=</span> <span class="st">"club_id"</span>, how <span class="op">=</span> <span class="st">"left"</span>, suffixes<span class="op">=</span>(<span class="st">'_player'</span>, <span class="st">'_club'</span>))</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Identifying rows where club details are missing due to the nature of the left join.</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>players_clubs_na_left <span class="op">=</span> players_clubs[players_clubs[<span class="st">'name_club'</span>].isna()]</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>players_clubs_na_left.head()</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co"># For comparison, performing an inner join, which only includes matching records.</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>players_clubs_inner <span class="op">=</span> pd.merge(left <span class="op">=</span> players_select, right <span class="op">=</span> clubs_subset, left_on <span class="op">=</span> <span class="st">"current_club_id"</span>, right_on <span class="op">=</span> <span class="st">"club_id"</span>, how <span class="op">=</span> <span class="st">"inner"</span>, suffixes<span class="op">=</span>(<span class="st">'_player'</span>, <span class="st">'_club'</span>))</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Checking for missing club details in the inner join result.</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>players_clubs_na_inner <span class="op">=</span> players_clubs_inner[players_clubs_inner[<span class="st">'name_club'</span>].isna()]</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>players_clubs_na_inner.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>In this example, the left join effectively retains all player records from <code>players_select</code>, even when their corresponding clubs are not present in <code>clubs_subset</code>. As a result, the <code>players_clubs_na_left</code> dataframe contains players whose club information is missing due to the absence of corresponding entries in <code>clubs_subset</code>. These are instances where players’ clubs do not match any club in our subset, highlighting the inclusiveness of the left join.</p>
+<div class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">player_id</th>
+<th data-quarto-table-cell-role="th">name_player</th>
+<th data-quarto-table-cell-role="th">last_season</th>
+<th data-quarto-table-cell-role="th">current_club_id</th>
+<th data-quarto-table-cell-role="th">club_id</th>
+<th data-quarto-table-cell-role="th">name_club</th>
+<th data-quarto-table-cell-role="th">domestic_competition_id</th>
+<th data-quarto-table-cell-role="th">squad_size</th>
+<th data-quarto-table-cell-role="th">average_age</th>
+<th data-quarto-table-cell-role="th">national_team_players</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>22860</td>
+<td>Jesper Hansen</td>
+<td>2023</td>
+<td>678</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>43250</td>
+<td>Jan Vertonghen</td>
+<td>2023</td>
+<td>58</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9</td>
+<td>46106</td>
+<td>Adam Le Fondre</td>
+<td>2023</td>
+<td>903</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">12</td>
+<td>56809</td>
+<td>Alexandre Oukidja</td>
+<td>2023</td>
+<td>347</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>59016</td>
+<td>David Alaba</td>
+<td>2023</td>
+<td>418</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>In contrast, the inner join, applied to create the <code>players_clubs_na_inner</code> dataframe, only includes players whose clubs have corresponding matches in both datasets. Since the inner join requires exact matches in both dataframes, there are no missing club details in this result, leading to an empty <code>players_clubs_na_inner</code> dataframe. This starkly contrasts with the left join outcome and exemplifies the inner join’s exclusivity — it only retains records that have matching counterparts in both datasets.</p>
+<div class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">player_id</th>
+<th data-quarto-table-cell-role="th">name_player</th>
+<th data-quarto-table-cell-role="th">last_season</th>
+<th data-quarto-table-cell-role="th">current_club_id</th>
+<th data-quarto-table-cell-role="th">club_id</th>
+<th data-quarto-table-cell-role="th">name_club</th>
+<th data-quarto-table-cell-role="th">domestic_competition_id</th>
+<th data-quarto-table-cell-role="th">squad_size</th>
+<th data-quarto-table-cell-role="th">average_age</th>
+<th data-quarto-table-cell-role="th">national_team_players</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This demonstration highlights the utility of left joins in ensuring no data from the primary dataset is overlooked, even in the absence of matching records in the secondary dataset. It is particularly valuable in scenarios where retaining complete records from one dataset is crucial for the analysis.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Right Join/Merge">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Right Join/Merge
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>While this demonstration focused on left joins/merges, it’s important to note that right joins/merges work in a similar but mirrored manner. Essentially, a right join/merge preserves all records from the right dataframe, complementing them with matching data from the left dataframe, just as we saw with the left join/merge but in reverse. Given their mirrored functionality, and with the syntax already provided, a separate practical demonstration for right joins/merges is not necessary to understand their behavior in the context of our dataset.</p>
+</div>
+</div>
+</section>
+<section id="full-join-outer-merge" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="full-join-outer-merge"><span class="header-section-number">3.3</span> Full Join / Outer Merge</h2>
+<p>A “full join” in R or an “outer merge” in Python is the most inclusive of data combination methods, designed to ensure no data is lost from either dataset involved. This operation merges rows from both datasets that have matching keys, and also includes rows that are exclusive to each dataset.</p>
+<p>Consider two separate collections of data, each with its own categories and values. A full join or outer merge will combine these sets, aligning the matching categories and their associated values. Where there is no match — for example, if Dataset 1 has a category A that is not found in Dataset 2, and Dataset 2 has a category C absent from Dataset 1 — both categories A and C will still appear in the combined dataset. The resulting merged dataset will have places filled with missing values (NA in R and NaN in Python) in place of the non-existent counterparts.</p>
+<p>This comprehensive approach is beneficial when it’s critical to maintain a full spectrum of data from both datasets, allowing for a thorough analysis that accounts for all available data points. It’s an approach that avoids any inadvertent loss of information, providing a complete combined dataset that is especially useful when analyzing the full scope of data without losing sight of any unpaired records.</p>
+<p>Below is the syntax for performing a full join in R using the <code>dplyr</code> package and an outer merge in Python using the <code>pandas</code> library.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">full_join</span>(X, Y, <span class="at">by =</span> <span class="st">"Category"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters:</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># X: The first data frame (or tibble) for joining.</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Y: The second data frame (or tibble) for joining.</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># by: The column name(s) used to match rows between X and Y.</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># The full_join function merges all rows from X and Y, keeping all records, with missing values filled where no match is found.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>pd.merge(left <span class="op">=</span> X, right <span class="op">=</span> Y, left_on <span class="op">=</span> <span class="st">'Category'</span>, right_on <span class="op">=</span> <span class="st">'Category'</span>, how <span class="op">=</span> <span class="st">'outer'</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters:</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># left: DataFrame to merge on the left side.</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># right: DataFrame to merge on the right side.</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># left_on: Column in the left DataFrame to align with the right DataFrame's right_on column.</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co"># right_on: Column in the right DataFrame to align with the left DataFrame's left_on column.</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co"># how: Specifies the merge type. Use 'outer' to include all records from both DataFrames.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>Now, let’s delve into the application of a full join using our Transfermarkt dataset. This demonstration will showcase the full join’s capability to combine datasets comprehensively, preserving all records from both datasets, regardless of whether they have matching counterparts.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Modified Data for Demonstration">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Modified Data for Demonstration
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For this demonstration, we’ve modified the <code>player_valuations</code> dataset by selecting only 70% of its entries. This adjustment introduces missing <code>player_id</code> values, which are essential for illustrating how full joins handle incomplete data across both datasets. It’s important to note that this modification is for educational purposes and may not reflect real-world data scenarios. The choice of join type in actual analysis should be based on the data’s structure and the objectives of your study.</p>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecting relevant columns and filtering the 'players' dataframe for the 2023 season.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>players_select <span class="ot">&lt;-</span> players <span class="sc">%&gt;%</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(last_season <span class="sc">==</span> <span class="dv">2023</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player_id, name, height_in_cm)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a subset of 'player_valuations', selecting the first entry for each player.</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>player_valuations_subset <span class="ot">&lt;-</span> player_valuations <span class="sc">%&gt;%</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(last_season <span class="sc">==</span> <span class="dv">2023</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(player_id) <span class="sc">%&gt;%</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player_id, market_value_in_eur)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Reducing the 'player_valuations_subset' to simulate missing data.</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>player_valuations_subset <span class="ot">&lt;-</span> player_valuations_subset[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(player_valuations_subset), <span class="at">size =</span> <span class="fl">0.7</span> <span class="sc">*</span> <span class="fu">nrow</span>(player_valuations_subset)), ]</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Performing a full join to merge all data from 'players_select' and 'player_valuations_subset'.</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>players_and_valuation <span class="ot">&lt;-</span> players_select <span class="sc">%&gt;%</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(player_valuations_subset, <span class="at">by =</span> <span class="st">"player_id"</span>)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering to show rows with missing values, indicating unmatched data in the join.</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>players_and_valuation_na <span class="ot">&lt;-</span> players_and_valuation <span class="sc">%&gt;%</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">if_any</span>(<span class="fu">everything</span>(), is.na))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecting relevant columns and filtering the 'players' dataframe for the 2023 season.</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>players_select <span class="op">=</span> players[players[<span class="st">'last_season'</span>] <span class="op">==</span> <span class="dv">2023</span>][[<span class="st">'player_id'</span>, <span class="st">'name'</span>, <span class="st">'height_in_cm'</span>]]</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a subset of 'player_valuations', selecting the first entry for each player.</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>player_valuations_subset <span class="op">=</span> player_valuations[player_valuations[<span class="st">'last_season'</span>] <span class="op">==</span> <span class="dv">2023</span>]</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>player_valuations_subset <span class="op">=</span> player_valuations_subset.groupby(<span class="st">'player_id'</span>).first().reset_index()</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>player_valuations_subset <span class="op">=</span> player_valuations_subset[[<span class="st">'player_id'</span>, <span class="st">'market_value_in_eur'</span>]]</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Reducing the 'player_valuations_subset' to simulate missing data.</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>player_valuations_subset <span class="op">=</span> player_valuations_subset.sample(frac<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Performing a full join to merge all data from 'players_select' and 'player_valuations_subset'.</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>players_and_valuation <span class="op">=</span> pd.merge(left <span class="op">=</span> players_select, right <span class="op">=</span> player_valuations_subset, left_on <span class="op">=</span> <span class="st">"player_id"</span>, right_on <span class="op">=</span> <span class="st">"player_id"</span>, how <span class="op">=</span> <span class="st">"outer"</span>)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering to show rows with missing values, indicating unmatched data in the join.</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>players_and_valuation_na <span class="op">=</span> players_and_valuation[players_and_valuation.isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>)]</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>players_and_valuation_na</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">player_id</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">height_in_cm</th>
+<th data-quarto-table-cell-role="th">market_value_in_eur</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>43250</td>
+<td>Jan Vertonghen</td>
+<td>189.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>45314</td>
+<td>Federico Fazio</td>
+<td>195.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9</td>
+<td>46106</td>
+<td>Adam Le Fondre</td>
+<td>180.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">12</td>
+<td>56809</td>
+<td>Alexandre Oukidja</td>
+<td>184.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>59016</td>
+<td>David Alaba</td>
+<td>180.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6558</td>
+<td>74996</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>150000.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6559</td>
+<td>405674</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>500000.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6560</td>
+<td>1069459</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>100000.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6561</td>
+<td>1043709</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>200000.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6562</td>
+<td>395485</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>50000.0</td>
+</tr>
+</tbody>
+</table>
+
+<p>2227 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<p>In this exercise, we conducted a full join to merge the <code>players_select</code> and <code>player_valuations_subset</code> dataframes. The resulting <code>players_and_valuation</code> dataframe includes all records from both dataframes. Where matches exist, they are combined; where they do not, the join inserts missing values. This results in the <code>players_and_valuation_na</code> dataframe highlighting players with missing valuation data, demonstrating the full join’s inclusiveness.</p>
+<p>This method is particularly useful in scenarios where you need a complete view of both datasets, ensuring that no information is discarded, even when some data points lack a corresponding match.</p>
+</section>
+<section id="how-to-choose-the-right-merge-method" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="how-to-choose-the-right-merge-method"><span class="header-section-number">3.4</span> How to Choose the Right Merge Method</h2>
+<div class="callout callout-style-default callout-tip callout-titled" title="Merging Tips">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Merging Tips
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This section provides tips on how to choose the right join/merge method for your data analysis needs.</p>
+</div>
+</div>
+<p>Selecting the appropriate merge method is essential for effective data analysis. The choice largely depends on your dataset’s completeness and the specific questions you aim to answer.</p>
+<ul>
+<li><p><strong><em>Assessing Data Completeness</em></strong>: If you’re unsure about your dataset’s completeness, opt for left, right, or outer merges. These methods are particularly revealing about missing data, offering insights into potential gaps in your information.</p></li>
+<li><p><strong><em>Confident in Data Quality</em></strong>: When you’re confident about your dataset’s thoroughness and integrity, your selection should align with the needs of your analytical queries.</p>
+<ul>
+<li><p><strong>Inner Merge</strong>: Ideal when your focus is solely on records existing in both datasets. For example, if you’re analyzing player performance only in matches that reached a specific stage or criterion, an inner merge efficiently narrows down the dataset to your area of interest.</p></li>
+<li><p><strong>Left/Right Merge</strong>: These are beneficial when you need to maintain all records from one dataset, regardless of whether they find a match in the other. For instance, in analyzing trends over seasons (like player transfers or club performances), a left merge with the primary dataset on the left ensures you retain a complete historical record, pulling in additional details where available.</p></li>
+<li><p><strong>Full/Outer Merge</strong>: Use this when it’s crucial to consider all available data from both datasets. This method is particularly useful for comprehensive overviews, such as analyzing complete player statistics, where both presence and absence of data points are significant.</p></li>
+</ul></li>
+</ul>
+<p>Remember, the key is to align the merge method with both the nature of your data and the specific questions you’re investigating. This strategic approach ensures that the resulting dataset is optimally structured for your analysis.</p>
+</section>
+</section>
+<section id="concatenation-unifying-segmented-data-for-holistic-analysis" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Concatenation: Unifying Segmented Data for Holistic Analysis</h1>
+<p>Data concatenation is a technique that merges data from multiple sources into a single dataset, which is particularly useful when you’re working with segmented information such as time-series data. For instance, when analyzing performance metrics of a sports team across a season, where each month’s data is in a separate file, concatenation is the method that will piece these segments together into a coherent whole.</p>
+<p>In R, <code>bind_rows()</code> from the <code>dplyr</code> package is the go-to function for this task. It stacks data frames with the same column names on top of each other to form an elongated, unified dataset. Should there be any mismatch in column names, <code>bind_rows()</code> will not discard any data; instead, it will introduce NA values where the columns do not align:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>combined_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df1, df2, df3)  <span class="co"># Concatenating data frames df1, df2, and df3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Python’s <code>pandas</code> offers the equivalent functionality with its <code>concat()</code> function. It, too, stacks dataframes vertically, but handles mismatched columns by inserting NaNs, ensuring no data is excluded from the final dataset:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>combined_df <span class="op">=</span> pd.concat([df1, df2, df3])  <span class="co"># Concatenating data frames df1, df2, and df3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s demonstrate this through a practical example in our Transfermarkt dataset. For this illustration, we’re going to focus on stadium attendance during the first matchday of the English Premier League for two distinct seasons – 2022 and 2023. Typically, such data might be stored in separate files for each season. However, to simplify our example and illustrate the concept effectively, we’ll artificially create two subsets from our existing <code>games</code> dataset – one for each season.</p>
+<p>The <code>subset_games</code> function we introduce below will help us filter and select the relevant data for each season based on specific criteria: the season year, competition ID, and matchday. We’ll then use data concatenation to combine these subsets into a single dataframe. This approach provides a unified view of attendance data across the two seasons, allowing for a more comprehensive analysis.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="sourceCode" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a function for dataframe subsetting</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>subset_games <span class="ot">&lt;-</span> <span class="cf">function</span>(df, season_year, competition, matchday) {</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span> </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(season <span class="sc">==</span> season_year <span class="sc">&amp;</span> competition_id <span class="sc">==</span> competition <span class="sc">&amp;</span> round <span class="sc">==</span> matchday) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(competition_id, season, round, date, home_club_name, away_club_name, attendance)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply function to subset data for 2022 and 2023</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>games_EPL2022 <span class="ot">&lt;-</span> <span class="fu">subset_games</span>(games, <span class="dv">2022</span>, <span class="st">'GB1'</span>, <span class="st">'1. Matchday'</span>)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>games_EPL2023 <span class="ot">&lt;-</span> <span class="fu">subset_games</span>(games, <span class="dv">2023</span>, <span class="st">'GB1'</span>, <span class="st">'1. Matchday'</span>)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Concatenate the data</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>matchday1_attendance <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(games_EPL2022, games_EPL2023)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Randomly select 8 rows from the concatenated dataframe</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>random_rows <span class="ot">&lt;-</span> <span class="fu">sample_n</span>(matchday1_attendance, <span class="dv">6</span>)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the randomly selected rows</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(random_rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a function for dataframe subsetting</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> subset_games(df, season, competition_id, matchday):</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (df[<span class="st">'season'</span>] <span class="op">==</span> season) <span class="op">&amp;</span> (df[<span class="st">'competition_id'</span>] <span class="op">==</span> competition_id) <span class="op">&amp;</span> (df[<span class="st">'round'</span>] <span class="op">==</span> matchday)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df[mask][[<span class="st">'competition_id'</span>, <span class="st">'season'</span>, <span class="st">'round'</span>, <span class="st">'date'</span>, <span class="st">'home_club_name'</span>, <span class="st">'away_club_name'</span>, <span class="st">'attendance'</span>]]</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply function to subset data for 2022 and 2023</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>games_EPL2022 <span class="op">=</span> subset_games(games, <span class="dv">2022</span>, <span class="st">'GB1'</span>, <span class="st">'1. Matchday'</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>games_EPL2023 <span class="op">=</span> subset_games(games, <span class="dv">2023</span>, <span class="st">'GB1'</span>, <span class="st">'1. Matchday'</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Concatenate the data</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>matchday1_attendance <span class="op">=</span> pd.concat([games_EPL2022, games_EPL2023])</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Randomly select 6 rows from the concatenated dataframe</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>random_rows <span class="op">=</span> matchday1_attendance.sample(n<span class="op">=</span><span class="dv">6</span>)</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the randomly selected rows</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>random_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">competition_id</th>
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th">round</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">home_club_name</th>
+<th data-quarto-table-cell-role="th">away_club_name</th>
+<th data-quarto-table-cell-role="th">attendance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60601</td>
+<td>GB1</td>
+<td>2023</td>
+<td>1. Matchday</td>
+<td>2023-08-13</td>
+<td>Chelsea FC</td>
+<td>Liverpool FC</td>
+<td>40096.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">18069</td>
+<td>GB1</td>
+<td>2022</td>
+<td>1. Matchday</td>
+<td>2022-08-07</td>
+<td>Manchester United</td>
+<td>Brighton &amp; Hove Albion</td>
+<td>73711.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">62678</td>
+<td>GB1</td>
+<td>2023</td>
+<td>1. Matchday</td>
+<td>2023-08-12</td>
+<td>AFC Bournemouth</td>
+<td>West Ham United</td>
+<td>11000.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">54891</td>
+<td>GB1</td>
+<td>2023</td>
+<td>1. Matchday</td>
+<td>2023-08-12</td>
+<td>Arsenal FC</td>
+<td>Nottingham Forest</td>
+<td>59984.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">52779</td>
+<td>GB1</td>
+<td>2022</td>
+<td>1. Matchday</td>
+<td>2022-08-07</td>
+<td>Leicester City</td>
+<td>Brentford FC</td>
+<td>31794.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">62888</td>
+<td>GB1</td>
+<td>2023</td>
+<td>1. Matchday</td>
+<td>2023-08-12</td>
+<td>Brighton &amp; Hove Albion</td>
+<td>Luton Town</td>
+<td>31872.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This vertical concatenation effectively combines segmented data, such as matchday information across seasons, facilitating comprehensive analysis from a unified dataset.</p>
+<section id="managing-multiple-files-with-a-naming-pattern-in-r" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="managing-multiple-files-with-a-naming-pattern-in-r"><span class="header-section-number">4.1</span> Managing Multiple Files With a Naming Pattern in R</h2>
+<p>For managing multiple files in R, when file names share a consistent pattern, <code>list.files()</code> can automate the file-gathering process. Coupled with <code>lapply()</code> and <code>read_csv()</code> from the <code>readr</code> package, it reads each file into R and <code>bind_rows()</code> then stitches them all together. If your files lack a naming pattern, consider renaming them for uniformity or individually specifying each file. Here’s how this process works:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a list of all files in the current directory that match the pattern “monthly_data_.*csv”</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">pattern =</span> <span class="st">"monthly_data_.*csv"</span>) </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply read_csv() to each file and add the resulting dataframes to the list df_list</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>df_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(files, read_csv)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Concatenate all the dataframes</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>combined_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Challenge for the Learner">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Challenge for the Learner
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Enhance your understanding of data organization and merging techniques using the Transfermarkt dataset by:</p>
+<ol type="1">
+<li>Applying an outer merge to combine <code>players.csv</code> and <code>clubs.csv</code> datasets based on <code>current_club_id</code> and <code>club_id</code>, then exploring any discrepancies or unmatched records.</li>
+<li>Using concatenation to combine <code>games.csv</code> data from two different rounds or matchdays, then analyzing trends or differences between these rounds.</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusion-and-reflection-advancing-sports-analysis-with-structured-data" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Conclusion and Reflection: Advancing Sports Analysis with Structured Data</h1>
+<p>In this lesson, we’ve navigated the essentials of data organization in sports analytics, learning to merge and concatenate datasets effectively. We explored practical techniques like inner and full joins, each serving a unique purpose in combining our sports data. From aligning datasets based on common keys to stacking them for a broader view, these methods have equipped us to handle data more confidently.</p>
+<p>By applying these strategies to our Transfermarkt dataset, we’ve demonstrated how structured data enhances sports analysis. Whether it’s analyzing team performances or tracking player stats, the right organization method ensures no critical insight is missed.</p>
+<p>The techniques covered here lay the groundwork for more advanced topics in data organization and analysis. Delve deeper into areas like data cleaning, advanced querying, and even predictive modeling to further enrich your understanding of sports data. Each step forward in mastering data organization opens new possibilities for insightful analysis, bringing valuable contributions to the field of sports and exercise science.</p>
+</section>
+<section id="knowledge-spot-check" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Knowledge Spot-Check</h1>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Which join method retains all records from the primary dataset, regardless of matching entries in the secondary dataset?** <br> <br> A) Inner Join <br> B) Left Join <br> C) Right Join <br> D) Full Join <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Which join method retains all records from the primary dataset, regardless of matching entries in the secondary dataset?</strong> <br> <br> A) Inner Join <br> B) Left Join <br> C) Right Join <br> D) Full Join <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answers are B) Left Join and C) Right Join.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**In the context of data merging, what is the significance of the 'by' argument?** <br> <br> A) It specifies the column names for concatenation. <br> B) It identifies the rows to be excluded. <br> C) It defines the columns used to align and combine datasets. <br> D) It changes the order of rows in the final dataset. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>In the context of data merging, what is the significance of the ‘by’ argument?</strong> <br> <br> A) It specifies the column names for concatenation. <br> B) It identifies the rows to be excluded. <br> C) It defines the columns used to align and combine datasets. <br> D) It changes the order of rows in the final dataset. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) It defines the columns used to align and combine datasets.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**What is a primary advantage of a full join in data merging?** <br> <br> A) It merges datasets based on unique keys only. <br> B) It includes all records from both datasets, even unmatched ones. <br> C) It is faster than other join methods. <br> D) It only retains records with no missing values. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>What is a primary advantage of a full join in data merging?</strong> <br> <br> A) It merges datasets based on unique keys only. <br> B) It includes all records from both datasets, even unmatched ones. <br> C) It is faster than other join methods. <br> D) It only retains records with no missing values. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is B) It includes all records from both datasets, even unmatched ones.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**When is data concatenation particularly useful in sports analytics?** <br> <br> A) To compare two different datasets. <br> B) To merge datasets with different column names. <br> C) To combine segmented data, like time-series data. <br> D) To filter out unnecessary data. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>When is data concatenation particularly useful in sports analytics?</strong> <br> <br> A) To compare two different datasets. <br> B) To merge datasets with different column names. <br> C) To combine segmented data, like time-series data. <br> D) To filter out unnecessary data. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) To combine segmented data, like time-series data.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**In R, which function is commonly used for data concatenation?** <br> <br> A) merge() <br> B) concat() <br> C) bind_rows() <br> D) join() <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>In R, which function is commonly used for data concatenation?</strong> <br> <br> A) merge() <br> B) concat() <br> C) bind_rows() <br> D) join() <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) bind_rows().</p>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+<script src="Data_Organization_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
