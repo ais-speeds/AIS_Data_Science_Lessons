@@ -54,11 +54,11 @@ Linear regression is a versatile and widely applied statistical methodology that
 
 The fundamental form of the linear regression equation for a simple linear regression model is represented as $Y=\beta_{0}+\beta_{1}X+\epsilon$, where $\beta_{0}$ is the intercept, $\beta_{1}$ is the slope, $X$ is the independent variable, and $\epsilon$ denotes the error terms accounting for unobserved factors. The objective of linear regression is to estimate the coefficients ($\beta_{0}$ and $\beta_{1}$) that minimize the sum of squared differences between the observed and predicted values. This method relies on several assumptions, including linearity, independence, normality of residuals, and equality of variances.
 
-The multiple linear regression extension accommodates multiple independent variables, expressed as:
+The **multiple linear regression** (sometimes called a multivariable linear regression) extension accommodates multiple independent variables, expressed as:
 
 $$Y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+...+\beta_{n}X_{n}+\epsilon$$
 
-which broadens the scope of applications to more complex datasets, by including more predictors. Linear regression serves as a powerful analytical tool in various domains, facilitating predictive modeling, hypothesis testing, and understanding the relationships within quantitative data.
+which broadens the scope of applications to more complex datasets, by including more predictors. Linear regression serves as a powerful analytic tool in various domains, facilitating predictive modeling, hypothesis testing, and understanding the relationships within quantitative data.
 
 # Assumptions
 
@@ -78,13 +78,13 @@ The assumption of normality in statistical modeling is a common pitfall, often m
 
 # Case Study
 
-Understanding and optimizing an athlete's physiological parameters are essential for performance enhancement. As we delve into the intricacies of linear regression, a powerful statistical tool, our focus turns to the predictive modeling of Absolute hemoglobin mass (ABHB) --- a critical metric indicative of an athlete's oxygen-carrying capacity.
+Understanding and optimizing an athlete's physiological parameters are essential for performance enhancement. As we delve into the intricacies of linear regression, a powerful statistical tool, our focus turns to the predictive modeling of absolute hemoglobin mass (ABHB) --- a critical metric indicative of an athlete's oxygen-carrying capacity.
 
-In this lesson, we will learn how variables, namely Ferritin, Transferrin Saturation, and Transferrin, play pivotal roles in deciphering the nuanced relationships that contribute to hematological outcomes. Through the lens of linear regression, we aim to unravel the complex interplay between these biomarkers and Absolute HBmass, offering valuable insights that can inform targeted interventions to enhance an athlete's aerobic capacity and overall athletic performance.
+In this lesson, we will learn how variables, namely ferritin, transferrin saturation, and transferrin, play pivotal roles in deciphering the nuanced relationships that contribute to hematological outcomes. Through the lens of linear regression, we aim to unravel the complex interplay between these biomarkers and absolute Hbmass, offering valuable insights that can inform targeted interventions to enhance an athlete's aerobic power and athletic performance.
 
 ## What to expect
 
-In this example the dependent variable is Absolute HBmass, which is a continuous variable - making linear regression an appropriate technique to employ. We will learn how to fit simple linear regression models (single predictor) as well as multiple linear regression models (many predictors) to the data. We will also learn how to use residual diagnostic tests to inspect the assumptions of our models.
+In this example the dependent variable is absolute Hbmass, which is a continuous variable - making linear regression an appropriate technique to employ. We will learn how to fit simple linear regression models (single predictor) as well as multiple linear regression models (many predictors) to the data. We will also learn how to use residual diagnostic tests to inspect the assumptions of our models.
 
 ## Data Loading and Cleaning
 
@@ -102,13 +102,13 @@ Before diving into building the regression model (or any model for that matter),
 
 ### Data organisation
 
-The hbmass data set contains the following variables:
+The Hbmass data set contains the following variables:
 
 -   `ID`: The participant's ID number
 -   `TIME`: A binary factor where 0 = pre-test and 1 = post-test
 -   `SEX`: The participant's sex, where 0 = Female and 1 = Male
--   `SUP_DOSE`: The amount (in mg) of the dose that each participant took, where 0 = None, 1 = 105 mg and 2 = 210mg
--   `BM`: The participant's Body Mass (kg)
+-   `SUP_DOSE`: The dose (in mg) of oral iron supplement that each participant took, where 0 = None, 1 = 105 mg and 2 = 210mg
+-   `BM`: The participant's body mass (kg)
 -   `FER`: Ferritin (ug/L)
 -   `FE`: Iron (ug/L)
 -   `TSAT`: Transferrin Saturation (%)
@@ -228,7 +228,7 @@ Here, we can see that for females, as TRANS (g/L) increases, AHBM (g) increases 
 
 ## Simple Linear Regression
 
-The term 'simple linear regression' refers to linear regression models with only one predictor. Sometimes it may be useful to start with a simple model just to understand the relationship between the outcome and main variable of interest (if there is one) before you start adding more predictors. For example, we will begin by modelling `AHBM` as a function of `FER`, that is to say: does one's ferritin levels (ug/L) influence their Absolute Haemoglobin mass (g)? Recall from our bivariate summary that `FER` appears to have a positive relationship with `AHBM`. Thus, we would be expecting a positive coefficient estimate for our results.
+The term 'simple linear regression' refers to linear regression models with only one predictor. Sometimes it may be useful to start with a simple model just to understand the relationship between the outcome and main variable of interest (if there is one) before you start adding more predictors. For example, we will begin by modelling `AHBM` as a function of `FER`, that is to say: does one's ferritin levels (ug/L) influence their absolute haemoglobin mass (g)? Recall from our bivariate summary that `FER` appears to have a positive relationship with `AHBM`. Thus, we would be expecting a positive coefficient estimate for our results.
 
 ```{r}
 model1 <- lm(AHBM ~ FER, data = Hbmass_pre)
@@ -242,11 +242,11 @@ By substituting the values from our output into the equation, we obtain a model 
 
 $$AHBM_{i}=715.74+1.72FER_{i}+\epsilon_{i}$$
 
-Our model can thus be interpreted as, Absolute Heamoglobin Mass (g) will increase by $\beta_{1}=1.72g$ for each additional ug/L in one's Ferritin. The estimated value of the intercept, $\beta_{0}=715.74$ represents the estimated `AHBM` value when `FER` equals 0.
+Our model can thus be interpreted as, absolute heamoglobin mass (g) will increase by $\beta_{1}=1.72g$ for each additional ug/L in one's ferritin. The estimated value of the intercept, $\beta_{0}=715.74$ represents the estimated `AHBM` value when `FER` equals 0.
 
-<center>**A quick note on $\epsilon$:**</center>
+<center>**A quick note on** $\epsilon$:</center>
 
-In statistical modeling, the error term serves as a comprehensive representation of various sources of variability that affect the dependent variable but are not explicitly accounted for by the independent variables. This term amalgamates subject-specific, within-subject, technical, and measurement errors into a single entity, denoted as ε (epsilon). While the error term is often treated as a collective measure of unpredictability, it is crucial to recognize that its components can be parsed and estimated separately. In more advanced statistical techniques, such as linear mixed models, the error term can be dissected using random effects. By incorporating random effects into the model, one can capture and quantify the inherent variability arising from individual differences, providing a more nuanced understanding of the data. Future lessons may delve into the intricacies of partitioning and estimating specific components of the error term, shedding light on the nuances of variability within the context of linear mixed models and enhancing the precision of statistical analyses.
+In statistical modeling, the error term serves as a comprehensive representation of various sources of variability that affect the dependent variable but are not explicitly accounted for by the independent variables. This term amalgamates subject-specific, within-subject, technical, and measurement errors into a single entity, denoted as ε (epsilon). While the error term is often treated as a collective measure of unpredictability, it is crucial to recognize that its components can be parsed and estimated separately. In more advanced statistical techniques, such as linear mixed models **\<add link to linear mixed model lesson\>**, the error term can be dissected using random effects. By incorporating random effects into the model, one can capture and quantify the inherent variability arising from individual differences, providing a more nuanced understanding of the data. Future lessons may delve into the intricacies of partitioning and estimating specific components of the error term, shedding light on the nuances of variability within the context of linear mixed models and enhancing the precision of statistical analyses.
 :::
 
 Note: the interpretation above is for *this sample* only, i.e. it would be more correct to say:
@@ -294,15 +294,15 @@ check_model(
 ::: callout-tip
 ## Assumptions interpretation
 
--   The Linearity plot (top-left panel) shows that the residuals are fairly pattern-less, as indicated by the green horizontal line - suggesting that linearity is met.
--   The Homogeneity of variance plot (top-right panel) shows shows a slight increase in variability. However, this is only a very minor deviation from 0, so it is unlike to impact the model results too much.
--   The Influential Observations plot (bottom-left panel) shows no cases falling outside of cuttoff lines - suggesting that there are no potential influential points of concern.
--   The Normalality of Residuals (bottom-right panel) shows that residuals are mostly normally distributted - suggesting that normality of residuals is met.
+-   **The linearity plot** (top-left panel) shows that the residuals are fairly pattern-less, as indicated by the green horizontal line - suggesting that linearity is met.
+-   **The homogeneity of variance plot** (top-right panel) shows shows a slight increase in variability. However, this is only a very minor deviation from 0, so it is unlike to impact the model results too much.
+-   **The influential observations plot** (bottom-left panel) shows no cases falling outside of cutoff lines - suggesting that there are no potential influential points of concern.
+-   **The normality of residuals** (bottom-right panel) plot shows that residuals are mostly normally distributed - suggesting that normality of residuals is met.
 :::
 
 ## Multiple Linear Regression
 
-In the previous example we built a linear regression model for `AHBM` using only `FER` as a predictor. As the name suggest, multiple linear regression involves building models that contain multiple predictors. As an example, let us now also include`FE` (Iron) and `TSAT` (Transferrin Saturation) into the model. Mathematically, this can be expressed as:
+In the previous example we built a linear regression model for `AHBM` using only `FER` as a predictor. As the name suggest, multiple linear regression involves building models that contain multiple predictors. As an example, let us now also include`FE` (iron) and `TSAT` (transferrin saturation) into the model. Mathematically, this can be expressed as:
 
 $$Y_{i}=\beta_{0}+\beta_{1}FER+\beta_{2}FE+\beta_{3}TSAT+\epsilon_{i}$$
 
@@ -329,9 +329,9 @@ $$AHBM_{i}=830.42+1.80FER_{i}-8.11FE_i+1.30TSAT_i+\epsilon_{i}$$
 
 Notice that some $\beta$ estimates are positive and some are negative. This provides us with an indication the **direction** of change for the outcome variable.
 
--   Absolute Heamoglobin Mass increases by $\beta_{1}=1.80g$ for each additional ug/L in one's Ferritin, whilst controlling for FE and TSAT.
--   Absolute Heamoglobin Mass decreases by $\beta_{2}=8.11g$ for each additional ug/L in one's Iron, whilst controlling for FER and TSAT.
--   Absolute Heamoglobin Mass increases by $\beta_{3}=1.30g$ for each additional % in one's Transferrin Saturation, whilst controlling for FER and FE.
+-   Absolute heamoglobin mass increases by $\beta_{1}=1.80g$ for each additional ug/L in one's ferritin, whilst controlling for FE and TSAT.
+-   Absolute heamoglobin mass decreases by $\beta_{2}=8.11g$ for each additional ug/L in one's iron, whilst controlling for FER and TSAT.
+-   Absolute heamoglobin mass increases by $\beta_{3}=1.30g$ for each additional % in one's transferrin saturation, whilst controlling for FER and FE.
 :::
 
 Similar to the simple linear regression example, we can inspect the associated *p*-values and 95% confidence intervals for each predictor from the output above. If these values are less than the chosen threshold (e.g. 0.05) then we have confidence in inferring these results to the larger population. In this example, `FER` and `FE` have *p*-values less than 0.05, so we can say that these results are statistically significant. Looking at the confidence intervals:
@@ -342,8 +342,8 @@ confint(model2)
 
 From the output above, we can say that:
 
--   The true slope for `FER` on `AHBM`, whilst controlling for `FE` and `TSAT` is estimated to fall within the interval 1.11 to 2.49. This interval is positive, so we would infer a 1.11 to 2.49 increase in `AHBM` for each additional increase in `FER`.
--   The true slope for `FE` on `AHBM`, whilst controlling for `FER` and `TSAT` is estimated to fall within the interval -13.08 to -3.13. This interval is negative, so we would infer a 13.08 to 3.13 decrease in `AHBM` for each additional increase in `FE`.
+-   The true slope for `FER` on `AHBM`, whilst controlling for `FE` and `TSAT` is estimated to fall within the interval 1.11 to 2.49. This interval is **positive**, so we would infer a 1.11 to 2.49 **increase** in `AHBM` for each additional increase in `FER`.
+-   The true slope for `FE` on `AHBM`, whilst controlling for `FER` and `TSAT` is estimated to fall within the interval -13.08 to -3.13. This interval is **negative**, so we would infer a 13.08 to 3.13 **decrease** in `AHBM` for each additional increase in `FE`.
 -   The true slope for `TSAT` on `AHBM` is uncertain, as it ranges from -1.42 (a decrease) to 4.02 (an increase). This aligns with the non-significant *p*-value observed for this predictor.
 
 Similar to previous example, we should also check the statistical assumptions to ensure that our model is valid. Multiple linear regression requires two additional assumptions to be met for a model to be valid:
@@ -406,7 +406,13 @@ ggpairs(Hbmass_pre,
         columns = c('FER','FE','TSAT'))
 ```
 
-[Andy to include some background information here on multicollinearity between FE and TSAT. The VIF and Tolerance aren't so extreme here, but should still be a consideration]{style="color:red"}
+Transferrin saturation is calculated from other iron parameters such as iron (umol/L) and transferrin (g/L), using the formula:
+
+$$
+\frac{3.982 \times \text{Iron (umol/L)}}{\text{Transferrin (g/L)}}
+$$
+
+Therefore, despite the VIF and tolerance statistics being acceptable, these variables are mathematically related to each other thus multicollinear.
 :::
 
 ## Multiple Linear Regression with interactions
@@ -526,7 +532,9 @@ Selection of the appropriate model involves a nuanced understanding of the probl
 
 ### Model parsimony
 
-Model parsimony is the principle of favoring simpler models that achieve a balance between explanatory power and simplicity. A parsimonious model uses the fewest variables or parameters necessary to adequately describe the observed data without overfitting. One way to formalize this principle in model selection is through the Bayesian Information Criterion (BIC). The Bayesian Information Criterion is a metric that balances goodness of fit with model complexity. In the context of multiple regression, BIC penalizes models for having more parameters. The BIC formula is given by:
+Model parsimony is the principle of favoring simpler models that achieve a balance between explanatory power and simplicity. A parsimonious model uses the fewest variables or parameters necessary to adequately describe the observed data without overfitting. One way to formalize this principle in model selection is through the Bayesian Information Criterion (BIC) (Schwarz, 1978). The Bayesian Information Criterion is a metric that balances goodness of fit with model complexity. In the context of multiple regression, BIC penalizes models for having more parameters. The BIC formula is given by:
+
+**\<Add BIC formula\>**
 
 In the context of model parsimony, a lower BIC indicates a more parsimonious model that achieves a good fit with fewer parameters. When comparing models, one should prefer the model with the lowest BIC, as it strikes a balance between capturing the complexity in the data and avoiding unnecessary elaboration.
 
@@ -628,7 +636,7 @@ Notice in this example that the R^2^ for the training set (R^2^ = .659) is much 
 
 To address the challenges highlighted by the disparity in R^2^ values between the training and testing sets, cross-validation emerges as a valuable tool. Cross-validation involves systematically partitioning the dataset into multiple subsets, training the model on different combinations of these subsets, and evaluating its performance across various folds. By doing so, cross-validation provides a more comprehensive assessment of the model's ability to generalize. In the context of our example, cross-validation would entail repeatedly splitting the data into training and validation sets, allowing the model to learn from different portions of the data. This process helps to smooth out the impact of specific data configurations and minimizes the influence of outliers or random variations in the initial train-test split. The average performance over multiple folds gives a more reliable estimate of how well the model is expected to perform on new, unseen data, offering a robust solution to the challenges associated with overfitting, outlier sensitivity, and random chance in the data partitioning process.
 
-An example of kfolds cross validation is demonstrated below using the `tidymodels` framework:
+An example of k-folds cross validation is demonstrated below using the `tidymodels` framework:
 
 ```{r}
 # Split data (we did this before, but we'll do this again for practice)
@@ -688,4 +696,4 @@ cv_results |> collect_metrics()
 
 In conclusion, delving into linear regression provides a robust framework for understanding and analyzing relationships within sport science data. By scrutinizing the assumptions and interpreting the coefficients, we've gained valuable insights into the dynamics between variables, paving the way for informed decision-making in athletic performance and training optimization. The ability to assess linearity, independence, normality, and equality of variances equips us with th e tools to ensure the reliability of our models. As we decipher the implications of regression coefficients, we unlock a deeper comprehension of how factors such as training intensity, player performance, and injury rates interconnect. Armed with this knowledge, sport scientists and coaches are better positioned to tailor training programs, enhance player development strategies, and contribute to the overall advancement of athletic performance and well-being.
 
-With that said, whilst linear regression is an invaluable tool for exploring relationships within sport science data, it represents just the tip of the iceberg in the realm of regression modeling. The versatility of regression extends beyond the linear framework, offering a diverse array of models to address various types of data and outcomes. Logistic regression, for instance, is well-suited for binary outcomes, making it applicable in scenarios such as predicting injury occurrence. Polynomial regression accommodates non-linear relationships, allowing for a more nuanced exploration of complex patterns in sports data. The exploration of other regression models, such as ridge regression or lasso regression, brings forth techniques for handling multicollinearity and feature selection. As we venture deeper into these advanced regression methods, we unlock new possibilities for understanding and predicting outcomes in sport science, showcasing the rich landscape of statistical tools available to researchers and practitioners alike.
+With that said, whilst linear regression is an invaluable tool for exploring relationships within sport science data, it represents just the tip of the iceberg in the realm of regression modeling. The versatility of regression extends beyond the linear framework, offering a diverse array of models to address various types of data and outcomes. **Logistic regression \<add link\>**, for instance, is well-suited for **binary outcomes**, making it applicable in scenarios such as predicting injury occurrence. **Polynomial regression** **\<add link\>** accommodates **non-linear relationships**, allowing for a more nuanced exploration of complex patterns in sports data. The exploration of other regression models, such as **ridge regression**, **lasso regression**, and **elastic net** brings forth techniques for handling multicollinearity and feature selection. As we venture deeper into these advanced regression methods, we unlock new possibilities for understanding and predicting outcomes in sport science, showcasing the rich landscape of statistical tools available to researchers and practitioners alike.
