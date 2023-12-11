@@ -1,0 +1,11 @@
+---
+title: "Introduction to Basis Vectors"
+description: "Foundational lesson for Dimensionality Reduction Module (structure is work in progress)"
+format:
+  html:
+    code-fold: false
+---
+
+## Introduction
+
+This is a template tutorial. The Iris dataset is explored here as an example in R. 
