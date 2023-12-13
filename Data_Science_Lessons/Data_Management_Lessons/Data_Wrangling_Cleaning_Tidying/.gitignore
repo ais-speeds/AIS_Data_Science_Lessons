@@ -1,3 +1,4 @@
 /.quarto/
 .RData
 .Rhistory
+.DS_Store
