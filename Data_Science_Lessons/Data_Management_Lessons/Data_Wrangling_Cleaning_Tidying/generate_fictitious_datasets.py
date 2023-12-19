@@ -81,12 +81,17 @@ def generate_dataset(file_num):
     for col in potential_columns_for_missing_values:
         df.loc[df.sample(frac=0.15).index, col] = np.random.choice([None, 'NA'])
     
-    # Randomly replace existing rows with duplicates, avoiding adjacent positions
-    num_duplicates = random.randint(1, 1)
-    positions = list(range(len(df)))
+    # Randomly replace existing rows with duplicates, ensuring they are not adjacent
+    num_duplicates = random.randint(1, 2)
+    duplicate_positions = []
     
-    random.shuffle(positions)
-    duplicate_positions = positions[:num_duplicates]
+    while len(duplicate_positions) < num_duplicates:
+        position = random.randint(0, len(df) - 1)
+        # Check if adjacent positions are not already in duplicate_positions
+        if (position not in duplicate_positions and
+            (position - 1) not in duplicate_positions and
+            (position + 1) not in duplicate_positions):
+            duplicate_positions.append(position)
 
     for replace_position in duplicate_positions:
         # Select a random row to duplicate
@@ -98,7 +103,7 @@ def generate_dataset(file_num):
 
     # Apply randomized column names and save the DataFrame to a csv file
     df.rename(columns=consistent_column_names, inplace=True)
-    df.to_csv(f'cycling_untidy_fictional_data_{file_num}.csv', index=False)
+    df.to_csv(f'cycling_untidy_fictitious_data_{file_num}.csv', index=False)
 
     return df
 
