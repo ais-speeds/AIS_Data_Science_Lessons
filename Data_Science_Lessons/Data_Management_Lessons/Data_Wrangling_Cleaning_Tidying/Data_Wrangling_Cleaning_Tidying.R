@@ -8,28 +8,46 @@ library(visdat) # enables visual inspection of data quality and structure
 library(speedsR) # collection of sports-specific benchmark datasets - part of the AIS SPEEDS project
 
 
-# cycling_untidy_fictional_data_1 <- import from speedsR
-# ...
-# ...
-# ...
-# ...
 
+# Load Datasets from speedsR and Save as CSV Files ----
 
-# This is to save tibbles into a csv file
-# write_csv(cycling_data, "cycling_data_clean.csv")
+# List of dataset names from speedsR
+dataset_names_from_speedsR <- c("cycling_untidy_fictitious_data_1", 
+                                "cycling_untidy_fictitious_data_2", 
+                                "cycling_untidy_fictitious_data_3", 
+                                "cycling_untidy_fictitious_data_4", 
+                                "cycling_untidy_fictitious_data_5")
+
+# Loop through each dataset name from speedsR package
+for (dataset_name in dataset_names_from_speedsR) {
+  
+  # Use 'get()' to load the dataset from speedsR using its name
+  # 'get()' retrieves an object (here, a dataset) by its name given as a string
+  dataset <- get(dataset_name)
+  
+  # Use 'paste0()' to create a file name for saving the dataset
+  # 'paste0()' concatenates strings, here it adds ".csv" to the dataset name
+  file_name <- paste0(dataset_name, ".csv")
+  
+  # Save the loaded dataset as a CSV file with the name created above
+  write_csv(dataset, file_name)
+}
+
 
 
 # Load and Concatenate Datasets ----
 
-# Get a list of all files in the *current directory* that match the pattern “cycling_untidy_fictional_data_.*csv”
+# Get a list of all files in the *current directory* that match the pattern “cycling_untidy_fictitious_data_.*csv”
 # Store the name of each file in a vector 'cycling_files'
-cycling_files <- list.files(pattern = 'cycling_untidy_fictional_data_.*csv')
+cycling_files <- list.files(pattern = 'cycling_untidy_fictitious_data_.*csv')
 
 # Read each file in 'cycling_files' into a tibble, storing all the tibbles in 'cycling_list'
 cycling_list <- lapply(cycling_files, read_csv)
 
 # Concatenate all tibbles in 'cycling_list' together
 cycling_data <- bind_rows(cycling_list)
+
+write_csv(cycling_data, "cycling_untidy_fictitious_data_before_cleaning.csv")
 
 
 
@@ -223,7 +241,7 @@ str(cycling_data)
 # Attempt to compute the mean of the VO2_max column
 # Note: This operation will produce a warning since the column is not numeric
 # This issue will be addressed in the next section
-cycling_data %>% summarise(mean_VO2_Max = mean(VO2_max))
+cycling_data %>% summarise(mean_VO2_max = mean(VO2_max))
 
 
 
@@ -241,12 +259,17 @@ cycling_data <- cycling_data %>%
 
 head(cycling_data)
 
+# Recompute the mean of the VO2_max column, excluding NA values for accurate calculation
+# The 'na.rm = TRUE' argument ensures that NA (missing) values are ignored in the mean calculation
+cycling_data %>% summarise(mean_VO2_max = mean(VO2_max, na.rm = TRUE))
+
 
 
 # Dates Formatting and Ordering ----
 
 # Convert 'race_date' from 'DD-MM-YYYY' format to 'YYYY-MM-DD' format
-# This standardizes the date format for consistency and easier analysis
+# This specifies the current format of the dates in your dataset
+# and standardizes them to the default 'YYYY-MM-DD' format for consistency and easier analysis
 cycling_data <- cycling_data %>%
   mutate(race_date = as.Date(race_date, format = "%d-%m-%Y"))
 
@@ -260,7 +283,7 @@ head(cycling_data)
 
 
 
-# Reshaping Data From Wide to Long Format
+# Reshaping Data From Wide to Long Format ----
 
 # Transform the 'cycling_data' tibble from wide format to long format.
 # The 'gather()' function collapses the 'heart_rate', 'distance_km', and 'VO2_max' columns
@@ -276,9 +299,11 @@ cycling_data <- cycling_data %>%
 cycling_data <- cycling_data %>%
   arrange(ID, measurement)
 
-head(cycling_data_long)
+head(cycling_data)
 
 # Count the number of occurrences of each measurement type.
 # This helps to understand the distribution of different measurements in the dataset.
 measurement_counts <- count(cycling_data, measurement)
 print(measurement_counts)
+
+write_csv(cycling_data, "cycling_tidy_fictitious_data_after_cleaning.csv")
