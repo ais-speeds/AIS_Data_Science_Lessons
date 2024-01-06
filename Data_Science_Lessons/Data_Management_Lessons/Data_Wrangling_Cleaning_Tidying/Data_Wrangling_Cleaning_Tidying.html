@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Data Wrangling: Cleaning and Tidying Raw Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Data_Wrangling_Cleaning_Tidying_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Data_Wrangling_Cleaning_Tidying_files/libs/quarto-html/quarto.js"></script>
+<script src="Data_Wrangling_Cleaning_Tidying_files/libs/quarto-html/popper.min.js"></script>
+<script src="Data_Wrangling_Cleaning_Tidying_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Data_Wrangling_Cleaning_Tidying_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Data_Wrangling_Cleaning_Tidying_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Data_Wrangling_Cleaning_Tidying_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Data_Wrangling_Cleaning_Tidying_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Data_Wrangling_Cleaning_Tidying_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Data_Wrangling_Cleaning_Tidying_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">1</span> Learning Outcomes</a></li>
+  <li><a href="#introduction-navigating-data-refinement-in-sport-and-exercise-science" id="toc-introduction-navigating-data-refinement-in-sport-and-exercise-science" class="nav-link" data-scroll-target="#introduction-navigating-data-refinement-in-sport-and-exercise-science"><span class="header-section-number">2</span> Introduction: Navigating Data Refinement in Sport and Exercise Science</a>
+  <ul class="collapse">
+  <li><a href="#clean-data---the-foundation-of-effective-analysis" id="toc-clean-data---the-foundation-of-effective-analysis" class="nav-link" data-scroll-target="#clean-data---the-foundation-of-effective-analysis"><span class="header-section-number">2.1</span> Clean Data - The Foundation of Effective Analysis</a></li>
+  <li><a href="#data-wrangling---shaping-raw-data-into-insights" id="toc-data-wrangling---shaping-raw-data-into-insights" class="nav-link" data-scroll-target="#data-wrangling---shaping-raw-data-into-insights"><span class="header-section-number">2.2</span> Data Wrangling - Shaping Raw Data into Insights</a></li>
+  <li><a href="#data-cleaning---polishing-data-for-accuracy-and-consistency" id="toc-data-cleaning---polishing-data-for-accuracy-and-consistency" class="nav-link" data-scroll-target="#data-cleaning---polishing-data-for-accuracy-and-consistency"><span class="header-section-number">2.3</span> Data Cleaning - Polishing Data for Accuracy and Consistency</a></li>
+  <li><a href="#data-tidying---structuring-data-for-insightful-analysis" id="toc-data-tidying---structuring-data-for-insightful-analysis" class="nav-link" data-scroll-target="#data-tidying---structuring-data-for-insightful-analysis"><span class="header-section-number">2.4</span> Data Tidying - Structuring Data for Insightful Analysis</a></li>
+  <li><a href="#the-expected-outcome---a-clean-and-analyzable-dataset" id="toc-the-expected-outcome---a-clean-and-analyzable-dataset" class="nav-link" data-scroll-target="#the-expected-outcome---a-clean-and-analyzable-dataset"><span class="header-section-number">2.5</span> The Expected Outcome - A Clean and Analyzable Dataset</a></li>
+  </ul></li>
+  <li><a href="#tools-for-data-wrangling-cleaning-and-tidying" id="toc-tools-for-data-wrangling-cleaning-and-tidying" class="nav-link" data-scroll-target="#tools-for-data-wrangling-cleaning-and-tidying"><span class="header-section-number">3</span> Tools for Data Wrangling, Cleaning, and Tidying</a>
+  <ul class="collapse">
+  <li><a href="#dplyr-package-in-r" id="toc-dplyr-package-in-r" class="nav-link" data-scroll-target="#dplyr-package-in-r"><span class="header-section-number">3.1</span> <code>dplyr</code> package in R</a></li>
+  <li><a href="#tidyr-package-in-r" id="toc-tidyr-package-in-r" class="nav-link" data-scroll-target="#tidyr-package-in-r"><span class="header-section-number">3.2</span> <code>tidyr</code> package in R</a></li>
+  </ul></li>
+  <li><a href="#key-steps-in-wrangling-cleaning-and-tidying" id="toc-key-steps-in-wrangling-cleaning-and-tidying" class="nav-link" data-scroll-target="#key-steps-in-wrangling-cleaning-and-tidying"><span class="header-section-number">4</span> Key Steps in Wrangling, Cleaning, and Tidying</a></li>
+  <li><a href="#wrangling-cleaning-and-tidying-an-unclean-dataset" id="toc-wrangling-cleaning-and-tidying-an-unclean-dataset" class="nav-link" data-scroll-target="#wrangling-cleaning-and-tidying-an-unclean-dataset"><span class="header-section-number">5</span> Wrangling, Cleaning, and Tidying an ‘Unclean’ Dataset</a>
+  <ul class="collapse">
+  <li><a href="#install-and-load-libraries" id="toc-install-and-load-libraries" class="nav-link" data-scroll-target="#install-and-load-libraries"><span class="header-section-number">5.1</span> Install and Load Libraries</a></li>
+  <li><a href="#load-datasets-from-the-speedsr-package-and-save-as-csv-files" id="toc-load-datasets-from-the-speedsr-package-and-save-as-csv-files" class="nav-link" data-scroll-target="#load-datasets-from-the-speedsr-package-and-save-as-csv-files"><span class="header-section-number">5.2</span> Load Datasets From The <code>speedsR</code> Package And Save As CSV Files</a></li>
+  <li><a href="#sec-load_and_concat" id="toc-sec-load_and_concat" class="nav-link" data-scroll-target="#sec-load_and_concat"><span class="header-section-number">5.3</span> Load and Concatenate Datasets</a></li>
+  <li><a href="#understanding-tibbles-vs-dataframes-in-r" id="toc-understanding-tibbles-vs-dataframes-in-r" class="nav-link" data-scroll-target="#understanding-tibbles-vs-dataframes-in-r"><span class="header-section-number">5.4</span> Understanding Tibbles vs Dataframes in R</a>
+  <ul class="collapse">
+  <li><a href="#what-is-a-tibble" id="toc-what-is-a-tibble" class="nav-link" data-scroll-target="#what-is-a-tibble"><span class="header-section-number">5.4.1</span> What is a Tibble?</a></li>
+  <li><a href="#key-differences-and-advantages" id="toc-key-differences-and-advantages" class="nav-link" data-scroll-target="#key-differences-and-advantages"><span class="header-section-number">5.4.2</span> Key Differences and Advantages</a></li>
+  <li><a href="#why-use-tibbles" id="toc-why-use-tibbles" class="nav-link" data-scroll-target="#why-use-tibbles"><span class="header-section-number">5.4.3</span> Why Use Tibbles?</a></li>
+  </ul></li>
+  <li><a href="#sec-explore_and_diagnose" id="toc-sec-explore_and_diagnose" class="nav-link" data-scroll-target="#sec-explore_and_diagnose"><span class="header-section-number">5.5</span> Explore and Diagnose the Dataset</a></li>
+  <li><a href="#sec-clean_column_names" id="toc-sec-clean_column_names" class="nav-link" data-scroll-target="#sec-clean_column_names"><span class="header-section-number">5.6</span> Clean Column Names</a>
+  <ul class="collapse">
+  <li><a href="#standardizing-to-lower-case" id="toc-standardizing-to-lower-case" class="nav-link" data-scroll-target="#standardizing-to-lower-case"><span class="header-section-number">5.6.1</span> Standardizing to Lower Case</a></li>
+  <li><a href="#trimming-white-spaces" id="toc-trimming-white-spaces" class="nav-link" data-scroll-target="#trimming-white-spaces"><span class="header-section-number">5.6.2</span> Trimming White Spaces</a></li>
+  <li><a href="#replacing-spaces-with-underscores" id="toc-replacing-spaces-with-underscores" class="nav-link" data-scroll-target="#replacing-spaces-with-underscores"><span class="header-section-number">5.6.3</span> Replacing Spaces with Underscores</a></li>
+  <li><a href="#applying-the-cleaned-column-names" id="toc-applying-the-cleaned-column-names" class="nav-link" data-scroll-target="#applying-the-cleaned-column-names"><span class="header-section-number">5.6.4</span> Applying the Cleaned Column Names</a></li>
+  <li><a href="#renaming-specific-columns" id="toc-renaming-specific-columns" class="nav-link" data-scroll-target="#renaming-specific-columns"><span class="header-section-number">5.6.5</span> Renaming Specific Columns</a></li>
+  <li><a href="#verifying-changes" id="toc-verifying-changes" class="nav-link" data-scroll-target="#verifying-changes"><span class="header-section-number">5.6.6</span> Verifying Changes</a></li>
+  </ul></li>
+  <li><a href="#sec-handle_missing_data" id="toc-sec-handle_missing_data" class="nav-link" data-scroll-target="#sec-handle_missing_data"><span class="header-section-number">5.7</span> Handle Missing Data</a>
+  <ul class="collapse">
+  <li><a href="#count-and-replace-empty-cells-with-nas" id="toc-count-and-replace-empty-cells-with-nas" class="nav-link" data-scroll-target="#count-and-replace-empty-cells-with-nas"><span class="header-section-number">5.7.1</span> Count and Replace Empty Cells with NAs</a></li>
+  <li><a href="#count-missing-values-na-in-each-column" id="toc-count-missing-values-na-in-each-column" class="nav-link" data-scroll-target="#count-missing-values-na-in-each-column"><span class="header-section-number">5.7.2</span> Count Missing Values (NA) in Each Column</a></li>
+  <li><a href="#total-count-of-missing-values-in-the-dataset" id="toc-total-count-of-missing-values-in-the-dataset" class="nav-link" data-scroll-target="#total-count-of-missing-values-in-the-dataset"><span class="header-section-number">5.7.3</span> Total Count of Missing Values in the Dataset</a></li>
+  <li><a href="#visualizing-missing-data" id="toc-visualizing-missing-data" class="nav-link" data-scroll-target="#visualizing-missing-data"><span class="header-section-number">5.7.4</span> Visualizing Missing Data</a></li>
+  </ul></li>
+  <li><a href="#sec-replace_certain_values" id="toc-sec-replace_certain_values" class="nav-link" data-scroll-target="#sec-replace_certain_values"><span class="header-section-number">5.8</span> Replace Certain Values</a>
+  <ul class="collapse">
+  <li><a href="#replace-values-in-a-specific-column" id="toc-replace-values-in-a-specific-column" class="nav-link" data-scroll-target="#replace-values-in-a-specific-column"><span class="header-section-number">5.8.1</span> Replace Values in a Specific Column</a></li>
+  <li><a href="#replace-values-in-the-entire-dataset" id="toc-replace-values-in-the-entire-dataset" class="nav-link" data-scroll-target="#replace-values-in-the-entire-dataset"><span class="header-section-number">5.8.2</span> Replace Values in the Entire Dataset</a></li>
+  </ul></li>
+  <li><a href="#sec-deal_with_duplicates" id="toc-sec-deal_with_duplicates" class="nav-link" data-scroll-target="#sec-deal_with_duplicates"><span class="header-section-number">5.9</span> Deal With Duplicates</a>
+  <ul class="collapse">
+  <li><a href="#identifying-duplicates" id="toc-identifying-duplicates" class="nav-link" data-scroll-target="#identifying-duplicates"><span class="header-section-number">5.9.1</span> Identifying Duplicates</a></li>
+  <li><a href="#removing-duplicates" id="toc-removing-duplicates" class="nav-link" data-scroll-target="#removing-duplicates"><span class="header-section-number">5.9.2</span> Removing Duplicates</a></li>
+  <li><a href="#verifying-duplicate-removal" id="toc-verifying-duplicate-removal" class="nav-link" data-scroll-target="#verifying-duplicate-removal"><span class="header-section-number">5.9.3</span> Verifying Duplicate Removal</a></li>
+  <li><a href="#understanding-the-duplicate-removal-process" id="toc-understanding-the-duplicate-removal-process" class="nav-link" data-scroll-target="#understanding-the-duplicate-removal-process"><span class="header-section-number">5.9.4</span> Understanding the Duplicate Removal Process</a></li>
+  </ul></li>
+  <li><a href="#sec-split_by_index" id="toc-sec-split_by_index" class="nav-link" data-scroll-target="#sec-split_by_index"><span class="header-section-number">5.10</span> Split By Index</a></li>
+  <li><a href="#sec-split_by_char" id="toc-sec-split_by_char" class="nav-link" data-scroll-target="#sec-split_by_char"><span class="header-section-number">5.11</span> Split By Character</a></li>
+  <li><a href="#sec-data_types" id="toc-sec-data_types" class="nav-link" data-scroll-target="#sec-data_types"><span class="header-section-number">5.12</span> Data Types</a></li>
+  <li><a href="#sec-string_parsing" id="toc-sec-string_parsing" class="nav-link" data-scroll-target="#sec-string_parsing"><span class="header-section-number">5.13</span> String Parsing</a></li>
+  <li><a href="#sec-dates_formatting" id="toc-sec-dates_formatting" class="nav-link" data-scroll-target="#sec-dates_formatting"><span class="header-section-number">5.14</span> Dates Formatting and Ordering</a></li>
+  <li><a href="#sec-wide_long_format" id="toc-sec-wide_long_format" class="nav-link" data-scroll-target="#sec-wide_long_format"><span class="header-section-number">5.15</span> Reshape Data From Wide to Long Format</a>
+  <ul class="collapse">
+  <li><a href="#wide-vs-long-data-formats" id="toc-wide-vs-long-data-formats" class="nav-link" data-scroll-target="#wide-vs-long-data-formats"><span class="header-section-number">5.15.1</span> Wide vs Long Data Formats</a></li>
+  <li><a href="#why-prefer-long-format" id="toc-why-prefer-long-format" class="nav-link" data-scroll-target="#why-prefer-long-format"><span class="header-section-number">5.15.2</span> Why Prefer Long Format?</a></li>
+  <li><a href="#transitioning-from-wide-to-long-format" id="toc-transitioning-from-wide-to-long-format" class="nav-link" data-scroll-target="#transitioning-from-wide-to-long-format"><span class="header-section-number">5.15.3</span> Transitioning from Wide to Long Format</a></li>
+  <li><a href="#gauging-measurement-distribution" id="toc-gauging-measurement-distribution" class="nav-link" data-scroll-target="#gauging-measurement-distribution"><span class="header-section-number">5.15.4</span> Gauging Measurement Distribution</a></li>
+  </ul></li>
+  <li><a href="#data-organization-in-spreadsheets-ensuring-readiness-for-analysis" id="toc-data-organization-in-spreadsheets-ensuring-readiness-for-analysis" class="nav-link" data-scroll-target="#data-organization-in-spreadsheets-ensuring-readiness-for-analysis"><span class="header-section-number">5.16</span> Data Organization in Spreadsheets: Ensuring Readiness for Analysis</a></li>
+  </ul></li>
+  <li><a href="#conclusion-and-reflection" id="toc-conclusion-and-reflection" class="nav-link" data-scroll-target="#conclusion-and-reflection"><span class="header-section-number">6</span> Conclusion and Reflection</a></li>
+  <li><a href="#knowledge-spot-check" id="toc-knowledge-spot-check" class="nav-link" data-scroll-target="#knowledge-spot-check"><span class="header-section-number">7</span> Knowledge Spot-Check</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Data_Wrangling_Cleaning_Tidying.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Wrangling: Cleaning and Tidying Raw Data</h1>
+<p class="subtitle lead">Transforming and Refining Raw Sports Data for Insightful Analysis</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="abstract-title">Abstract</div>
+    Dive into the intricacies of data wrangling to unveil the true potential of sports data. This lesson is dedicated to transforming raw datasets into a structured, analysis-ready format, essential for extracting actionable insights. We navigate through data cleaning and tidying, employing tools from R’s <code>tidyverse</code> to refine and reshape datasets for sports and exercise science applications. Designed for sports analysts and practitioners, this lesson offers a hands-on approach to mastering the art of data wrangling, focusing on practical techniques for dealing with common data challenges. From parsing strings to reshaping data formats, you’ll emerge equipped with the skills to turn raw numbers into compelling stories and evidence-based decisions.
+  </div>
+</div>
+
+</header>
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Keywords">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Data wrangling, data cleaning, data tidying, data transformation, data organization, data manipulation, tibble, data analysis, sports analytics, R, tidyverse, dplyr, tidyr, stringr, visdat, speedsR.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lesson's Level">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorized as <span style="color:#CD7F32">BRONZE</span>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Lesson's Main Idea**">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Lesson’s Main Idea</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Data wrangling, cleaning, and tidying form the bedrock of meaningful sports analytics, transforming raw datasets into structured, insightful sources.</li>
+<li>Mastering these processes in R’s <code>tidyverse</code> empowers practitioners to reveal hidden patterns and insights essential for data-driven decision-making in sport and exercise science science.</li>
+</ul>
+</div>
+</div>
+<div id="disclaimer" class="callout callout-style-default callout-warning callout-titled" title="Dataset Featured In This Lesson">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Dataset Featured In This Lesson
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Disclaimer</strong>: The dataset featured in this lesson is entirely fictitious and has been artificially created for pedagogical purposes. Any resemblance to actual persons, living or deceased, or real-world data is purely coincidental and not intended.</p>
+</div>
+</div>
+<section id="learning-outcomes" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning Outcomes</h1>
+<p>By the end of this lesson, you will have honed the ability to:</p>
+<ul>
+<li><p><strong>Manage and Concatenate Data Files</strong>: Skillfully manage and concatenate multi-file datasets, harnessing the power of R to streamline data preparation processes in sport analytics.</p></li>
+<li><p><strong>Execute Data Wrangling Techniques</strong>: Apply robust data wrangling methods to transform raw datasets into analyzable formats, enabling deeper insights in sport and exercise science.</p></li>
+<li><p><strong>Organize, Reshape, and Order Data Effectively</strong>: Implement data tidying techniques to structure and reshape datasets, as well as order temporal data, facilitating easier manipulation, modeling, and visualization.</p></li>
+<li><p><strong>Ensure Data Precision</strong>: Master data cleaning strategies to rectify inaccuracies and standardize datasets, ensuring precision and consistency for accurate sports data analysis.</p></li>
+</ul>
+</section>
+<section id="introduction-navigating-data-refinement-in-sport-and-exercise-science" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction: Navigating Data Refinement in Sport and Exercise Science</h1>
+<section id="clean-data---the-foundation-of-effective-analysis" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="clean-data---the-foundation-of-effective-analysis"><span class="header-section-number">2.1</span> Clean Data - The Foundation of Effective Analysis</h2>
+<p>In sport and exercise science, practitioners often grapple with raw data collected from diverse sources like training metrics, physiological measures, and performance statistics. This data, while valuable, typically arrives in a format that’s not immediately conducive to analysis. The crucial first step in extracting insights from this data is data wrangling, a comprehensive process that includes data cleaning and data tidying.</p>
+<p>Data cleaning focuses on eliminating errors and inconsistencies, such as rectifying inaccurate entries, handling missing values, and standardizing data formats. Data tidying, meanwhile, organizes the data more coherently. It ensures each column in the dataset represents a single variable, and each row corresponds to a unique observation. Together, these steps transform a raw and often messy data into a structured, logical format that’s primed for detailed analysis and reveals the true story hidden within the numbers.</p>
+</section>
+<section id="data-wrangling---shaping-raw-data-into-insights" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="data-wrangling---shaping-raw-data-into-insights"><span class="header-section-number">2.2</span> Data Wrangling - Shaping Raw Data into Insights</h2>
+<p>Data wrangling in sport and exercise science involves a nuanced process of molding raw data into an analyzable format. This task, essential in the data analysis journey, goes beyond mere cleaning and tidying. It represents a holistic approach to data preparation, where inquisitive exploration meets meticulous refinement.</p>
+<p>A key aspect of data wrangling is understanding what the raw data represents and discerning the necessary steps for its transformation. Sports science professionals often need to:</p>
+<ul>
+<li>Assess the completeness of the data, identifying and addressing gaps or missing sections.</li>
+<li>Evaluate the format, ensuring datasets are structured correctly for meaningful analysis.</li>
+<li>Consider the sample size, determining if it accurately reflects the intended study population.</li>
+<li>Identify potential biases in the dataset and strategize on how to mitigate their impact.</li>
+<li>Safeguard privacy when dealing with sensitive data and devise strategies to protect confidentiality.</li>
+</ul>
+<p>In addition to these strategic considerations, diagnosing whether a dataset is tidy involves utilizing essential functions from the <code>tidyverse</code> packages in R, like <code>head()</code> to view initial rows, <code>summary()</code> for statistical overviews, and <code>colnames()</code> to confirm variable names. These tools allow sports science practitioners to probe and refine the data, ensuring it meets the standards of tidiness and is ready for deeper analysis.</p>
+<p>These inquiries and tools form the backbone of the data wrangling process, guiding practitioners through the often intricate process of data wrangling. By thoughtfully addressing these aspects, sports science professionals ensure that the transition from raw data to a clean and structured dataset is both efficient and effective. This process paves the way for extracting the valuable insights needed to support evidence-based decisions in sport and exercise science.</p>
+</section>
+<section id="data-cleaning---polishing-data-for-accuracy-and-consistency" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="data-cleaning---polishing-data-for-accuracy-and-consistency"><span class="header-section-number">2.3</span> Data Cleaning - Polishing Data for Accuracy and Consistency</h2>
+<p>Building upon the foundational steps of data wrangling, data cleaning in sport and exercise science is a critical process, ensuring data’s precision and reliability. This step involves scrutinizing the dataset for errors and inconsistencies, an indispensable practice in the field where accurate data is vital for sound decision-making.</p>
+<p>The core elements of data cleaning include:</p>
+<ul>
+<li>Handling missing values: actively filling in or addressing gaps in data to prevent skewed interpretations.</li>
+<li>Correcting errors: diligently rectifying incorrect entries, crucial for maintaining the integrity of the analysis.</li>
+<li>Dealing with outliers: identifying and managing data points that significantly deviate from the norm, ensuring they don’t distort overall patterns.</li>
+<li>Standardizing formats: unifying the presentation of data for consistency, essential for comparative and comprehensive analysis.</li>
+</ul>
+<p>Through these focused efforts, practitioners in sports science are able to refine their datasets, turning them into accurate and reliable sources for analysis. This meticulous approach to data cleaning lays the groundwork for drawing meaningful, evidence-based conclusions, critical in the strategic development of training, performance enhancement, and injury prevention within the discipline.</p>
+</section>
+<section id="data-tidying---structuring-data-for-insightful-analysis" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="data-tidying---structuring-data-for-insightful-analysis"><span class="header-section-number">2.4</span> Data Tidying - Structuring Data for Insightful Analysis</h2>
+<p>Continuing from the process of data cleaning, data tidying is the next essential step, focusing on structuring data into a format that facilitates insightful analysis. This process is integral to transforming data into a layout that is both accessible and analyzable.</p>
+<p>Key aspects of data tidying include:</p>
+<ul>
+<li>Organizing variables and observations: ensuring each variable is represented in its own column and each observation occupies a unique row. This clear distinction between variables and observations is critical for accurate analysis.</li>
+<li>Streamlining data structure: reorganizing data to align with the principles of tidy data. This involves not just rearranging data but also ensuring consistency in how data is presented, which significantly aids in subsequent data manipulation, visualization, and modeling tasks.</li>
+</ul>
+<p>The objective of data tidying is to create datasets that are intuitively structured, making them easier for sports science practitioners to explore and analyze. This organized framework allows for more straightforward comparisons, trend analysis, and the development of predictive models.</p>
+</section>
+<section id="the-expected-outcome---a-clean-and-analyzable-dataset" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="the-expected-outcome---a-clean-and-analyzable-dataset"><span class="header-section-number">2.5</span> The Expected Outcome - A Clean and Analyzable Dataset</h2>
+<p>The culmination of the data wrangling process is the creation of a clean and tidy dataset that simplifies analysis and visualization, paving the way for deeper insights. In this lesson, we will demonstrate the techniques to achieve this clean, structured state of data by looking at some ‘unclean’ dataset and exploiting the power of <code>dplyr</code> and <code>tidyr</code> packages in the R programming language. By adhering to the principles of tidy data, sport science practitioners will be well-equipped to extract valuable insights, essential for informed decision-making in the field.</p>
+</section>
+</section>
+<section id="tools-for-data-wrangling-cleaning-and-tidying" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Tools for Data Wrangling, Cleaning, and Tidying</h1>
+<section id="dplyr-package-in-r" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="dplyr-package-in-r"><span class="header-section-number">3.1</span> <code>dplyr</code> package in R</h2>
+<p><code>dplyr</code> is a fundamental package in R for data wrangling, cleaning, and tidying. In our lesson, we tap into a small yet powerful portion of <code>dplyr</code>’s capabilities. We use functions like <code>distinct()</code> to remove duplicates and <code>gsub()</code> for fine-tuning string values, which are key for tidying column names. Additionally, <code>rename()</code> plays a crucial role in making our data more readable and consistent. These functions are just examples; <code>dplyr</code> offers a broad range of tools that are incredibly useful for cleaning and organizing data, especially vital for sport science data analysis.</p>
+</section>
+<section id="tidyr-package-in-r" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="tidyr-package-in-r"><span class="header-section-number">3.2</span> <code>tidyr</code> package in R</h2>
+<p>The <code>tidyr</code> package is a key player in the R environment for data tidying. It offers specialized functions like <code>gather()</code> for reshaping data from wide to long formats, a critical step for data analysis. We also utilize <code>tidyr</code>’s <code>separate()</code> function, which allows us to split complex column entries into simpler, more manageable parts. Used alongside <code>str_sub()</code> from the <code>stringr</code> package, <code>tidyr</code> boosts our ability to efficiently clean and structure data. This combination of tools makes <code>tidyr</code> an essential package for data scientists, especially in sports science where data clarity and precision are paramount.</p>
+<p>Both <code>dplyr</code> and <code>tidyr</code>, key components of the <code>tidyverse</code> collection of R packages designed for data science, play a crucial role in transforming raw, messy, and cluttered datasets into clean, structured formats ready for analysis. Their combined functionalities tackle a wide range of data wrangling tasks, establishing them as essential tools in the data science toolkit, especially for those in sports science and related fields.</p>
+</section>
+</section>
+<section id="key-steps-in-wrangling-cleaning-and-tidying" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Key Steps in Wrangling, Cleaning, and Tidying</h1>
+<p>Here, we provide a list of data cleaning and tidying steps that we cover in this lesson. The order of these steps is standard and conventional accepted in the data science industry.</p>
+<ol type="1">
+<li><p><a href="#sec-load_and_concat"><strong>Load and concatenate datasets</strong></a>: starting with data loading is a standard approach and sets the foundation for the rest of data manipulation.</p></li>
+<li><p><a href="#sec-explore_and_diagnose"><strong>Explore and diagnose the dataset</strong></a>: before cleaning, it’s essential to understand what the data looks like.</p></li>
+<li><p><a href="#sec-clean_column_names"><strong>Clean column names</strong></a>: this step is crucial for ease of the entire data manipulation process.</p></li>
+<li><p><a href="#sec-handle_missing_data"><strong>Handling missing data</strong></a>: addressing missing data early in the process is a common practice in data cleaning.</p></li>
+<li><p><a href="#sec-replace_certain_values"><strong>Replacing certain values</strong></a>: replacing values both in specific columns and across the dataset is a valuable skill and comes handy, for instance, for handling missing values.</p></li>
+<li><p><a href="#sec-deal_with_duplicates"><strong>Dealing with duplicates</strong></a>: identifying and removing duplicates is a key step in data cleaning.</p></li>
+<li><p><strong>Splitting by <a href="#sec-split_by_index">index</a> and by <a href="#sec-split_by_char">character</a></strong>: these more advanced data manipulation techniques come handy for handling strings and categorical variables.</p></li>
+<li><p><a href="#sec-data_types"><strong>Data types</strong></a>: understanding and modifying data types is crucial before performing any analytical operations.</p></li>
+<li><p><a href="#sec-string_parsing"><strong>String parsing</strong></a>: this section involves converting string data to a numeric format, which is a common task.</p></li>
+<li><p><a href="#sec-dates_formatting"><strong>Dates formatting and ordering</strong></a>: handling date formats is an essential skill in data science.</p></li>
+<li><p><a href="#sec-wide_long_format"><strong>Reshaping data from wide to long format</strong></a>: this crucial step involves transforming your data into a format that is most conducive for subsequent analyses, focusing on the optimal structure for in-depth exploration.</p></li>
+</ol>
+<p>Overall, this lesson covers a comprehensive range of data cleaning and tidying techniques. It naturally progresses from basic to more advanced topics.</p>
+</section>
+<section id="wrangling-cleaning-and-tidying-an-unclean-dataset" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Wrangling, Cleaning, and Tidying an ‘Unclean’ Dataset</h1>
+<section id="install-and-load-libraries" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="install-and-load-libraries"><span class="header-section-number">5.1</span> Install and Load Libraries</h2>
+<p>Most of the libraries required for this lesson are readily available on CRAN and can be installed using the command <code>install.packages("NameOfPackage")</code>, if they are not already installed on your computer:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"dplyr"</span>, <span class="st">"tidyr"</span>, <span class="st">"readr"</span>, <span class="st">"stringr"</span>, <span class="st">"visdat"</span>), <span class="at">repos=</span><span class="st">"https://cloud.r-project.org/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Another library required for this lesson, <code>speedsR</code>, is specifically designed for the AIS SPEEDS project. This package, not available on CRAN, offers an extensive collection of sports-specific datasets, including the one used in this lesson. <code>speedsR</code> can be downloaded from the AIS SPEEDS GitHub repository and integrated into any R-based Integrated Development Environment (IDE). A detailed instruction on how to install and load <code>speedsR</code> is provided in the <a href="https://speeds.quarto.pub/speeds/speedsR_data_package.html">dedicated section of our website</a>.</p>
+<p>After you have installed all the required packages, you can load them into your current R session as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co"># clear the workspace</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co"># provides functions for manipulating datasets</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr) <span class="co"># tools for tidying data, reshaping and restructuring datasets</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr) <span class="co"># offers fast and user-friendly functions to read tabular data into R</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr) <span class="co"># simplifies the process of working with strings, providing consistent and easy-to-understand functions</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(visdat) <span class="co"># enables visual inspection of data quality and structure</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(speedsR) <span class="co"># collection of sports-specific benchmark datasets - part of the AIS SPEEDS project</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-datasets-from-the-speedsr-package-and-save-as-csv-files" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="load-datasets-from-the-speedsr-package-and-save-as-csv-files"><span class="header-section-number">5.2</span> Load Datasets From The <code>speedsR</code> Package And Save As CSV Files</h2>
+<p>As noted in the <a href="#disclaimer">disclaimer</a>, the dataset used in this lesson is synthetically designed for educational purposes and provided through the <code>speedsR</code> package. This dataset is structured as a multi-file dataset, replicating the kind of data formats sport and exercise science practitioners might encounter in their professional practice.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Workflow Note">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Workflow Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The sequence we adopt in this lesson—loading data from <code>speedsR</code>, saving it as CSV files, and then reloading these files—is specifically designed for educational purposes. This approach deviates from typical workflows found in the industry and is aimed at providing hands-on experience with common data manipulation techniques in R.</p>
+</div>
+</div>
+<p>Our educational workflow involves the following key steps:</p>
+<ol type="1">
+<li><p>Initial data loading from <code>speedsR</code>: we start by loading the multi-file dataset into the RStudio environment directly from the <code>speedsR</code> package.</p></li>
+<li><p>Local saving as multiple CSV files: subsequently, we save this dataset into several CSV files on our local machine. This step, while not typically found in standard data analysis workflows, is necessary for our educational objective.</p></li>
+<li><p>Re-loading from CSV files using a naming pattern: the primary focus of this section is to demonstrate how to efficiently load datasets initially stored across multiple CSV files with a naming pattern. This is a common scenario in real-world data analysis, and we use the function <code>list.files()</code> to achieve this. However, to get to this demonstration, we first need to create the scenario by saving our dataset into multiple CSV files.</p></li>
+</ol>
+<p>The reason for this additional step is that the dataset, originally available through the <code>speedsR</code> package, needs to be converted into a format that mimics a real-world scenario. By first saving the dataset into multiple CSV files and then reloading it, we are simulating a typical situation where a practitioner would need to load data that is dispersed across various files with a consistent naming pattern. This teaching approach is designed to provide practical experience in handling and navigating multi-file datasets commonly encountered in the field, whether the data is stored locally or in the cloud.</p>
+<p>Through this unique workflow, our aim is to equip learners with the skills to manage datasets in formats they are likely to encounter in their professional data analysis tasks, enhancing their proficiency in using R for real-world data handling challenges.</p>
+<p>To extract datasets from <code>speedsR</code> and make them available for use in this lesson, we employ a loop that iterates through a list of dataset names. This approach utilizes R functions to efficiently load each dataset and then save it as a CSV file. The <code>get()</code> function is crucial for loading the datasets by their names, while <code>paste0()</code> helps in constructing the filenames for saving. Finally, <code>write_csv()</code> is employed to save each dataset into its corresponding CSV file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List of dataset names from speedsR</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dataset_names_from_speedsR <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cycling_untidy_fictitious_data_1"</span>, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"cycling_untidy_fictitious_data_2"</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"cycling_untidy_fictitious_data_3"</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"cycling_untidy_fictitious_data_4"</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"cycling_untidy_fictitious_data_5"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop through each dataset name from speedsR package</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (dataset_name <span class="cf">in</span> dataset_names_from_speedsR) {</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Use 'get()' to load the dataset from speedsR using its name</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 'get()' retrieves an object (here, a dataset) by its name given as a string</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  dataset <span class="ot">&lt;-</span> <span class="fu">get</span>(dataset_name)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Use 'paste0()' to create a file name for saving the dataset</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 'paste0()' concatenates strings, here it adds ".csv" to the dataset name</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  file_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(dataset_name, <span class="st">".csv"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Save the loaded dataset as a CSV file with the name created above</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write_csv</span>(dataset, file_name)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This code showcases the power of automation in R. The loop structure simplifies the task of handling multiple datasets, allowing us to load and save each dataset from <code>speedsR</code> with minimal repetition of code. The combined use of <code>get()</code>, <code>paste0()</code>, and <code>write_csv()</code> functions streamlines the process, making the datasets accessible for the subsequent steps of our data wrangling lesson.</p>
+</section>
+<section id="sec-load_and_concat" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="sec-load_and_concat"><span class="header-section-number">5.3</span> Load and Concatenate Datasets</h2>
+<p>In the previous step, we saved our multi-file dataset into several CSV files. Now, to mimic a real-world scenario where sport and exercise science practitioners often work with multiple data files, we’ll demonstrate how R’s robust functionality can streamline the process of combining these files. Using <code>list.files()</code>, we’ll efficiently identify files with a consistent naming pattern. The base R function <code>lapply()</code> and the <code>read_csv()</code> function from the <code>readr</code> package will then be used to read each of these files into R as individual tibbles. Finally, <code>bind_rows()</code> from <code>dplyr</code> will seamlessly merge these data frames into a single cohesive dataset. This method is time-efficient, ensures completeness, and is critical for accurate data analysis in sports science.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a list of all files in the *current directory* that match the pattern “cycling_untidy_fictitious_data_.*csv”</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Store the name of each file in a vector 'cycling_files'</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>cycling_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">pattern =</span> <span class="st">'cycling_untidy_fictitious_data_.*csv'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Read each file in 'cycling_files' into a tibble, storing all the tibbles in 'cycling_list'</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>cycling_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(cycling_files, read_csv)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Concatenate all tibbles in 'cycling_list' together</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(cycling_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For further insights into best practices of file concatenation and merging, please refer to our <a href="https://speeds.quarto.pub/speeds/Data_Organization.html">Data Organization, Merging, and Concatenation</a> lesson.</p>
+</section>
+<section id="understanding-tibbles-vs-dataframes-in-r" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="understanding-tibbles-vs-dataframes-in-r"><span class="header-section-number">5.4</span> Understanding Tibbles vs Dataframes in R</h2>
+<p>After successfully loading and concatenating our datasets from the <code>speedsR</code> package and CSV files, it’s important to note that these datasets were loaded as tibbles, a specific type of data structure in R. This distinction is crucial for understanding how our concatenated dataset, <code>cycling_data</code>, behaves and interacts with R functions.</p>
+<section id="what-is-a-tibble" class="level3" data-number="5.4.1">
+<h3 data-number="5.4.1" class="anchored" data-anchor-id="what-is-a-tibble"><span class="header-section-number">5.4.1</span> What is a Tibble?</h3>
+<p>A tibble, introduced by the <code>tibble</code> package within the <code>tidyverse</code>, is a modern reimagining of the data frame. When datasets are loaded using tidyverse functions like <code>read_csv()</code>, they are read in as tibbles, indicated by the data type <code>spec-tbl-df</code> or <code>tbl-df</code>. This format enhances the data frame structure with improved printing and subsetting methods that are more suitable for data analysis workflows.</p>
+</section>
+<section id="key-differences-and-advantages" class="level3" data-number="5.4.2">
+<h3 data-number="5.4.2" class="anchored" data-anchor-id="key-differences-and-advantages"><span class="header-section-number">5.4.2</span> Key Differences and Advantages</h3>
+<ol type="1">
+<li><p><strong>Printing</strong>: Tibbles provide a more concise printed output, displaying only the first ten rows and all columns that fit on the screen. This approach is particularly useful for large datasets, offering a quick snapshot without overwhelming the console.</p></li>
+<li><p><strong>Subsetting</strong>: Tibbles are less likely to change types when you subset rows, and they never change the types of variables when you subset columns. This consistency ensures more predictable and reliable results during data manipulation.</p></li>
+<li><p><strong>Row Names</strong>: Unlike traditional data frames, tibbles do not use row names. This design choice simplifies operations and reduces confusion, especially for newcomers to R.</p></li>
+<li><p><strong>Non-standard Columns</strong>: Tibbles can handle columns containing complex objects, like lists or matrices, without simplifying or altering the structure, which is a limitation in regular data frames.</p></li>
+</ol>
+</section>
+<section id="why-use-tibbles" class="level3" data-number="5.4.3">
+<h3 data-number="5.4.3" class="anchored" data-anchor-id="why-use-tibbles"><span class="header-section-number">5.4.3</span> Why Use Tibbles?</h3>
+<p>The primary reason for using tibbles in data science is their user-friendly nature. They simplify the exploration and manipulation of data, especially in the early stages of analysis. With tibbles, practitioners can focus more on the data and less on wrestling with data types and structures. In our lesson, since all datasets were loaded and concatenated as tibbles, the final <code>cycling_data</code> dataset is also a tibble (<code>tbl_df</code>). This makes it easier to work with using tidyverse functions and streamlines the data analysis process.</p>
+</section>
+</section>
+<section id="sec-explore_and_diagnose" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="sec-explore_and_diagnose"><span class="header-section-number">5.5</span> Explore and Diagnose the Dataset</h2>
+<p>After consolidating our cycling data into one dataset, the next step is to explore and diagnose it. This initial exploration is crucial as it helps us understand the structure and characteristics of our data before diving into more complex analysis.</p>
+<p>Let’s start by examining the first few rows of the dataset using the <code>head()</code> function. This function displays the top rows and gives us a glimpse of the data types and values we are working with.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the dataset</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+     ID Race_date  Team      participant `Gender AGE` `heart RATE` `DISTANCE km`
+  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;               &lt;dbl&gt;         &lt;dbl&gt;
+1     1 07-06-2023 Victoria… Mary_White  &lt;NA&gt;                   NA          36.5
+2     2 15-11-2023 Queensla… Elizabeth_… F33                   146          66.3
+3     3 11-06-2023 Tasmania… Robert_Smi… M18                    73          90.6
+4     4 &lt;NA&gt;       &lt;NA&gt;      Jennifer_W… F25                   123          NA  
+5     5 18-07-2023 Tasmania… Mary_Jones  F19                    69          88.1
+6     6 20-02-2023 Queensla… Mary_Smith  F30                    67          49.1
+# ℹ 1 more variable: `VO2 MAX` &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Next, we use the <code>summary()</code> function to obtain a basic descriptive statistical summary of the dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a statistical summary of the dataset</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       ID        Race_date             Team           participant       
+ Min.   : 1.0   Length:35          Length:35          Length:35         
+ 1st Qu.: 9.5   Class :character   Class :character   Class :character  
+ Median :18.0   Mode  :character   Mode  :character   Mode  :character  
+ Mean   :18.0                                                           
+ 3rd Qu.:26.5                                                           
+ Max.   :35.0                                                           
+                                                                        
+  Gender AGE          heart RATE      DISTANCE km      VO2 MAX         
+ Length:35          Min.   : 60.00   Min.   :31.44   Length:35         
+ Class :character   1st Qu.: 89.75   1st Qu.:48.84   Class :character  
+ Mode  :character   Median :115.00   Median :71.23   Mode  :character  
+                    Mean   :113.67   Mean   :67.75                     
+                    3rd Qu.:139.50   3rd Qu.:83.21                     
+                    Max.   :175.00   Max.   :97.06                     
+                    NA's   :5        NA's   :7                         </code></pre>
+</div>
+</div>
+<p>Lastly, using <code>nrow()</code> reveals the number of rows in the dataset. The ‘L’ suffix in outputs like ‘35L’ indicates an integer value, distinguishing it from numeric (floating-point) types. This distinction is important in R for memory usage and certain operations, as R treats integers and numerics differently. Note, that you can also use the <code>dim()</code> function to find out the full dimensions of the dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find out the number of rows in the dataset</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>nrow_cycling_data <span class="ot">&lt;-</span> <span class="fu">nrow</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This basic exploration sets the stage for further data wrangling and more in-depth analysis.</p>
+</section>
+<section id="sec-clean_column_names" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="sec-clean_column_names"><span class="header-section-number">5.6</span> Clean Column Names</h2>
+<p>Cleaning and standardizing column names is a crucial step in data preparation, ensuring ease of data manipulation and consistency throughout analysis. In this section, we’ll refine the column names of our dataset for better readability and standardization.</p>
+<p>To view the original column names in our dataset, we use the <code>colnames()</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve and print the original column names from the dataset</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>col_names <span class="ot">&lt;-</span> <span class="fu">colnames</span>(cycling_data)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(col_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ID"          "Race_date"   "Team"        "participant" "Gender AGE" 
+[6] "heart RATE"  "DISTANCE km" "VO2 MAX"    </code></pre>
+</div>
+</div>
+<section id="standardizing-to-lower-case" class="level3" data-number="5.6.1">
+<h3 data-number="5.6.1" class="anchored" data-anchor-id="standardizing-to-lower-case"><span class="header-section-number">5.6.1</span> Standardizing to Lower Case</h3>
+<p>Converting all column names to lower case is our initial step. This standardizes the format, making subsequent processing more consistent and less error-prone. In R, column names are case-sensitive; thus, ‘Age’ and ‘age’ would be treated differently. Standardizing to lower case avoids confusion, simplifies code readability, and sets the stage for further modifications.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert all column names to lower case for consistency and ease of use</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>col_names <span class="ot">&lt;-</span> <span class="fu">tolower</span>(col_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="trimming-white-spaces" class="level3" data-number="5.6.2">
+<h3 data-number="5.6.2" class="anchored" data-anchor-id="trimming-white-spaces"><span class="header-section-number">5.6.2</span> Trimming White Spaces</h3>
+<p>Our next focus is removing any leading or trailing white spaces, ensuring clean and error-free column names. The regular expression <code>^\\s+|\\s+$</code> in the <code>gsub()</code> function serves this purpose by identifying and eliminating unwanted spaces at the beginning and end of each string.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove any leading and trailing white spaces from the column names</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># '^\\s+' matches leading spaces and '\\s+$' matches trailing spaces</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>col_names <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">s+|</span><span class="sc">\\</span><span class="st">s+$"</span>, <span class="st">""</span>, col_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>^\\s+</code> part of the expression matches one or more (<code>+</code>) whitespace characters (<code>\\s</code>) at the beginning (<code>^</code>) of the string. The <code>|</code> is the logical OR operator in regular expressions. It allows for matching either the pattern before or after it. The <code>\\s+$</code> part matches one or more whitespace characters at the end (<code>$</code>) of the string. This step is vital for maintaining a neat and error-free dataset structure.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>gsub()</code> is a vectorized function, which means it can operate on multiple strings at once. Therefore, using <code>gsub()</code> directly on a vector of strings (like column names) is more efficient than using <code>lapply()</code>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Checking for White Spaces in Column Names">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Checking for White Spaces in Column Names
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>grepl()</code> function in R serves as a powerful tool for detecting patterns within strings. It can be particularly useful for identifying the presence of white spaces in column names. For instance, using <code>grepl("^\\s+|\\s+$", col_names)</code> checks each name in <code>col_names</code> for any leading (<code>^\\s+</code>) or trailing (<code>\\s+$</code>) white spaces. The result is a logical vector, where <code>TRUE</code> indicates the presence of white spaces and <code>FALSE</code> their absence, helping you identify which column names need attention.</p>
+</div>
+</div>
+</section>
+<section id="replacing-spaces-with-underscores" class="level3" data-number="5.6.3">
+<h3 data-number="5.6.3" class="anchored" data-anchor-id="replacing-spaces-with-underscores"><span class="header-section-number">5.6.3</span> Replacing Spaces with Underscores</h3>
+<p>To further enhance readability, we replace spaces in the column names consisting of multiple words with underscores, following the ‘snake_case’ naming convention. This format is widely used in programming for its clarity and ease of reading.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace spaces with underscores to ensure column names follow snake_case format</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>col_names <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">"_"</span>, col_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="applying-the-cleaned-column-names" class="level3" data-number="5.6.4">
+<h3 data-number="5.6.4" class="anchored" data-anchor-id="applying-the-cleaned-column-names"><span class="header-section-number">5.6.4</span> Applying the Cleaned Column Names</h3>
+<p>Now we can apply the cleaned and standardized column names back to our dataset. This ensures that all subsequent operations and analyses utilize these optimized names.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the cleaned column names back to the dataset</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(cycling_data) <span class="ot">&lt;-</span> col_names</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="renaming-specific-columns" class="level3" data-number="5.6.5">
+<h3 data-number="5.6.5" class="anchored" data-anchor-id="renaming-specific-columns"><span class="header-section-number">5.6.5</span> Renaming Specific Columns</h3>
+<p>After general cleaning, we manually rename specific columns for additional clarity or to adhere to standard naming conventions. This step tailors the dataset to our specific analysis needs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Manually rename specific columns for clarity and standardization</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: renaming 'vo2_max' to 'VO2_max' and 'id' to 'ID' for better readability or convention</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> <span class="fu">rename</span>(cycling_data, <span class="at">VO2_max =</span> vo2_max, <span class="at">ID =</span> id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="verifying-changes" class="level3" data-number="5.6.6">
+<h3 data-number="5.6.6" class="anchored" data-anchor-id="verifying-changes"><span class="header-section-number">5.6.6</span> Verifying Changes</h3>
+<p>A quick check of the updated column names confirms our cleaning efforts, marking a successful end to this crucial data preparation step.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the updated column names to verify changes</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ID"          "race_date"   "team"        "participant" "gender_age" 
+[6] "heart_rate"  "distance_km" "VO2_max"    </code></pre>
+</div>
+</div>
+<p>By following these steps, we ensure that our dataset’s column names are clean, consistent, and conducive to efficient data analysis. This meticulous approach sets a strong foundation for all future data manipulations and analyses.</p>
+</section>
+</section>
+<section id="sec-handle_missing_data" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="sec-handle_missing_data"><span class="header-section-number">5.7</span> Handle Missing Data</h2>
+<p>In this section, we briefly touch upon strategies for managing missing data. Handling missing data is a critical aspect of data cleaning, involving techniques like imputation and removal. A more detailed exploration of these strategies will be covered in a separate, dedicated tutorial on our platform.</p>
+<section id="count-and-replace-empty-cells-with-nas" class="level3" data-number="5.7.1">
+<h3 data-number="5.7.1" class="anchored" data-anchor-id="count-and-replace-empty-cells-with-nas"><span class="header-section-number">5.7.1</span> Count and Replace Empty Cells with NAs</h3>
+<p>Firstly, we address empty cells in our dataset by identifying and replacing them with NA values. This step ensures a uniform representation of missingness across the dataset, paving the way for more accurate analyses.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify and replace empty cells with NA across the entire dataset</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>cycling_data[cycling_data <span class="sc">==</span> <span class="st">""</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="count-missing-values-na-in-each-column" class="level3" data-number="5.7.2">
+<h3 data-number="5.7.2" class="anchored" data-anchor-id="count-missing-values-na-in-each-column"><span class="header-section-number">5.7.2</span> Count Missing Values (NA) in Each Column</h3>
+<p>Next, we use <code>sapply()</code> combined with <code>sum(is.na(x))</code> to count the number of missing values in each column. This approach provides a detailed view of missing data across different variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of NA values in each column of the tibble</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>NA_count_per_column <span class="ot">&lt;-</span> <span class="fu">sapply</span>(cycling_data, <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x)))</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(NA_count_per_column)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         ID   race_date        team participant  gender_age  heart_rate 
+          0           6           6           0           5           5 
+distance_km     VO2_max 
+          7           4 </code></pre>
+</div>
+</div>
+</section>
+<section id="total-count-of-missing-values-in-the-dataset" class="level3" data-number="5.7.3">
+<h3 data-number="5.7.3" class="anchored" data-anchor-id="total-count-of-missing-values-in-the-dataset"><span class="header-section-number">5.7.3</span> Total Count of Missing Values in the Dataset</h3>
+<p>For an overall assessment of data cleanliness, we calculate the total count of missing values in the dataset. This gives us a quick understanding of the extent of missing data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you don't need to know the missing values tally per column, </span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># you can compute the total number of missing values in the entire tibble</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>total_NA_count <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(cycling_data))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(total_NA_count)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 33</code></pre>
+</div>
+</div>
+</section>
+<section id="visualizing-missing-data" class="level3" data-number="5.7.4">
+<h3 data-number="5.7.4" class="anchored" data-anchor-id="visualizing-missing-data"><span class="header-section-number">5.7.4</span> Visualizing Missing Data</h3>
+<p>Lastly, we leverage the <code>vis_miss()</code> function from the <code>visdat</code> package for a visual representation of missing data. This visualization aids in comprehending the distribution and magnitude of missingness within the dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualise missing data in the dataset</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vis_miss</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data_Wrangling_Cleaning_Tidying_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This overview presents fundamental steps in handling missing data. For a comprehensive guide on tackling various types of missing data, including methods of data imputation and choosing between different strategies, stay tuned for our upcoming lesson dedicated to this topic.</p>
+</section>
+</section>
+<section id="sec-replace_certain_values" class="level2" data-number="5.8">
+<h2 data-number="5.8" class="anchored" data-anchor-id="sec-replace_certain_values"><span class="header-section-number">5.8</span> Replace Certain Values</h2>
+<p>Manipulating and refining data often involves replacing specific values within a dataset. This section demonstrates two common scenarios: replacing values in a specific column and across the entire dataset.</p>
+<section id="replace-values-in-a-specific-column" class="level3" data-number="5.8.1">
+<h3 data-number="5.8.1" class="anchored" data-anchor-id="replace-values-in-a-specific-column"><span class="header-section-number">5.8.1</span> Replace Values in a Specific Column</h3>
+<p>Initially, we focus on a single column. For example, we might want to update team names in the <code>team</code> column. This operation is particularly useful for correcting data entries or updating information based on new criteria.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace values in a particular column ('team' in our example) that meet a specific condition</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>cycling_data<span class="sc">$</span>team[cycling_data<span class="sc">$</span>team <span class="sc">==</span> <span class="st">"Tasmania_Track"</span>] <span class="ot">&lt;-</span> <span class="st">"ACT_Road"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="replace-values-in-the-entire-dataset" class="level3" data-number="5.8.2">
+<h3 data-number="5.8.2" class="anchored" data-anchor-id="replace-values-in-the-entire-dataset"><span class="header-section-number">5.8.2</span> Replace Values in the Entire Dataset</h3>
+<p>The next step is to apply a condition across the entire dataset. This is a more advanced operation, showcasing the ability to make widespread changes efficiently. Our example involves modifying numeric values in the dataset, such as replacing all numeric values below a certain threshold with a new number, while keeping unique identifiers like IDs intact.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modify numeric columns in the dataset, excluding the ID column.</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This operation replaces all numeric values less than or equal to 40 with 50,</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># while preserving the unique identifiers in the ID column.</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The 'mutate_if' function is used here to selectively apply the replacement</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co"># only to columns that are numeric and not the ID column.</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_if</span>(<span class="sc">~</span><span class="fu">is.numeric</span>(.) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">identical</span>(., cycling_data<span class="sc">$</span>ID), <span class="sc">~</span><span class="fu">ifelse</span>(. <span class="sc">&lt;=</span> <span class="dv">40</span>, <span class="dv">50</span>, .))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>By demonstrating these techniques, this section highlights the versatility of R in handling value replacements, both at a column-specific level and across the entire dataset. It is a vital skill for sport science practitioners looking to refine their datasets for more precise analyses.</p>
+</section>
+</section>
+<section id="sec-deal_with_duplicates" class="level2" data-number="5.9">
+<h2 data-number="5.9" class="anchored" data-anchor-id="sec-deal_with_duplicates"><span class="header-section-number">5.9</span> Deal With Duplicates</h2>
+<p>In data analysis, particularly in sport and exercise science, addressing duplicate data is crucial. Duplicates can skew results and provide misleading insights, hence their accurate identification and removal are vital.</p>
+<section id="identifying-duplicates" class="level3" data-number="5.9.1">
+<h3 data-number="5.9.1" class="anchored" data-anchor-id="identifying-duplicates"><span class="header-section-number">5.9.1</span> Identifying Duplicates</h3>
+<p>To identify duplicates, we utilize the <code>duplicated()</code> function. This function returns a Boolean vector with either TRUE or FALSE values indicating which rows are duplicates of any other rows in the dataset. We apply this function in two ways:</p>
+<ol type="1">
+<li><strong>Including the ID Column</strong>: This approach checks for completely identical rows, including any unique identifiers like the ID column. It’s useful when we need to identify rows that are exact copies of others.</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify duplicates including the ID column</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Useful when checking for completely identical rows including identifiers</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>duplicates_including_id <span class="ot">&lt;-</span> <span class="fu">duplicated</span>(cycling_data)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print Boolean vector showing duplicates</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(duplicates_including_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[13] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[25] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li><strong>Excluding the ID Column</strong>: Here, we ignore the ID column to focus on duplicates based on data content. This approach helps in identifying duplicates that have identical data but different IDs.</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify duplicates excluding the ID column</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This helps to find duplicates based on data content, ignoring unique identifiers (the ID column)</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>duplicates_excluding_id <span class="ot">&lt;-</span> <span class="fu">duplicated</span>(cycling_data[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print Boolean vector showing duplicates</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(duplicates_excluding_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE
+[13] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+[25] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE</code></pre>
+</div>
+</div>
+<p>To see the actual duplicate rows, we use the <code>which()</code> function to obtain their indices and then print these rows.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print rows that are duplicates (excluding ID)</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This gives a clear view of which rows are duplicate entries</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>duplicate_indices_excluding_id <span class="ot">&lt;-</span> <span class="fu">which</span>(duplicates_excluding_id)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cycling_data[duplicate_indices_excluding_id, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 8
+     ID race_date  team    participant gender_age heart_rate distance_km VO2_max
+  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;           &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+1     7 &lt;NA&gt;       &lt;NA&gt;    Jennifer_W… F25               123        NA   79 mL/…
+2    11 19-05-2023 Queens… Michael_Jo… M20               112        41.8 52 mL/…
+3    19 27-07-2023 Queens… William_Wh… M37               166        NA   30 mL/…
+4    27 13-11-2023 ACT_Ro… Jennifer_W… F25               100        81.3 55 mL/…
+5    35 03-12-2023 Victor… James_Will… M25                64        77.9 73 mL/…</code></pre>
+</div>
+</div>
+</section>
+<section id="removing-duplicates" class="level3" data-number="5.9.2">
+<h3 data-number="5.9.2" class="anchored" data-anchor-id="removing-duplicates"><span class="header-section-number">5.9.2</span> Removing Duplicates</h3>
+<p>After identifying duplicates, we proceed to remove them:</p>
+<ol type="1">
+<li><p><strong>Excluding ID from Duplicate Check</strong>: We first exclude the ID column to focus on the content of the data.</p></li>
+<li><p><strong>Using <code>distinct()</code></strong>: The <code>distinct()</code> function from <code>dplyr</code> eliminates duplicate rows based on the remaining columns after the ID exclusion.</p></li>
+<li><p><strong>Re-adding Sequential IDs</strong>: We use <code>mutate()</code> with <code>row_number()</code> to add a new ID column with sequential numbers. This preserves the order of the dataset.</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove duplicates from the dataset, excluding the ID column</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Preserve the order of the dataset by updating the ID column with the 'row_number()' function</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ID) <span class="sc">%&gt;%</span> <span class="co"># Temporarily remove the ID column</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> <span class="co"># Eliminate duplicate rows based on remaining columns</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span> <span class="co"># Add a new ID column with sequential numbers</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID, <span class="fu">everything</span>()) <span class="co"># Reorder columns to place the new ID column at the beginning</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="verifying-duplicate-removal" class="level3" data-number="5.9.3">
+<h3 data-number="5.9.3" class="anchored" data-anchor-id="verifying-duplicate-removal"><span class="header-section-number">5.9.3</span> Verifying Duplicate Removal</h3>
+<p>To ensure that duplicates have been effectively removed, we perform a final check:</p>
+<ol type="1">
+<li><p><strong>Duplicate Check</strong>: We use <code>duplicated()</code> again, this time to confirm that no duplicates remain after the cleaning process.</p></li>
+<li><p><strong>Counting Duplicates</strong>: The <code>table()</code> function, a versatile tool in base R, tallies the frequency of each unique element within an R object that is supplied to <code>table()</code> as an argument. In our case, <code>table()</code> counts the occurrences of TRUE (indicating duplicates) and FALSE (indicating unique rows). Post-cleaning, we expect to see no occurrences of TRUE, indicating successful removal of all duplicates.</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify that duplicates have been removed</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>duplicates_check <span class="ot">&lt;-</span> <span class="fu">duplicated</span>(cycling_data[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(duplicates_check)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[13] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[25] FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Printing the output of the table() function should yield count 0 for TRUE after cleaning</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(duplicates_check))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>duplicates_check
+FALSE 
+   30 </code></pre>
+</div>
+</div>
+</section>
+<section id="understanding-the-duplicate-removal-process" class="level3" data-number="5.9.4">
+<h3 data-number="5.9.4" class="anchored" data-anchor-id="understanding-the-duplicate-removal-process"><span class="header-section-number">5.9.4</span> Understanding the Duplicate Removal Process</h3>
+<p>The process of removing duplicates should be approached with care. Ensure that the columns you choose to check for duplicates are those where duplicates are genuinely undesirable. For example, it wouldn’t make sense to remove duplicates based solely on age, as multiple athletes could be of the same age. Instead, focus on columns where uniqueness is expected.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When needing to remove every row with a duplicate value in a specific column (for instance, ‘participant’ in our ‘cycling_data’ dataset), use <code>distinct(participant, .keep_all = TRUE)</code>. This keeps the first occurrence of each unique value in the specified column.</p>
+</div>
+</div>
+<p>Managing duplicates is a key aspect of data cleaning, especially in datasets like ours where the integrity of each entry is crucial. By following these steps, sport and exercise science practitioners can ensure their data is free from redundancies, paving the way for more accurate and reliable analyses.</p>
+</section>
+</section>
+<section id="sec-split_by_index" class="level2" data-number="5.10">
+<h2 data-number="5.10" class="anchored" data-anchor-id="sec-split_by_index"><span class="header-section-number">5.10</span> Split By Index</h2>
+<p>It is common to encounter columns in raw data that combine multiple pieces of information. This can be problematic for analysis, as ideally, each column should represent a single variable. We’ll demonstrate how to address this using the <code>str_sub()</code> function from the <code>stringr</code> package to separate these combined data elements.</p>
+<p>Consider our <code>cycling_data</code> dataset, where we have a <code>gender_age</code> column combining gender and age information. Our goal is to split this data into distinct <code>gender</code> and <code>age</code> columns.</p>
+<p>First, we isolate the gender indicator, typically represented as ‘M’ or ‘F’, from the <code>gender_age</code> column. We achieve this by extracting the first character and creating a new <code>gender</code> column:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the first character from 'gender_age' and create a new column 'gender'</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This operation isolates the gender indicator (e.g., 'M' or 'F') from the combined 'gender_age' column</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">gender =</span> <span class="fu">str_sub</span>(gender_age, <span class="at">start=</span><span class="dv">1</span>, <span class="at">end=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we separate the age portion from the <code>gender_age</code> column. This involves extracting all characters starting from the second position:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the remaining characters (starting from the second character) from 'gender_age' and create a new column 'age'</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This operation separates the age portion from the combined 'gender_age' column</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">str_sub</span>(gender_age, <span class="at">start=</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After splitting the data, we remove the original <code>gender_age</code> column to avoid redundancy, maintaining a tidy dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the original 'gender_age' column as it's now split into 'gender' and 'age'</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This step cleans the dataset by removing redundant columns</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>gender_age)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we reorder the columns for a more logical structure, placing <code>gender</code> and <code>age</code> between <code>participant</code> and <code>heart_rate</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder columns to place 'gender' and 'age' between 'participant' and 'heart_rate'</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID, race_date, team, participant, gender, age, <span class="fu">everything</span>())</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 9
+     ID race_date  team  participant gender age   heart_rate distance_km VO2_max
+  &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+1     1 07-06-2023 Vict… Mary_White  &lt;NA&gt;   &lt;NA&gt;          NA        50   38 mL/…
+2     2 15-11-2023 Quee… Elizabeth_… F      33           146        66.3 60 mL/…
+3     3 11-06-2023 Tasm… Robert_Smi… M      18            73        90.6 37 mL/…
+4     4 &lt;NA&gt;       &lt;NA&gt;  Jennifer_W… F      25           123        NA   79 mL/…
+5     5 18-07-2023 ACT_… Mary_Jones  F      19            69        88.1 &lt;NA&gt;   
+6     6 20-02-2023 Quee… Mary_Smith  F      30            67        49.1 51 mL/…</code></pre>
+</div>
+</div>
+<p>This approach ensures that each variable is distinctly represented, enhancing both the clarity and usability of our dataset for further analysis. By employing these techniques, sport and exercise science professionals can efficiently transform combined data into separate, meaningful columns, paving the way for more targeted and insightful analysis.</p>
+</section>
+<section id="sec-split_by_char" class="level2" data-number="5.11">
+<h2 data-number="5.11" class="anchored" data-anchor-id="sec-split_by_char"><span class="header-section-number">5.11</span> Split By Character</h2>
+<p>Another common situation in data wrangling arises where a single column contains compound data elements separated by a specific character. In sport science data, it’s typical to encounter such scenarios where a column might combine different types of information, like team names and class categories, separated by a character like an underscore ’_’. We’ll address this using the <code>separate()</code> function from the <code>tidyr</code> package.</p>
+<p>Take, for example, our <code>team</code> column in the <code>cycling_data</code> dataset. This column may contain values like “ACT_Road” or “NSW_Track”, combining the team’s state and class. Our objective is to split this data into two separate columns, <code>state_team</code> and <code>class</code>, for more precise analysis.</p>
+<p>We utilize the <code>separate()</code> function, specifying the underscore ’_’ as the separator:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The 'separate()' function is used to split the 'team' column into two new columns: 'state' and 'class'</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The underscore '_' character is used as the separator</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(team, <span class="fu">c</span>(<span class="st">'state_team'</span>, <span class="st">'class'</span>), <span class="st">'_'</span>, <span class="at">extra =</span> <span class="st">'merge'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The first argument, ‘team’, is the column we’re splitting. <code>c('state_team', 'class')</code> defines the names of the new columns to be created. The underscore ’_’ is the character we use to identify where the split should occur.</p>
+<p>The <code>extra = 'merge'</code> parameter ensures that if there’s more than one underscore in the value, the remaining text after the first underscore is combined into the <code>class</code> column, maintaining the integrity of our data.</p>
+<p>Splitting data by character in this manner is a powerful technique to refine and organize your dataset, making it more accessible and meaningful for deeper analysis.</p>
+</section>
+<section id="sec-data_types" class="level2" data-number="5.12">
+<h2 data-number="5.12" class="anchored" data-anchor-id="sec-data_types"><span class="header-section-number">5.12</span> Data Types</h2>
+<p>In data science, and particularly in sports and exercise science, the data type of each column in a dataset plays a pivotal role in analysis. Common data types in R include character, numeric, integer, logical, and complex. Properly formatted data types are crucial for effective analysis, as they determine what operations can be performed on the data.</p>
+<p>Consider our <code>cycling_data</code> tibble. To ensure each column is optimally formatted for analysis, we first need to understand the current data types of each column. This understanding is crucial because, for instance, if a numerical category like ‘distance’ is incorrectly stored as characters, it can hinder the ability to perform numerical analyses.</p>
+<p>We use the <code>str()</code> function in R to view the structure and data types of each column in our dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use 'str()' to view the structure of the 'cycling_data' tibble</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This function gives an overview of the types of data in each column</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [30 × 10] (S3: tbl_df/tbl/data.frame)
+ $ ID         : int [1:30] 1 2 3 4 5 6 7 8 9 10 ...
+ $ race_date  : chr [1:30] "07-06-2023" "15-11-2023" "11-06-2023" NA ...
+ $ state_team : chr [1:30] "Victoria" "Queensland" "Tasmania" NA ...
+ $ class      : chr [1:30] "Mountain" "Track" "Road" NA ...
+ $ participant: chr [1:30] "Mary_White" "Elizabeth_White" "Robert_Smith" "Jennifer_White" ...
+ $ gender     : chr [1:30] NA "F" "M" "F" ...
+ $ age        : chr [1:30] NA "33" "18" "25" ...
+ $ heart_rate : num [1:30] NA 146 73 123 69 67 112 126 140 170 ...
+ $ distance_km: num [1:30] 50 66.3 90.5 NA 88.1 ...
+ $ VO2_max    : chr [1:30] "38 mL/kg/min" "60 mL/kg/min" "37 mL/kg/min" "79 mL/kg/min" ...</code></pre>
+</div>
+</div>
+<p>The <code>str()</code> function displays the internal structure of an R object. For our <code>cycling_data</code>, it will show the data types of each column, allowing us to identify any columns that might be misformatted.</p>
+<p>Now, let’s consider a practical example where data type matters. We attempt to compute the mean of the <code>VO2_max</code> column:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Attempt to compute the mean of the VO2_max column</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: This operation will produce a warning since the column is not numeric</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="co"># This issue will be addressed in the next section</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">mean_VO2_max =</span> <span class="fu">mean</span>(VO2_max))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  mean_VO2_max
+         &lt;dbl&gt;
+1           NA</code></pre>
+</div>
+</div>
+<p>If <code>VO2_max</code> is not stored as a numeric type, this operation will produce a warning, indicating that the data cannot be properly processed as numerical values. Such warnings highlight the importance of verifying and potentially converting data types for accurate calculations.</p>
+</section>
+<section id="sec-string_parsing" class="level2" data-number="5.13">
+<h2 data-number="5.13" class="anchored" data-anchor-id="sec-string_parsing"><span class="header-section-number">5.13</span> String Parsing</h2>
+<p>Converting data into the correct format is crucial for effective analysis. The data we encounter isn’t always in the most analysis-friendly format, as we’ll see with our <code>cycling_data</code> dataset.</p>
+<p>In our <code>cycling_data</code>, the <code>VO2_max</code> column contains values suffixed with ’ mL/kg/min’, making them character strings rather than pure numeric values. This format is not suitable for numerical analysis like calculating averages or other statistical measures. To address this, we first need to parse these strings to extract the numeric part:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the non-numeric part (' mL/kg/min') from the VO2_max column</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This prepares the column for conversion to a numeric data type</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">VO2_max =</span> <span class="fu">gsub</span>(<span class="st">' mL/kg/min'</span>, <span class="st">''</span>, VO2_max))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here, we use <code>gsub()</code>, a powerful function in R for string manipulation, to replace ’ mL/kg/min’ in each entry with an empty string, effectively removing it. This step transforms the <code>VO2_max</code> column, prepping it for numerical conversion.</p>
+<p>Next, we convert the <code>VO2_max</code> column to a numeric data type:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the VO2_max column to a numeric data type</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This allows for numerical operations to be performed on the VO2_max values</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">VO2_max =</span> <span class="fu">as.numeric</span>(VO2_max))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>as.numeric()</code> function transforms character strings containing numerical values into numeric data types. This conversion is essential for allowing us to perform numerical operations like calculating means or sums.</p>
+<p>Finally, we can accurately compute the mean of the <code>VO2_max</code> values:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Recompute the mean of the VO2_max column, excluding NA values for accurate calculation</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The 'na.rm = TRUE' argument ensures that NA (missing) values are ignored in the mean calculation</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">mean_VO2_max =</span> <span class="fu">mean</span>(VO2_max, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  mean_VO2_max
+         &lt;dbl&gt;
+1         51.5</code></pre>
+</div>
+</div>
+<p>This example highlights the importance of string parsing and data type conversion in data analysis, especially when working with sports data.</p>
+</section>
+<section id="sec-dates_formatting" class="level2" data-number="5.14">
+<h2 data-number="5.14" class="anchored" data-anchor-id="sec-dates_formatting"><span class="header-section-number">5.14</span> Dates Formatting and Ordering</h2>
+<p>Date formats can be a tricky aspect of data analysis, especially in sports science where temporal data is crucial. The way dates are formatted can significantly affect how we interpret and analyze temporal trends. In our <code>cycling_data</code> dataset, the <code>race_date</code> column is initially in the ‘DD-MM-YYYY’ format. To facilitate analysis, especially when sorting or comparing dates, we need to standardize these dates into a more uniform format.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert 'race_date' from 'DD-MM-YYYY' format to 'YYYY-MM-DD' format</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This specifies the current format of the dates in your dataset</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="co"># and standardizes them to the default 'YYYY-MM-DD' format for consistency and easier analysis</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">race_date =</span> <span class="fu">as.Date</span>(race_date, <span class="at">format =</span> <span class="st">"%d-%m-%Y"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In the above snippet, we use the <code>as.Date()</code> function to convert the <code>race_date</code> column to the ‘YYYY-MM-DD’ format. This function requires specifying the current format of the dates in your dataset, which in our case is ‘DD-MM-YYYY’. The conversion brings consistency and standardizes the dates for easier analysis.</p>
+<p>Once the dates are standardized, arranging the data in a particular temporal order becomes much more straightforward:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange the data by 'race_date' in descending order</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This helps in analyzing the data from the most recent to the earliest dates</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(race_date)) <span class="sc">%&gt;%</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="fu">row_number</span>()) <span class="co"># Update IDs to reflect the new order after arranging dates</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 10
+     ID race_date  state_team class    participant     gender age   heart_rate
+  &lt;int&gt; &lt;date&gt;     &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;
+1     1 2023-12-05 Queensland Mountain John_Smith      M      39            NA
+2     2 2023-12-03 Victoria   Mountain James_Williams  M      25            64
+3     3 2023-11-26 Victoria   Track    John_Williams   &lt;NA&gt;   &lt;NA&gt;         170
+4     4 2023-11-18 Tasmania   Mountain Tiffany_Jones   F      31           175
+5     5 2023-11-15 Queensland Track    Elizabeth_White F      33           146
+6     6 2023-11-13 ACT        Road     Jennifer_White  F      25           100
+# ℹ 2 more variables: distance_km &lt;dbl&gt;, VO2_max &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>Here, we use <code>arrange(desc(race_date))</code> to order the dataset by <code>race_date</code> in descending order. This reordering is beneficial for analyzing data trends from the most recent to the earliest events. We also update the ID column to reflect the new order after arranging the dates. This step is particularly valuable when working with time series data.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Alternatively, for ascending order arrangement:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(race_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-wide_long_format" class="level2" data-number="5.15">
+<h2 data-number="5.15" class="anchored" data-anchor-id="sec-wide_long_format"><span class="header-section-number">5.15</span> Reshape Data From Wide to Long Format</h2>
+<section id="wide-vs-long-data-formats" class="level3" data-number="5.15.1">
+<h3 data-number="5.15.1" class="anchored" data-anchor-id="wide-vs-long-data-formats"><span class="header-section-number">5.15.1</span> Wide vs Long Data Formats</h3>
+<p>The structure of your data can significantly influence the ease and effectiveness of your analysis. Two common data formats are wide and long.</p>
+<div id="fig-wide_long" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="wide_long_data.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption class="figure-caption">Figure&nbsp;1: Comparison of Wide and Long Data Formats: On the left, the wide format with separate columns for each metric per athlete; on the right, the long format with consolidated metrics and values for streamlined analysis.</figcaption>
+</figure>
+</div>
+<p><strong>Wide Data Format</strong> is characterized by its “wider” structure, where multiple measurements (or metrics) for each subject are stored in separate columns. For example, in a wide data format, an athlete’s heart_rate and VO2_max might be stored in two distinct columns, as shown in the left side of <a href="#fig-wide_long">Fig&nbsp;1</a>. Each row in this format represents a full set of observations for one athlete.</p>
+<p><strong>Long Data Format</strong>, on the other hand, is “taller” and typically involves stacking the measurements vertically. Each row represents a single observation for a subject. As depicted in the right side of <a href="#fig-wide_long">Fig&nbsp;1</a>, the same data is now arranged such that heart_rate and VO2_max are not separate columns but rather fall under a single ‘metric’ column, with their respective values under the ‘value’ column.</p>
+</section>
+<section id="why-prefer-long-format" class="level3" data-number="5.15.2">
+<h3 data-number="5.15.2" class="anchored" data-anchor-id="why-prefer-long-format"><span class="header-section-number">5.15.2</span> Why Prefer Long Format?</h3>
+<p>The long format is often more conducive to analysis because it aligns with the principles of tidy data:</p>
+<ul>
+<li>Each variable forms a column</li>
+<li>Each observation forms a row</li>
+</ul>
+<p>In practice, this format makes filtering, summarizing, and visualizing data for specific measurements more straightforward. It is especially useful for time-series data or repeated measurements across different conditions or time points.</p>
+</section>
+<section id="transitioning-from-wide-to-long-format" class="level3" data-number="5.15.3">
+<h3 data-number="5.15.3" class="anchored" data-anchor-id="transitioning-from-wide-to-long-format"><span class="header-section-number">5.15.3</span> Transitioning from Wide to Long Format</h3>
+<p>The <code>gather()</code> function from the <code>tidyr</code> package is commonly used to transform data from wide to long format. It collapses selected columns (like <code>heart_rate</code>, <code>distance_km</code>, and <code>VO2_max</code>) into two new columns: one for the measurement type (key) and one for the values (value).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform the 'cycling_data' tibble from wide format to long format.</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The 'gather()' function collapses the 'heart_rate', 'distance_km', and 'VO2_max' columns</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="co"># into key-value pairs, making the data structure more flexible for analysis.</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The '-variable' notation is used to exclude certain columns from being gathered.</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Including the '-variable' notation is optional and we include it here for completeness.</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(heart_rate, distance_km, VO2_max, <span class="at">key =</span> <span class="st">"measurement"</span>, <span class="at">value =</span> <span class="st">"value"</span>, <span class="sc">-</span>ID, <span class="sc">-</span>race_date, <span class="sc">-</span>state_team, <span class="sc">-</span>class, <span class="sc">-</span>participant, <span class="sc">-</span>gender, <span class="sc">-</span>age)</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange the reshaped data by ID and measurement types.</span></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="co"># This ordering helps to organize the data for each participant in a systematic way.</span></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> cycling_data <span class="sc">%&gt;%</span></span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(ID, measurement)</span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 9
+     ID race_date  state_team class   participant gender age   measurement value
+  &lt;int&gt; &lt;date&gt;     &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;
+1     1 2023-12-05 Queensland Mounta… John_Smith  M      39    VO2_max      NA  
+2     1 2023-12-05 Queensland Mounta… John_Smith  M      39    distance_km  75.8
+3     1 2023-12-05 Queensland Mounta… John_Smith  M      39    heart_rate   NA  
+4     2 2023-12-03 Victoria   Mounta… James_Will… M      25    VO2_max      73  
+5     2 2023-12-03 Victoria   Mounta… James_Will… M      25    distance_km  77.9
+6     2 2023-12-03 Victoria   Mounta… James_Will… M      25    heart_rate   64  </code></pre>
+</div>
+</div>
+<p>By applying <code>gather()</code>, we reshape the dataset so that each row corresponds to a single metric per athlete, rather than an athlete’s complete profile per row. Post-transformation, we use <code>arrange()</code> to systematically order the data by ID and measurement type.</p>
+</section>
+<section id="gauging-measurement-distribution" class="level3" data-number="5.15.4">
+<h3 data-number="5.15.4" class="anchored" data-anchor-id="gauging-measurement-distribution"><span class="header-section-number">5.15.4</span> Gauging Measurement Distribution</h3>
+<p>After reshaping the data, it can be insightful to count the occurrences of each measurement type:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of occurrences of each measurement type.</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This helps to understand the distribution of different measurements in the dataset.</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>measurement_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(cycling_data, measurement)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(measurement_counts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  measurement     n
+  &lt;chr&gt;       &lt;int&gt;
+1 VO2_max        30
+2 distance_km    30
+3 heart_rate     30</code></pre>
+</div>
+</div>
+<p>Understanding the distribution of different measurements within the dataset is critical. It informs us about the data’s granularity and potential areas of focus for in-depth analysis.</p>
+</section>
+</section>
+<section id="data-organization-in-spreadsheets-ensuring-readiness-for-analysis" class="level2" data-number="5.16">
+<h2 data-number="5.16" class="anchored" data-anchor-id="data-organization-in-spreadsheets-ensuring-readiness-for-analysis"><span class="header-section-number">5.16</span> Data Organization in Spreadsheets: Ensuring Readiness for Analysis</h2>
+<p>Having cleaned and tidied our dataset, it’s imperative to store it correctly to ensure that it remains accessible and amenable to analysis. As we explored the various techniques of data wrangling and tidying, our approach adheres to the best practices recommended in the informative article on <a href="https://www.tandfonline.com/doi/full/10.1080/00031305.2017.1375989">Data Organization in Spreadsheets</a>. To preserve the integrity and utility of our data, we’ve followed principles that promote precision and ease of analysis. These principles include consistency in data entry, utilizing the unambiguous YYYY-MM-DD format for dates, avoiding the pitfalls of empty cells, and maintaining the discipline of single pieces of information per cell. Our data is organized in a clean rectangle, with each subject’s data captured in rows, variables in columns, and a single header row to define our dataset’s structure.</p>
+<p>When wroking wtih your data, it should also be documented with a data dictionary. It’s advised to refrain from incorporating calculations within the raw data files and from using font colors or cell highlighting as data indicators. Proper naming conventions, routine backups, the application of data validation to circumvent entry mistakes, and saving data in a plain text format are all part of the structured approach that is recommended to follow. This level of orderliness in spreadsheet data organization is not only a matter of best practice but also a cornerstone for efficient and accurate data analysis in future endeavors.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Challenge for the Learner">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Challenge for the Learner
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Apply your data wrangling skills to refine and analyze a new dataset:</p>
+<ol type="1">
+<li>Identify a sports dataset of interest and perform initial data cleaning steps, such as standardizing column names and handling missing values.</li>
+<li>Utilize string parsing to extract useful information from complex data entries, and reshape the dataset from wide to long format.</li>
+<li>Craft a visualization of the cleaned dataset to reveal an interesting trend or insight, using the principles of tidy data you’ve learned.</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusion-and-reflection" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Conclusion and Reflection</h1>
+<p>In this lesson, we’ve honed the essential skills of data wrangling, cleaning, and tidying, crucial for insightful sports data analytics. We’ve transformed raw datasets into structured, analysis-ready formats, crucial for unearthing patterns and driving data-informed decisions.</p>
+<p>The journey through R’s <code>tidyverse</code> has not only shown us how to effectively clean and restructure data but also underscored the importance of precise data transformation for reliable analysis. Applying these data refinement techniques to the diverse datasets encountered in sport and exercise science empowers you to unlock analytical potential. Each step in mastering these skills paves the way to new insights and advancements.</p>
+</section>
+<section id="knowledge-spot-check" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Knowledge Spot-Check</h1>
+<div class="callout callout-style-default callout-tip callout-titled" title="**What is the primary goal of data wrangling in sports data analytics?** <br> <br> A) To create visually appealing reports. <br> B) To ensure data is formatted for easy entry into spreadsheets. <br> C) To transform and clean data for accurate analysis. <br> D) To learn programming in R and Python. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>What is the primary goal of data wrangling in sports data analytics?</strong> <br> <br> A) To create visually appealing reports. <br> B) To ensure data is formatted for easy entry into spreadsheets. <br> C) To transform and clean data for accurate analysis. <br> D) To learn programming in R and Python. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) To transform and clean data for accurate analysis.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Which R package provides functions for both data wrangling and tidying?** <br> <br> A) ggplot2 <br> B) shiny <br> C) readr <br> D) tidyverse <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Which R package provides functions for both data wrangling and tidying?</strong> <br> <br> A) ggplot2 <br> B) shiny <br> C) readr <br> D) tidyverse <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is D) tidyverse.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**When preparing data for analysis, why is it important to standardize column names?** <br> <br> A) To enable merging with other datasets. <br> B) To prevent errors due to case sensitivity. <br> C) To facilitate sorting of columns alphabetically. <br> D) To make the dataset visually appealing. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>When preparing data for analysis, why is it important to standardize column names?</strong> <br> <br> A) To enable merging with other datasets. <br> B) To prevent errors due to case sensitivity. <br> C) To facilitate sorting of columns alphabetically. <br> D) To make the dataset visually appealing. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is B) To prevent errors due to case sensitivity.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**What does the R function 'gsub()' do in the context of data cleaning?** <br> <br> A) Summarizes data statistics. <br> B) Generates subplots for data visualization. <br> C) Replaces patterns in strings. <br> D) Groups similar data points. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>What does the R function ‘gsub()’ do in the context of data cleaning?</strong> <br> <br> A) Summarizes data statistics. <br> B) Generates subplots for data visualization. <br> C) Replaces patterns in strings. <br> D) Groups similar data points. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) Replaces patterns in strings.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Why is the 'long' format often preferred over the 'wide' format in data analysis?** <br> <br> A) It is more compact and requires less disk space. <br> B) It typically allows for more efficient computation. <br> C) It facilitates easier filtering, summarizing, and visualization. <br> D) It is the only format supported by modern analytics tools. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Why is the ‘long’ format often preferred over the ‘wide’ format in data analysis?</strong> <br> <br> A) It is more compact and requires less disk space. <br> B) It typically allows for more efficient computation. <br> C) It facilitates easier filtering, summarizing, and visualization. <br> D) It is the only format supported by modern analytics tools. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) It facilitates easier filtering, summarizing, and visualization.</p>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+<script src="Data_Wrangling_Cleaning_Tidying_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
