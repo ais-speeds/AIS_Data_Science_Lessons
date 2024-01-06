@@ -47,7 +47,7 @@ cycling_list <- lapply(cycling_files, read_csv)
 # Concatenate all tibbles in 'cycling_list' together
 cycling_data <- bind_rows(cycling_list)
 
-write_csv(cycling_data, "cycling_untidy_fictitious_data_before_cleaning.csv")
+# write_csv(cycling_data, "cycling_untidy_fictitious_data_before_cleaning.csv")
 
 
 
@@ -61,6 +61,9 @@ summary(cycling_data)
 
 # Find out the number of rows in the dataset
 nrow_cycling_data <- nrow(cycling_data)
+
+# Find out the dimensions of the dataset
+dims_cycling_data <- dim(cycling_data)
 
 
 
@@ -306,4 +309,4 @@ head(cycling_data)
 measurement_counts <- count(cycling_data, measurement)
 print(measurement_counts)
 
-write_csv(cycling_data, "cycling_tidy_fictitious_data_after_cleaning.csv")
+# write_csv(cycling_data, "cycling_tidy_fictitious_data_after_cleaning.csv")
