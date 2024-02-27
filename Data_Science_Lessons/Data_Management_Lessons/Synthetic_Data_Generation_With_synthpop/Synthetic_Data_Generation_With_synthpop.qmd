@@ -1,0 +1,644 @@
+---
+title: "Data Privacy: Synthetic Data Generation with 'synthpop' in R"
+subtitle: "Enhancing Athlete Privacy and Data Utility With Synthetic Data in Sports Analytics"
+abstract: "Explore the essentials of synthetic data generation using the 'synthpop' package in R, a pivotal technique for safeguarding athlete privacy while maintaining data utility in sports analytics. This lesson delves into creating algorithmic replicas of real-world data, tailored for sports science applications. Learn how synthetic data enables insightful analysis without compromising confidentiality, serving as a cornerstone for ethical data practices in sports and exercise science."
+format:
+  html:
+    code-fold: false
+    toc: true
+    toc_depth: 4
+    toc-title: Contents
+    smooth-scroll: true
+    number-sections: true
+    css: styles.css
+  pdf: default
+execute:
+  warning: false
+editor: visual
+editor_options: 
+  chunk_output_type: inline
+---
+
+::: {.callout-tip title="Keywords"}
+Synthetic data, data privacy, data protection, statistical modeling, data simulation, sports analytics, R, synthpop, mice, data imputation, predictive modeling, data evaluation, machine learning, data analysis techniques, correlation analysis, distribution analysis, tidyverse, ggplot2, corrplot.
+:::
+
+::: {.callout-note title="Lesson's Level"}
+The level of this lesson is categorized as [SILVER]{style="color:#A9A9A9"}.
+:::
+
+::: {.callout-tip title="**Lesson's Main Idea**"}
+-   Synthetic data generation bridges the gap between maintaining athlete privacy and leveraging comprehensive sports datasets for analytics, enabling the exploration of data-driven insights without compromising confidentiality.
+-   Through the use of R's `synthpop` and `mice` packages, this lesson guides practitioners through creating, evaluating, and employing synthetic datasets that mirror the statistical properties of real-world data, thus equipping them with the ability to conduct robust sports analytics in a privacy-conscious manner.
+:::
+
+::: {.callout-warning title="Dataset Featured In This Lesson"}
+The focal dataset of this lesson encapsulates hematological variables from endurance athletes, comparing pre and post conditions following moderate altitude exposure. Recognizing the sensitive nature of the original data, direct access to it is not feasible. Nevertheless, this lesson navigates through the creation of a synthetic version that mirrors the original dataset's statistical properties, ensuring confidentiality while facilitating educational exploration. This synthetic dataset is accessible via our specialized `speedsR` [R data package](https://speeds.quarto.pub/speeds/speedsR_data_package.html), designed to support your learning journey.
+:::
+
+# Learning Outcomes
+
+By the end of this lesson, you will have developed the ability to:
+
+-   **Understand the Importance of Synthetic Data**: Grasp the concept and significance of synthetic data in sports analytics, particularly its role in enhancing privacy and data protection while maintaining the utility of sports datasets.
+
+-   **Prepare Data for Synthetic Generation**: Learn to prepare datasets for synthetic data generation, including handling missing values and ensuring data is in the correct format for synthesis, using tools like `mice` and R programming techniques.
+
+-   **Generate High-Quality Synthetic Data**: Master the use of the `synthpop` package in R to generate synthetic datasets that closely mirror the statistical properties of original datasets, without exposing sensitive information.
+
+-   **Evaluate Synthetic Data Quality**: Apply a comprehensive suite of evaluation techniques to assess the fidelity of synthetic data, including statistical comparisons, distribution checks, and correlation analysis, ensuring the synthetic data is a reliable stand-in for the original data in sports analytics.
+
+-   **Apply Synthetic Data in Predictive Modeling**: Understand how to use synthetic data for predictive modeling tasks, evaluating its performance against real data to confirm its utility in sports and exercise science research and analysis.
+
+::: {.callout-note title="Setting a Seed For Randomness"}
+The processes of missing data imputation, synthetic data generation, and model-based evaluation involve random computations. As such, the exact metrics and results you see might vary each time you run the code. To achieve consistent results across multiple runs, the code includes `set.seed()` functions before each step involving randomness. Make sure to run these `set.seed()` lines if you wish to replicate the outcomes within your own environment..
+:::
+
+```{r}
+my_seed = 124
+```
+
+# Introduction: The Role of Synthetic Data in Sports Analytics
+
+## Bridging Privacy and Insight with Synthetic Data
+
+The advancement of sports analytics has ushered in an era where data not only enhances performance and strategy but also raises significant privacy concerns. The use of synthetic data represents a pivotal innovation in this field, offering a solution that preserves the statistical integrity of real-world data while ensuring the anonymity of the individuals involved. This approach enables the detailed analysis of athlete performance, health metrics, and team dynamics without compromising personal confidentiality. Synthetic data generation techniques, ranging from classical statistical methods to sophisticated machine learning models, allow researchers and practitioners to leverage rich, insightful data for advancements in sports science while adhering to ethical standards of privacy and data protection.
+
+## Tools and Methods for Synthetic Data Generation
+
+In the evolving field of synthetic data generation, several libraries stand out for their comprehensive methods and applications, particularly in sports and exercise science. Among them, `Synthetic Data Vault` (SDV) and `synthcity` in Python, along with `synthpop` in R, offer tailored solutions that span classical statistical to advanced machine learning approaches. These tools are instrumental for practitioners aiming to leverage synthetic data for insightful, privacy-conscious analytics.
+
+### Synthetic Data Vault (SDV): Python's Comprehensive Synthetic Data Solution
+
+The Synthetic Data Vault (SDV) is a sophisticated Python library that utilizes a wide range of classical statistical methods, such as Gaussian Copula, and advanced machine and deep learning algorithms, including CTGAN and the Probabilistic Auto-Regressive model. Designed to accurately learn and replicate complex data patterns, SDV supports the generation of synthetic datasets across single tables, multiple connected tables, and sequential data. This capability is especially valuable in sports analytics, facilitating the creation of synthetic data that maintains the statistical properties of original datasets while safeguarding athlete privacy. SDV stands out for its comprehensive approach to synthetic data generation, enabling sports scientists to analyze intricate data relationships and sequences without compromising confidentiality. It is particularly useful for those looking to explore data-driven strategies, performance analytics, and predictive modeling in a secure and privacy-preserving manner.
+
+### Synthcity: A Versatile Python Toolkit for Advanced Synthetic Data
+
+`synthcity` is an innovative Python library that leverages cutting-edge machine and deep learning methods, including GAN-based models like CTGAN and PATEGAN, and VAE-based models like TVAE, to generate synthetic data. It excels in creating data for a wide range of tabular data modalities, from static data to complex time series, making it ideal for sports analytics applications that require nuanced data representations. `synthcity` is particularly adept at handling fairness, privacy, and data augmentation challenges, providing sports scientists with a platform for ethical data exploration and analysis. Its pluginable architecture and comprehensive set of evaluation metrics allow for custom solutions tailored to the unique demands of sports and exercise science research, including injury prediction models and athlete performance simulations.
+
+### Synthpop: Simplifying Synthetic Data Generation in R
+
+`synthpop` is a user-friendly R package designed for generating synthetic versions of sensitive datasets, thereby facilitating confidentiality and privacy. Utilizing sequential regression modeling, including classification and regression trees (CART), `synthpop` allows for the detailed customization of the data synthesis process according to the dataset's unique characteristics. This method is particularly suited for sports analytics where maintaining the statistical integrity of the data—such as relationships between variables—is crucial. `synthpop` shines in applications where the goal is to produce datasets for exploratory analysis or training purposes, without compromising the privacy of individual athletes. It's an excellent choice for practitioners in sports and exercise science looking to conduct analyses on athlete performance, team strategies, or health outcomes while ensuring data confidentiality.
+
+By focusing on `synthpop` for this lesson, we aim to introduce sports and exercise science practitioners to the foundational skills of synthetic data generation within the familiar R programming environment. This decision acknowledges the greater flexibility and customization options offered by Python libraries but opts for the simplicity and direct applicability of `synthpop` to the practitioners' existing data analysis workflows.
+
+# Data import and exploration
+
+We start by loading all the necessary libraries and reading the data from the Hbmass Excel file.
+
+## Data import
+
+```{r message=FALSE}
+# Load required libraries
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(naniar)
+library(mice)
+library(corrplot)
+library(synthpop)
+```
+
+```{r}
+# Reading the Hbmass Excel file and selecting the data sheet
+sheets <- excel_sheets("./AHBM_Data.xlsx")
+real_data <- read_excel("./AHBM_Data.xlsx", sheet="AHBM_LONG")
+
+# Create an exact copy of the 'real_data' data frame (this might come handy later)
+real_data_copy <- real_data
+```
+
+## Initial data exploration
+
+To gain an understanding of the loaded dataset, we first conduct an initial exploration of the data.
+
+-   Descriptive Statistics: Our first step is to examine a summary of key statistical measures. This provides essential insights into central tendencies, data ranges, and other statistical characteristics.
+
+-   Pairwise Scatter Plots: Subsequently, we visualize how variables interact with each other through scatter plots, which can reveal linear or non-linear relationships.
+
+-   Histograms: Next, we study the distribution of each variable using histograms. This step helps us identify patterns, such as skewness or normality.
+
+-   Correlation Matrix: Last but not least, we compute and visualize a correlation matrix. Correlation measures the strength and direction of the linear relationship between two variables. The values range from -1 to 1, where -1 indicates a perfect negative correlation, 1 indicates a perfect positive correlation, and 0 indicates no linear correlation. The size and color of the circles in this matrix signifies the strength and direction of correlations between variables.
+
+```{r, warning=FALSE}
+# Descriptive statistics
+summary(real_data)
+
+# Pairwise Scatter plots
+cont_var_cols <- real_data[, c("BM", "FER", "FE", "TSAT", "TRANS", "AHBM", "RHBM")] # continuous variables columns
+pairs(cont_var_cols, pch = 16, cex = 0.6) # pch - plotting character, cex - character expansion
+
+# Distributions
+# Create a data frame to store variable names and bin widths
+cont_var_distrib <- data.frame(
+  var = c("BM", "FER", "FE", "TSAT", "TRANS", "AHBM", "RHBM"),
+  bin_width = c(1.5, 5, 1, 2, 0.1, 25, 0.2)
+)
+
+# Loop through the data frame to create plots
+for(i in 1:nrow(cont_var_distrib)) {
+  var_name <- as.character(cont_var_distrib[i, "var"])
+  bin_w <- cont_var_distrib[i, "bin_width"]
+  
+  p <- ggplot(real_data, aes_string(x = var_name)) + 
+    geom_histogram(binwidth = bin_w, fill = "skyblue", color = "black") +
+    labs(title = paste("Distribution of", var_name))
+  
+  print(p)
+}
+
+# Correlation Matrix
+cor_matrix <- cor(cont_var_cols, use = "complete.obs")  # "complete.obs" means that only complete observations (rows where no variables have missing values) will be used in the calculations
+corrplot(cor_matrix, method = "circle")
+```
+
+# Data missingness
+
+Before we proceed with generating synthetic data with `synthpop`, it's really important to check for missing values in the dataset. How we deal with missing data can make a big difference in the quality of our synthetic dataset. Before imputing or handling missing values, it's essential to understand the nature of the missingness. We first check if there are any missing values in our dataset at all. And if there are any, we visualize where they are in our dataset using the `vis_miss()` function.
+
+```{r}
+sum(is.na(real_data)) # check how many missing values there are in the dataset
+
+vis_miss(real_data) # visualize the missingness in the dataset
+```
+
+## Imputation of missing values
+
+From the missingness visualization above, we see that variables `FER`, `FE`, `TSAT`, and `TRANS` have some values missing. Moreover, there is some structure to the missing data that exhibits the following pattern:
+
+-   if **`FE`**, **`TSAT`**, and **`TRANS`** are missing, then **`FER`** can also occasionally be missing;
+
+-   if **`FER`** is missing, **`FE`**, **`TSAT`**, and **`TRANS`** are never fully observed in those rows.
+
+The pattern above and the fact that **`FE`**, **`TSAT`**, and **`TRANS`** share all rows of missing data suggests a Missing at Random (MAR) mechanism of missingness, at least for these columns. Moreover, the missingness pattern might indicate a hierarchical or dependent relationship between **`FER`** and the other three columns, as it seems like the presence of values in **`FER`** might be a prerequisite for the presence of values in **`FE`**, **`TSAT`**, and **`TRANS`**.
+
+When the data has structured missingness of MAR type, simple imputation techniques like replacing with mean, median, or mode are often insufficient. These simpler methods do not account for the relationships between variables or the patterns of missingness. That's why model-based imputation methods like MICE (Multivariate Imputation by Chained Equations) are more appropriate in such cases.
+
+MICE is a robust technique designed to handle complex missing data patterns. Rather than filling in a single value for each missing entry, MICE iteratively updates these values based on a series of regression models that consider other variables in the data. This iterative process is typically run until it converges to stable solutions.
+
+Here's the process in a nutshell:
+
+-   Initially, missing values are replaced with simple placeholders (e.g., column mean).
+
+-   For each variable with missing values, a regression model is fitted where this variable is the dependent variable, and all other variables act as independent variables.
+
+-   Missing values are then updated with predictions from the respective regression model.
+
+-   This process is repeated iteratively until the imputed values stabilize.
+
+For continuous variables, Predictive Mean Matching (PMM) is often a method of choice within the MICE framework. PMM works by imputing missing values based on observed data points that have similar predicted values. This preserves the data distribution and relationships between variables.
+
+In brief, PMM:
+
+-   Identifies a set of observed values whose predicted values are closest to the predicted value for the missing entry.
+
+-   Randomly picks one from this set to impute the missing value.
+
+By employing MICE with PMM, we can handle missing data effectively while preserving the complex relationships between variables in the original dataset.
+
+In this section, we are using the `mice` package in R to handle missing values in the FER, FE, TSAT, and TRANS variables. Leveraging the robustness of MICE, we apply the PMM method for these continuous variables to capture the underlying relationships between them.
+
+## Predictor matrix
+
+A predictor matrix is a tool used in the `mice` package to decide which variables in the dataset will be used to estimate missing values for other variables. In this matrix, each row represents a variable with missing data, and each column represents a possible predictor variable. A value of `1` means the column variable (predictor) will be used to estimate missing values in the row's variable, while a value of **`0`** means it won't be used. Typically, the diagonal of this matrix is set to `0`, meaning a variable doesn't predict itself.
+
+By default, when constructing a predictor matrix in `mice`, every variable is initially considered as a potential predictor for all other variables. However, `mice` allows the flexibility to adjust this. In our case, we ensure that variables `FER`, `FE`, `TSAT`, and `TRANS` are imputed using all other variables as predictors, while explicitly excluding the `ID` variable from the process.
+
+```{r}
+# Generate an initial predictor matrix using quickpred function from the mice package
+predictor_matrix <- mice::quickpred(real_data)
+
+# Print the initial predictor matrix for inspection
+print(predictor_matrix)
+
+# Set predictor flags for columns ("FER", "FE", "TSAT", "TRANS") to 1, indicating they will be used for imputation.
+predictor_matrix[c("FER", "FE", "TSAT", "TRANS"), ] <- 1
+
+# Exclude "ID" from the predictor matrix by setting its flag to 0
+vars_to_exclude <- c("ID")
+predictor_matrix[, vars_to_exclude] <- 0
+
+# Set the diagonal of the predictor matrix to 0, indicating that each variable should not predict itself
+diag(predictor_matrix) <- 0
+
+# Print the modified predictor matrix for final inspection
+print(predictor_matrix)
+
+```
+
+## Data imputation with MICE
+
+Once the predictor matrix has been constructed, we create a vector to specify which imputation methods to be used for each variable. For our target variables `FER`, `FE`, `TSAT`, `TRANS` we set the method to PMM. This approach uses all variables as predictors (excluding `ID`) but specifically applies PMM only to our target variables, allowing us to benefit from the predictive power of the entire dataset. A random seed is established for reproducibility of the imputation output.
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+# Initialize a vector of empty strings, the length is the number of columns in the dataset
+default_methods <- rep("", ncol(real_data))  
+
+# Name the vector elements with the names of the columns in real_data
+names(default_methods) <- colnames(real_data)
+
+# Specify the PMM imputation method for the variables to be imputed
+default_methods[c("FER", "FE", "TSAT", "TRANS")] <- "pmm"
+
+# Set seed for reproducibility
+set.seed(my_seed)
+
+# Run MICE to perform multiple imputations: m=5 is the number of imputed datasets, maxit=50 is maximum iterations
+imputed_data <- mice::mice(real_data, m = 5, method = default_methods, predictorMatrix = predictor_matrix, maxit = 50)
+
+# View the final predictor matrix
+print(imputed_data$predictorMatrix)
+```
+
+## Evaluating MICE imputed data quality
+
+After imputing the missing values, it's essential to validate the output. To ensure that the imputed data accurately reflects relationships and structures of the original dataset, we perform several checks. These include verifying the hierarchical structure, comparing the distributions of the original and imputed data, assessing correlations, and contrasting the value ranges in both the original and imputed datasets.
+
+### Verify hierarchical structure
+
+If the hierarchical structure is maintained, the check below should return 0. This means that the imputation has respected the hierarchical structure of the original dataset.
+
+```{r}
+completed_data_subset <- complete(imputed_data, 1)[, c("FER", "FE", "TSAT", "TRANS")] # Extract one of the imputed datasets and select only the target variables
+
+# Ensure that there are no rows where FER is missing and the other three columns (FE, TSAT, TRANS) are observed
+sum(is.na(completed_data_subset$FER) & (!is.na(completed_data_subset$FE) | !is.na(completed_data_subset$TSAT) | !is.na(completed_data_subset$TRANS)))
+```
+
+### Distributions check
+
+To evaluate the quality of our imputed data, we visualize and compare the distributions of imputed and observed values for each variable. Ideally, the distributions should match closely, indicating that the imputation process has successfully preserved the data's original characteristics without introducing significant biases.
+
+```{r warning=FALSE}
+# Create a subset of the original data that contains only the variables with imputed values
+subset_real_data <- real_data[, c("FER", "FE", "TSAT", "TRANS")]
+
+# Create a data frame for variables that have imputed values to store the variable names and bin widths
+cont_var_distrib <- data.frame(
+  var = c("FER", "FE", "TSAT", "TRANS"),
+  bin_width = c(5, 1, 2, 0.1)
+) # continuous variables distributions
+
+# Loop through the data frame to create plots
+for(i in 1:nrow(cont_var_distrib)) {
+  var_name <- as.character(cont_var_distrib[i, "var"])
+  bin_w <- cont_var_distrib[i, "bin_width"]
+  
+  p <- ggplot() +
+    geom_histogram(data = completed_data_subset, aes_string(x = var_name), binwidth = bin_w, fill = "red", alpha = 0.5, position = "identity") +
+    geom_histogram(data = subset_real_data, aes_string(x = var_name), binwidth = bin_w, fill = "blue", alpha = 0.5, position = "identity") + 
+    labs(title = paste("Distribution of", var_name, ": Imputed (Red) vs. Observed (Blue)"))
+# Setting 'position = "identity"' allows the histograms to overlap, facilitating easy comparison
+  
+  print(p)
+}
+```
+
+### Correlations Check
+
+To make sure the relationships between variables in the imputed data are consistent with the original data, we compare the correlation matrices --- one from the original data and one from the imputed data. The correlations don't have to match exactly, but they should be reasonably close. We visualize these using correlation plots, where circle size and color represent the strength and direction of the correlation, respectively. If the plots look reasonably similar, it suggests that the imputation has preserved the relationships between variables. If there are significant differences, it might be a sign to investigate further or consider alternative imputation methods or parameters.
+
+```{r}
+
+# Compare the correlation matrices to ensure that the relationships between variables in the imputed data are consistent with the original data
+cor_matrix_imputed <- cor(completed_data_subset, use = "complete.obs")
+cor_matrix_original <- cor(subset_real_data, use = "complete.obs")
+
+# View the correlation matrices
+print(cor_matrix_imputed)
+print(cor_matrix_original)
+
+# Visualize the correlations in the original data
+corrplot(cor_matrix_original, method = "circle")
+
+# Visualize the correlations in the imputed data
+corrplot(cor_matrix_imputed, method = "circle")
+```
+
+Both the original and imputed data show similar correlation patterns among the target variables, suggesting that the imputation has preserved the relationships between variables to a large extent.
+
+### Assessing value range consistency
+
+It's a good practice to ensure that the imputed values fall within a reasonable range, especially when compared to the original data. By comparing the "Original_Min" and "Original_Max" rows to the "Imputed_Min" and "Imputed_Max" rows, we check that the imputed values for each variable fall within the expected range.
+
+```{r}
+# Calculate the range of values for each variable in the original data, ignoring NA values
+original_ranges <- sapply(subset_real_data, range, na.rm = TRUE)
+
+# Calculate the range of values for each variable in the imputed data, ignoring NA values
+imputed_ranges <- sapply(completed_data_subset, range, na.rm = TRUE)
+
+# Combine the ranges from both original and imputed data into a single data frame for easy comparison
+ranges_df <- rbind(original_ranges, imputed_ranges)
+
+# Rename the rows for clarity and print the output
+rownames(ranges_df) <- c("Original_Min", "Original_Max", "Imputed_Min", "Imputed_Max")
+print(ranges_df)
+
+```
+
+## Replacing missing original data with imputed columns
+
+Now we are ready to merge the imputed data with the original dataset. After this step, the original dataset **`real_data`** will no longer have any missing values in the columns **`FER`**, **`FE`**, **`TSAT`**, and **`TRANS`**.
+
+```{r}
+# Replace the columns with missing values in the original dataset with the imputed ones
+real_data[, c("FER", "FE", "TSAT", "TRANS")] <- completed_data_subset[, c("FER", "FE", "TSAT", "TRANS")]
+
+```
+
+# Synthetic data generation
+
+To generate high-quality synthetic data, the original dataset must first be adequately prepared. This preparation could entail handling missing values, encoding categorical variables, and normalizing numerical ones. In our case, the only necessary preprocessing was the management of missing values. With that task completed, we're ready to generate synthetic data that mirrors the characteristics of the original dataset. The `synthpop` package in R allows us to generate synthetic data that maintains the statistical attributes of the original set without exposing any sensitive information.
+
+In the synthetic data generation process using the `synthpop` package, the data type of each variable is crucial. In our dataset, the variables `TIME,` `SEX`, and `SUP_DOSE` are categorical but have numerical values with either two or three levels. To ensure `synthpop` recognizes them as categorical, we convert these variables into factors using the `as.factor()` function in R.
+
+We then define the 'visit sequence' via the `visit.sequence` parameter. This sequence, comprising the order in which variables are synthesized, is essential because a variable can only be predicted by those synthesized earlier in the sequence. In our R code, we specify the `visit.sequence` such that `TIME` comes first, followed by `SEX,` `SUP_DOSE` and so on.
+
+The `method` parameter specifies how each variable is synthesized. For the variables `TIME,` `SEX`, and `SUP_DOSE` we use the 'sample' method. This is because they are the first in the visit sequence and do not have preceding predictors. These variables' synthetic values are obtained through random sampling with replacement from the original data. We intentionally avoid using the 'cart' method for these variables to retain their original distributions.
+
+For all other variables, the 'cart' (Classification and Regression Trees) method is used. This is the default method for variables with preceding predictors in the `visit.sequence`.
+
+The `predictor.matrix` defines which variables act as predictors for each target variable. A `1` in this matrix indicates the column variable will be a predictor for the row variable. Initially, we let `syn()` create a default predictor matrix. However, we manually adjust this matrix to ensure that variables like `TIME,` `SEX`, and `SUP_DOSE` are also used as predictors for other variables in the synthetic data.
+
+Variables with an empty method (**`""`**) in the `method` parameter are neither synthesized nor used as predictors. This ensures that they are excluded from the synthesis process altogether, but their original values are kept in the synthetic data.
+
+After setting up these configurations, we run the `syn()` function again, but with our manually adjusted predictor matrix. This ensures that the synthetic data reflects the relationships and distributions found in the original dataset, while also safeguarding any sensitive information.
+
+Overall, synthetic data generation is a multistep, configurable process that aims to produce data that statistically mirrors the original dataset.
+
+```{r message=FALSE, warning=FALSE}
+# Fix the pseudo random number generator seed and make the results reproducible
+my.seed <- my_seed
+
+# Convert 'TIME' to factor
+real_data$TIME <- as.factor(real_data$TIME)
+
+# Convert 'SEX' to factor
+real_data$SEX <- as.factor(real_data$SEX)
+
+# Convert 'SUP_DOSE' to factor
+real_data$SUP_DOSE <- as.factor(real_data$SUP_DOSE)
+
+# Check the structure of the data frame to confirm the conversion
+# As you can see from the table below, variables  TIME, SEX, and SUP_DOSE have been converted into factors
+str(real_data)
+
+# Define the initial visit sequence and methods for synthesis
+visit.sequence.ini <- c(5, 6, 7, 8, 9, 10)
+method.ini <- c("", "sample", "sample", "sample", "cart", "cart", "cart", "cart", "cart", "cart", "")  #polyreg
+
+# Run initial synthesis
+# You'll see a warning "Method "cart" is not valid for a variable without predictors (BM) Method has been changed to "sample" ". This is normal as, according to the default predictor matrix, variable BM doesn't have predictors yet, and therefore method 'cart' can't be used for this variable. This is fixed below where we adjust the predictor matrix. 
+synth_data.ini <- syn(data = real_data, visit.sequence = visit.sequence.ini, method = method.ini, m = 0, drop.not.used = FALSE)
+
+# Display the default predictor matrix
+synth_data.ini$predictor.matrix
+
+# Customize the predictor matrix
+predictor.matrix.corrected <- synth_data.ini$predictor.matrix
+rows_to_change <- c("TIME", "SEX", "SUP_DOSE", "BM", "FER", "FE", "TSAT", "TRANS", "AHBM")
+cols_to_change <- c("TIME", "SEX", "SUP_DOSE", "BM", "FER", "FE", "TSAT", "TRANS", "AHBM")
+predictor.matrix.corrected[rows_to_change, cols_to_change] <- 1
+diag(predictor.matrix.corrected) <- 0
+predictor.matrix.corrected
+
+# Generate synthetic data using the corrected predictor matrix
+# You may encounter warnings like "Not synthesised predictor FER removed from predictor.matrix for variable BM." This is expected behavior. Variables are synthesized one-by-one and can't serve as predictors until they've been synthesized. As a result, only the last variable to be synthesized, AHBM, doesn't produce this warning because all its predictors have already been synthesized by that point.
+synth_data.corrected <- syn(data = real_data, visit.sequence = visit.sequence.ini, method = method.ini, predictor.matrix = predictor.matrix.corrected, seed = my.seed)
+
+# Update 'RHBM' values in synthetic data
+synth_data.corrected$syn$RHBM <- synth_data.corrected$syn$AHBM / synth_data.corrected$syn$BM
+
+# Final synthetic data
+synth_data <- synth_data.corrected$syn
+```
+
+# Synthetic data evaluation
+
+Evaluating the quality of synthetic data is essential to ensure its reliability for further analyses. After generating synthetic data, it's critical to compare its distributions and relationships between the variables to those in the original dataset. The goal is to assess how closely the synthetic data mimics the statistical properties of the real data.
+
+## Compare() function
+
+For the initial quality check, we utilize the `compare()` function from the `synthpop` package. This function allows for a side-by-side statistical comparison between the synthetic and original data. By setting the stat parameter to "counts," we obtain a count-based statistical summary for each selected variable. This is a valuable first step for gauging how well the synthetic dataset replicates the distribution of these variables in the original dataset.
+
+```{r message=FALSE, warning=FALSE}
+# Use the compare() function from the synthpop package to compare the target variables from the synthetic and real datasets
+real_data_subset <- real_data[, c("BM", "FER", "FE", "TSAT", "TRANS", "AHBM")]
+synth_data_subset <- synth_data[, c("BM", "FER", "FE", "TSAT", "TRANS", "AHBM")]
+compare(synth_data_subset, real_data_subset, stat = "counts") # The stat parameter is set to "counts" to get count-based statistics for each variable in the selected subsets
+
+```
+
+The output from the `compare()` function provides utility measures, such as pMSE (Propensity Score Mean Squared Error) and S_pMSE (Scaled Propensity Score Mean Squared Error). These metrics evaluate the quality of the synthetic data when compared to the original data.
+
+pMSE: This measure quantifies how well the synthetic data reproduces the relationships between variables found in the real data. Lower pMSE values suggest a better approximation, meaning that the fit of the models on the real and synthetic data is similar. All the variables in our case have pMSE values close to zero, which is a positive indication of the quality of the synthetic data.
+
+S_pMSE: This is the pMSE divided by a scale factor, often the mean squared error of the model fit to the real data. It offers a relative measure of fit; lower S_pMSE values generally indicate better approximation quality. In our case, the S_pMSE values for all variables are low, reinforcing the quality of the synthetic data.
+
+df: This represents the degrees of freedom for the statistical tests comparing the real and synthetic data. Here, it's 4 for all variables. A higher number of degrees of freedom usually signifies a more flexible model, but it can also risk overfitting.
+
+In summary, both the pMSE and S_pMSE values for all variables are low, indicating that the synthetic data closely mimics the relationships between variables in the original data.
+
+## Visual Comparison
+
+We can also visualize the distributions of the target variables from both the real and synthetic datasets for a more intuitive comparison. By examining these histograms, we can get a visual sense of how closely the synthetic data approximates the real dataset.
+
+```{r}
+# Visualize both real and synthetic data for comparison
+
+# Create a data frame to store variable names and bin widths
+cont_var_distrib <- data.frame(
+  var = c("BM", "FER", "FE", "TSAT", "TRANS", "AHBM", "RHBM"),
+  bin_width = c(1.5, 5, 1, 2, 0.1, 25, 0.2)
+)
+
+# Loop through the data frame to create plots
+for(i in 1:nrow(cont_var_distrib)) {
+  var_name <- as.character(cont_var_distrib[i, "var"])
+  bin_w <- cont_var_distrib[i, "bin_width"]
+  
+  p <- ggplot() +
+    geom_histogram(data = real_data, aes_string(x = var_name), binwidth = bin_w, fill = "blue", alpha = 0.5, position = "identity") +
+    geom_histogram(data = synth_data, aes_string(x = var_name), binwidth = bin_w, fill = "red", alpha = 0.5, position = "identity") + 
+    labs(title = paste("Distribution of", var_name, ": Real (Blue) vs. Synthetic (Red)"))
+  
+  print(p)
+}
+```
+
+## Descriptive statistics
+
+The **`summary()`** function provides a convenient way for quickly reviewing and comparing the descriptive statistics of both the synthetic and real datasets. With this function we can obtain key summary metrics like mean, median, and quartiles.
+
+```{r}
+# Compare descriptive statistics of the real and synthetic datasets
+summary(real_data[, cont_var_distrib$var])
+summary(synth_data[, cont_var_distrib$var])
+
+```
+
+The descriptive statistics of the real and synthetic data show close alignment across all key metrics including minima, maxima, quartiles, median, and mean for each variable. This indicates that the synthetic data is a reliable approximation of the real data, effectively capturing its range, spread, and central tendencies.
+
+## Statistical comparison: Kolmogorov-Smirnov test
+
+To further ensure that synthetic data closely resembles the original data, it's crucial to compare their distributions more quantitatively. The Kolmogorov-Smirnov (K-S) test is a non-parametric test that gauges if two datasets come from the same distribution. The K-S test yields two main metrics: the D-statistic and the p-value. The D-statistic measures the maximum difference between the cumulative distributions of the datasets; a smaller D-value suggests the datasets are similar. The p-value, on the other hand, gives us the probability that the observed differences could occur by random chance. A high p-value (usually above 0.05) indicates that the datasets are statistically similar, while a low p-value suggests they are different.
+
+```{r warning=FALSE}
+# Initialize an empty data frame to store the results of the K-S test
+ks_results <- data.frame(
+  Variable = character(0),
+  D_statistic = numeric(0),
+  p_value = numeric(0)
+)
+
+# Loop through each variable in the 'var' column of 'cont_var_distrib' to perform the K-S test
+for (var in cont_var_distrib$var) {
+  # Run the K-S test on each variable and store the results in 'ks_test_result'
+  ks_test_result <- ks.test(real_data[[var]], synth_data[[var]])
+  
+  # Add the results (Variable name, D-statistic, and p-value) to the 'ks_results' data frame
+  ks_results <- rbind(ks_results, data.frame(
+    Variable = var,
+    D_statistic = ks_test_result$statistic,
+    p_value = ks_test_result$p.value
+  ))
+}
+
+# Print the K-S test results
+print(ks_results, row.names = FALSE)
+
+```
+
+The K-S test results show low D-statistic values and high p-values for all variables, suggesting that the distributions of the synthetic and real data are not significantly different. This further reinforces the conclusion that the synthetic data closely approximates the real data across all examined variables.
+
+## Correlation structure
+
+To evaluate the integrity of the relationships between variables in synthetic data, it's crucial to assess whether it maintains the original data's correlation structure. Correlation matrices are instrumental for this. Each matrix is filled with correlation coefficients that range from -1 to 1. The diagonal always contains 1s, as each variable is perfectly correlated with itself. Off-diagonal values indicate the strength and direction of the relationship between variable pairs. A value close to 1 indicates a strong positive correlation, while a value near -1 suggests a strong negative correlation. A value of 0 indicates no correlation. By comparing the correlation matrices of the real and synthetic datasets, one can visually gauge how well the synthetic data captures these relationships between variables. We visualize these using correlation plots, where circle size and color represent the strength and direction of the correlation, respectively.
+
+```{r}
+# Check if the synthetic data maintains the correlation structure of the original data
+
+# Extract relevant variable names from cont_var_distrib DataFrame
+selected_vars <- as.character(cont_var_distrib$var)
+
+# Filter the original dataset to include only the selected variables
+real_data_selected <- real_data[, selected_vars]
+
+# Compute correlation matrices
+cor_real_selected <- cor(real_data_selected, use = "complete.obs")
+cor_synthetic_selected <- cor(synth_data[, selected_vars], use = "complete.obs")
+
+# Display correlation matrices
+print(cor_real_selected)
+print(cor_synthetic_selected)
+
+# Visualize correlation matrices
+# Original data correlations
+corrplot(cor_real_selected, method = "circle", diag = FALSE)
+# Synthetic data correlations
+corrplot(cor_synthetic_selected, method = "circle", diag = FALSE)
+```
+
+The correlation matrices for both real and synthetic data show similar patterns across variables, although some minor differences exist in terms of correlation strength magnitudes. Overall, the matrices broadly align, suggesting that the synthetic data maintains the relational structures observed in the original dataset. Thus, the synthetic data appears to be a reliable representation of the real data in terms of correlations between the variables.
+
+## Model-based evaluation
+
+To evaluate how well synthetic data approximates real data, we conduct a model-based evaluation. We train a predictive model on the synthetic data and then test its accuracy on a validation set made up of real data. We measure the model's performance using Mean Squared Error (MSE). We also train a model using real data and compare the MSEs of both models. If the MSEs are similar, it suggests that the synthetic data has captured the essential characteristics of the original data, making it a viable substitute for predictive modelling tasks.
+
+```{r}
+# Train a model on the synthetic data and test it on a real validation set to see how well it generalizes 
+
+# Initialize an empty data frame to store MSE results
+mse_results <- data.frame(var = character(),
+                          mse_real = numeric(),
+                          mse_synthetic = numeric())
+
+# Randomly split the original data into 80% training and 20% test sets
+set.seed(my_seed)
+train_indices <- sample(1:nrow(real_data), nrow(real_data)*0.8)
+train_data <- real_data[train_indices, ]
+test_data <- real_data[-train_indices, ]
+
+# Loop through each variable in cont_var_distrib
+for (var_name in cont_var_distrib$var) {
+  # Train a linear regression model using the synthetic data
+  model_synthetic <- lm(as.formula(paste(var_name, "~ .")), data = synth_data)
+  
+  # Train a linear regression model using the real training data
+  model_real <- lm(as.formula(paste(var_name, "~ .")), data = train_data)
+  
+  # Make predictions using the test set for both models
+  predictions_synthetic <- predict(model_synthetic, newdata = test_data)
+  predictions_real <- predict(model_real, newdata = test_data)
+  
+  # Calculate MSE for the models trained on synthetic and real data
+  mse_synthetic <- mean((test_data[[var_name]] - predictions_synthetic)^2)
+  mse_real <- mean((test_data[[var_name]] - predictions_real)^2)
+  
+  # Append MSE results to the mse_results data frame
+  mse_results <- rbind(mse_results, data.frame(var = var_name, mse_real = mse_real, mse_synthetic = mse_synthetic))
+}
+
+# Print the mse_results data frame for comparison
+print(mse_results)
+```
+
+The model-based evaluation shows that the Mean Squared Errors (MSEs) between models trained on real and synthetic data are relatively close for all variables. This suggests that the synthetic data captures the essential characteristics of the real data quite well, making it a reliable substitute for predictive modeling tasks. Overall, the synthetic data appears to be a viable alternative to the original data for building and testing predictive models.
+
+# Synthetic Data Evaluation Summary
+
+Utility is High: The low pMSE and S_pMSE values confirm that the synthetic data effectively replicates the underlying relationships in the original data.
+
+Distribution Similarity is Robust: High p-values from the Kolmogorov-Smirnov test indicate that the synthetic data's distribution is closely aligned with that of the real data.
+
+Correlations are Preserved: The correlation matrices for both real and synthetic data are largely consistent, showing that relational structures are maintained.
+
+Model-Based Evaluations are Aligned: Close Mean Squared Errors between the synthetic and real data imply comparable predictive accuracy, further confirming the utility of the synthetic data.
+
+In summary, the synthetic data demonstrates high fidelity to the original dataset across multiple dimensions: utility, distribution similarity, correlation preservation, and predictive performance. Therefore, the synthetic data can be considered a reliable and high-quality representation of the original dataset.
+
+# Saving synthetic data to a file
+
+```{r}
+# write.csv(synth_data, "Hbmass_synthetic.csv", row.names = FALSE)
+```
+
+::: {.callout-tip title="Challenge for the Learner"}
+Leverage your newfound knowledge on synthetic data generation to create and evaluate a synthetic version of a sports dataset:
+
+1.  Choose a sports dataset that contains both categorical and numerical variables. Prepare the dataset by addressing any missing values and ensuring all categorical variables are correctly formatted.
+2.  Generate a synthetic dataset using the `synthpop` package in R, carefully selecting the synthesis sequence and methods for each variable based on their types and relationships.
+3.  Conduct a comprehensive evaluation of your synthetic dataset: compare the distributions, correlations, and predictive accuracy of the synthetic data against the original dataset.
+4.  Reflect on the implications of using synthetic data in sports analytics. Identify any potential benefits or limitations you observed through this exercise, particularly in terms of data privacy and analytical utility.
+:::
+
+# Conclusion and Reflection
+
+In this lesson, we've ventured into the world of synthetic data generation, a cornerstone for conducting privacy-conscious sports analytics. Through meticulous preparation, generation, and evaluation, we've demonstrated how synthetic datasets can serve as stand-ins for real data, mirroring its statistical essence without compromising sensitive information.
+
+Navigating through the `synthpop` package in R has equipped us with the means to not only create but also critically assess the quality of synthetic data. This process underscores the balance between data utility and privacy, enabling sports scientists and analysts to explore data-driven insights ethically.
+
+The skills acquired in this lesson pave the way for innovative approaches to data analysis in sports and exercise science, expanding our toolkit for tackling privacy and confidentiality challenges head-on.
+
+# Knowledge Spot-Check
+
+::: {.callout-tip title="**What is the primary objective of generating synthetic data in sports analytics?** <br> <br> A) To increase the volume of data for analysis. <br> B) To protect the privacy of individuals in datasets. <br> C) To improve the graphical presentation of data. <br> D) To simplify the data collection process. <br> <br> Expand to see the correct answer." collapse="true"}
+The correct answer is B) To protect the privacy of individuals in datasets.
+:::
+
+::: {.callout-tip title="**Which R package is specifically used for generating synthetic data while preserving statistical properties?** <br> <br> A) ggplot2 <br> B) synthpop <br> C) dplyr <br> D) readxl <br> <br> Expand to see the correct answer." collapse="true"}
+The correct answer is B) synthpop.
+:::
+
+::: {.callout-tip title="**Why is it important to evaluate synthetic data against the original data?** <br> <br> A) To ensure the synthetic data is larger than the original. <br> B) To confirm the synthetic data accurately mirrors the original data's statistical properties. <br> C) To make the synthetic data more visually appealing than the original. <br> D) To reduce the file size of the synthetic data. <br> <br> Expand to see the correct answer." collapse="true"}
+The correct answer is B) To confirm the synthetic data accurately mirrors the original data's statistical properties.
+:::
+
+::: {.callout-tip title="**What method within the MICE package is often used for imputing missing continuous variables in preparation for synthetic data generation?** <br> <br> A) Linear regression <br> B) K-nearest neighbors <br> C) Predictive Mean Matching (PMM) <br> D) Random Forest <br> <br> Expand to see the correct answer." collapse="true"}
+The correct answer is C) Predictive Mean Matching (PMM).
+:::
+
+::: {.callout-tip title="**In the context of synthetic data, what does a low pMSE (Propensity Score Mean Squared Error) value indicate?** <br> <br> A) The synthetic data requires more variables. <br> B) The synthetic data is of poor quality. <br> C) The synthetic data closely replicates the relationships found in the real data. <br> D) The synthetic data is significantly different from the real data. <br> <br> Expand to see the correct answer." collapse="true"}
+The correct answer is C) The synthetic data closely replicates the relationships found in the real data.
+:::
