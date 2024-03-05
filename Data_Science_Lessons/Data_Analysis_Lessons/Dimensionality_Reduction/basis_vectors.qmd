@@ -1,11 +1,112 @@
 ---
 title: "Introduction to Basis Vectors"
+bibliography: refs_dimReduction.bib
 description: "Foundational lesson for Dimensionality Reduction Module (structure is work in progress)"
 format:
   html:
     code-fold: false
 ---
 
+::: {.callout-note title="Note to self (dcarey)"}
+
+Existing resources:
+* PSA lecture - Representing things with data
+* Dimensionality reduction in strength testing.pptx
+* SpatialDimReduction.pptx
+* BasicsBasis.pptx
+* https://danielroelfs.com/blog/a-basic-comparison-between-factor-analysis-pca-and-ica/
+
+MixOmics: This R package is handy and covers (s)PCA, (s)PLS-DA, CCA. It is designed for fusion of several omic layers (e.g., genomics and metabolomics). eBook attached.
+
+Multiblock: This R packages covers multiblock data fusion. It has good RM or LiMM-SCA function. However, they are a bit hard to interpret. eBook attached and worth checking the vignettes.
+
+ropls: Implementation of SIMCA in R. Mainly used for orthogonal PLS-DA (OPLS-DA). Check the vignette.
+
+ALASCA: Good implementation of RM_ASCA functions. Visualisations are good too. Paper attached.
+
+:::
+
+
 ## Introduction
 
-This is a template tutorial. The Iris dataset is explored here as an example in R. 
+This is a template tutorial. 
+
+
+## Motivations
+
+Why is dimensionality reduction important to learn about.
+
+* What is the _"dimensionality"_ of a dataset?
+* What does it mean to capture the variance of a dataset in fewer dimensions?
+
+
+## Background knowledge
+
+
+### Datasets as matrices
+
+A dataset can be thought of as a matrix because it's essentially a two-dimensional arrangement of numbers, where rows represent individual observations or samples, and columns represent different variables or features.
+
+This 
+
+**IMAGE: Excel spreadsheet to a matrix. Showing how some things like metadata and id columns get dropped. The "spreadsheet" is the data + organising and identifying metadata. The data matrix is the arrangements of the numbers alone.**
+
+This matrix representation makes it easy to perform various mathematical operations and analyses on the dataset, such as matrix multiplication, linear algebra operations, and statistical computations. It's a fundamental way of organizing and analyzing data, especially in fields like machine learning and data science.
+
+#### Non-tabular data
+
+A set of images can be treated as a data matrix by first representing each image as a vector, and then combining these vectors into a matrix. Here's a general process:
+
+Flatten the Images: Convert each image into a one-dimensional vector by concatenating its rows or columns. For example, if you have an image with dimensions 100x100 pixels, you would concatenate all the pixel values along either the rows (resulting in a vector of length 10000) or the columns.
+
+Arrange the Vectors: Arrange these flattened vectors into rows or columns of a matrix. Each row or column of the matrix corresponds to one image in your dataset.
+
+**IMAGE: images to a matrix**
+
+A set of waveforms can be treated as a data matrix by representing each waveform as a vector and then combining these vectors into a matrix.
+
+**IMAGE: biomech waveforms to a matrix**
+
+Once represented as matrices, these data types can be manipulated, analyzed, and processed using various mathematical and computational techniques, including linear algebra, signal processing, and machine learning algorithms. This matrix representation allows for efficient storage, computation, and analysis of complex data structures.
+
+
+
+### Dimensionality
+
+The dimensionality of a dataset refers to the number of features or variables used to describe each data point within that dataset. In simpler terms, it's the number of columns or dimensions in your dataset.
+
+
+### Basis vectors
+
+In math lingo, we can say that a basis vector is like a "building block" for describing points in space. You can combine these basis vectors in different amounts to reach any point in your space. They give you a way to break down complex positions into simpler parts.
+
+#### Change of basis
+
+In mathematics, particularly linear algebra, a change of basis operation is a transformation that allows you to express vectors in a new coordinate system. It's like changing the perspective from which you view the vectors, while keeping their underlying meaning intact.
+
+
+## Example: 
+
+Let's now work through a conrete (albeit contrived) example of dimensionality reduction in action to consolidate these background topics.
+
+**2x simulated datasets both with two dimensions. One is made up sprint and hurdle times near perfect correlation, the other is sprint times and fingernail length (or something else obviously unrelated) with no correlation. Run a PCA on both and show some graphs. Do the calculations explicitly to show the basis transformation preserves the original values, and how "variance explained" is calculated.**
+
+
+## Cautions
+
+No analysis method is without potential issues that can lead to misinterpretting data. Dimensionality reduction methods are no exception to this. As always there is no substitute for careful thinking, checking and re-checking, and being cautious.
+
+### Limitations of PCA
+
+This artcicle [@dyer2023simplest] shows how PCA will return the same result on three very different datasets (reminiscent of the famous Anscombe's quartet result). They argue that relaxing some of the constraints of PCA and using more flexible models may be beneficial in some situations.
+
+**Check this against biomech data**: Shinn [@shinn2023phantom] - "Here, we show that two common properties of data violate these assumptions (of PCA) and cause oscillatory principal components: smoothness, and shifts in time or space. These two properties implicate almost all neuroscience data"
+
+## Extensions
+
+PCA of waveforms and functional PCA: A primer for biomechanics - <https://github.com/johnwarmenhoven/PCA-FPCA>
+
+## References
+
+::: {#refs}
+:::
