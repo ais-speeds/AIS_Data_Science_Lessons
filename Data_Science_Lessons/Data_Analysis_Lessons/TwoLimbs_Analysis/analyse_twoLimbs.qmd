@@ -1,0 +1,67 @@
+---
+title: "Analysis of limb-based data"
+bibliography: refs_twoLimbs.bib
+description: ""
+format:
+  html:
+    code-fold: false
+---
+
+::: {.callout-note title="Note to self (dcarey)"}
+
+
+
+:::
+
+
+## Introduction
+
+This is a template tutorial. 
+
+
+## Motivations
+
+* Very common to collect data on individual limbs from the same person.
+* This natually leads to _repeated measures_ data.
+* There will clearly be correlation between the left and right limbs from the same person that should be considered when doing any analysis.
+
+
+## Background knowledge
+
+
+Within-subject correlation: Since data is collected from the same individuals, there may be correlations between measurements taken from different limbs of the same person. Ignoring this correlation can lead to biased estimates and incorrect conclusions. Statistical techniques such as mixed-effects models or generalized estimating equations (GEE) can be used to account for within-subject correlation.
+
+Randomization and order effects: If measurements are collected in a specific order or sequence, there may be systematic biases or order effects that need to be considered. Randomizing the order of measurement collection can help mitigate these effects.
+
+Cross-limb comparisons: Comparing data across different limbs of the same individual requires careful consideration of potential confounding factors such as handedness or dominant limb. Adjustments may be necessary to account for these differences when making comparisons.
+
+Intra-individual variability: Individuals may exhibit variability in measurements within and between their limbs. Understanding and accounting for this variability is essential for accurate analysis and interpretation of results.
+
+Sample size considerations: Since data is collected from the same individuals, the effective sample size may be smaller than the total number of limbs measured. This can affect the power of statistical tests and the precision of estimates, so sample size calculations should account for within-subject correlation.
+
+## Example data
+
+
+Examples of some good visualisations of limb data. Show the within subject correlation
+
+Also include some code in here to show how to manipulate data in wide to long format.
+
+How to deal with multiple trials - average, best of, median, or model all observations.
+
+## Task: An example use case for this type of data
+
+
+### Analysis with repeated measures ANOVA
+
+
+### Analysis with mixed effect models
+
+
+### Analysis with generalised estimating equations
+
+
+
+## References
+
+::: {#refs}
+:::
