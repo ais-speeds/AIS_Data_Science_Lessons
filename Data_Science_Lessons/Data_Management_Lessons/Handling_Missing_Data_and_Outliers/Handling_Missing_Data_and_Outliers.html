@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Data Integrity: Handling Missing Data and Outliers</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Handling_Missing_Data_and_Outliers_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Handling_Missing_Data_and_Outliers_files/libs/quarto-html/quarto.js"></script>
+<script src="Handling_Missing_Data_and_Outliers_files/libs/quarto-html/popper.min.js"></script>
+<script src="Handling_Missing_Data_and_Outliers_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Handling_Missing_Data_and_Outliers_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Handling_Missing_Data_and_Outliers_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Handling_Missing_Data_and_Outliers_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Handling_Missing_Data_and_Outliers_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Handling_Missing_Data_and_Outliers_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Handling_Missing_Data_and_Outliers_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">1</span> Learning Outcomes</a></li>
+  <li><a href="#introduction-ensuring-data-integrity-in-sport-and-exercise-science" id="toc-introduction-ensuring-data-integrity-in-sport-and-exercise-science" class="nav-link" data-scroll-target="#introduction-ensuring-data-integrity-in-sport-and-exercise-science"><span class="header-section-number">2</span> Introduction: Ensuring Data Integrity in Sport and Exercise Science</a>
+  <ul class="collapse">
+  <li><a href="#the-challenge-of-missing-data-and-outliers" id="toc-the-challenge-of-missing-data-and-outliers" class="nav-link" data-scroll-target="#the-challenge-of-missing-data-and-outliers"><span class="header-section-number">2.1</span> The Challenge of Missing Data and Outliers</a>
+  <ul class="collapse">
+  <li><a href="#why-its-important-to-handle-missing-data" id="toc-why-its-important-to-handle-missing-data" class="nav-link" data-scroll-target="#why-its-important-to-handle-missing-data"><span class="header-section-number">2.1.1</span> Why It’s Important to Handle Missing Data</a></li>
+  <li><a href="#why-data-might-be-missing" id="toc-why-data-might-be-missing" class="nav-link" data-scroll-target="#why-data-might-be-missing"><span class="header-section-number">2.1.2</span> Why Data Might Be Missing</a></li>
+  <li><a href="#identifying-and-checking-for-missing-data" id="toc-identifying-and-checking-for-missing-data" class="nav-link" data-scroll-target="#identifying-and-checking-for-missing-data"><span class="header-section-number">2.1.3</span> Identifying and Checking for Missing Data</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#understanding-missing-data" id="toc-understanding-missing-data" class="nav-link" data-scroll-target="#understanding-missing-data"><span class="header-section-number">3</span> Understanding Missing Data</a>
+  <ul class="collapse">
+  <li><a href="#types-of-missing-data" id="toc-types-of-missing-data" class="nav-link" data-scroll-target="#types-of-missing-data"><span class="header-section-number">3.1</span> Types of Missing Data</a>
+  <ul class="collapse">
+  <li><a href="#missing-completely-at-random-mcar" id="toc-missing-completely-at-random-mcar" class="nav-link" data-scroll-target="#missing-completely-at-random-mcar"><span class="header-section-number">3.1.1</span> Missing Completely at Random (MCAR)</a></li>
+  <li><a href="#missing-at-random-mar" id="toc-missing-at-random-mar" class="nav-link" data-scroll-target="#missing-at-random-mar"><span class="header-section-number">3.1.2</span> Missing at Random (MAR)</a></li>
+  <li><a href="#missing-not-at-random-mnar" id="toc-missing-not-at-random-mnar" class="nav-link" data-scroll-target="#missing-not-at-random-mnar"><span class="header-section-number">3.1.3</span> Missing Not at Random (MNAR)</a></li>
+  </ul></li>
+  <li><a href="#exploring-data-missingness-in-your-dataset" id="toc-exploring-data-missingness-in-your-dataset" class="nav-link" data-scroll-target="#exploring-data-missingness-in-your-dataset"><span class="header-section-number">3.2</span> Exploring Data Missingness In Your Dataset</a>
+  <ul class="collapse">
+  <li><a href="#loading-and-preparing-data-for-analysis" id="toc-loading-and-preparing-data-for-analysis" class="nav-link" data-scroll-target="#loading-and-preparing-data-for-analysis"><span class="header-section-number">3.2.1</span> Loading and Preparing Data for Analysis</a></li>
+  <li><a href="#preliminary-data-cleaning-steps" id="toc-preliminary-data-cleaning-steps" class="nav-link" data-scroll-target="#preliminary-data-cleaning-steps"><span class="header-section-number">3.2.2</span> Preliminary Data Cleaning Steps</a></li>
+  <li><a href="#investigating-missingness" id="toc-investigating-missingness" class="nav-link" data-scroll-target="#investigating-missingness"><span class="header-section-number">3.2.3</span> Investigating Missingness</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#approaches-for-handling-missing-data" id="toc-approaches-for-handling-missing-data" class="nav-link" data-scroll-target="#approaches-for-handling-missing-data"><span class="header-section-number">4</span> Approaches for Handling Missing Data</a>
+  <ul class="collapse">
+  <li><a href="#handling-missing-data-with-deletion---use-with-caution" id="toc-handling-missing-data-with-deletion---use-with-caution" class="nav-link" data-scroll-target="#handling-missing-data-with-deletion---use-with-caution"><span class="header-section-number">4.1</span> Handling Missing Data With Deletion - Use With Caution</a>
+  <ul class="collapse">
+  <li><a href="#precautions-when-using-deletion" id="toc-precautions-when-using-deletion" class="nav-link" data-scroll-target="#precautions-when-using-deletion"><span class="header-section-number">4.1.1</span> Precautions When Using Deletion</a></li>
+  </ul></li>
+  <li><a href="#handling-missing-data---imputation-techniques" id="toc-handling-missing-data---imputation-techniques" class="nav-link" data-scroll-target="#handling-missing-data---imputation-techniques"><span class="header-section-number">4.2</span> Handling Missing Data - Imputation Techniques</a>
+  <ul class="collapse">
+  <li><a href="#meanmedianmode-imputation" id="toc-meanmedianmode-imputation" class="nav-link" data-scroll-target="#meanmedianmode-imputation"><span class="header-section-number">4.2.1</span> Mean/Median/Mode Imputation</a></li>
+  <li><a href="#k-nearest-neighbors-knn-imputation" id="toc-k-nearest-neighbors-knn-imputation" class="nav-link" data-scroll-target="#k-nearest-neighbors-knn-imputation"><span class="header-section-number">4.2.2</span> K-Nearest Neighbors (KNN) Imputation</a></li>
+  <li><a href="#multiple-imputation-by-chained-equations-mice-with-predictive-mean-matching-pmm" id="toc-multiple-imputation-by-chained-equations-mice-with-predictive-mean-matching-pmm" class="nav-link" data-scroll-target="#multiple-imputation-by-chained-equations-mice-with-predictive-mean-matching-pmm"><span class="header-section-number">4.2.3</span> Multiple Imputation by Chained Equations (MICE) with Predictive Mean Matching (PMM)</a></li>
+  </ul></li>
+  <li><a href="#common-pitfalls-in-handling-missing-data" id="toc-common-pitfalls-in-handling-missing-data" class="nav-link" data-scroll-target="#common-pitfalls-in-handling-missing-data"><span class="header-section-number">4.3</span> Common Pitfalls in Handling Missing Data</a></li>
+  </ul></li>
+  <li><a href="#understanding-and-handling-outliers" id="toc-understanding-and-handling-outliers" class="nav-link" data-scroll-target="#understanding-and-handling-outliers"><span class="header-section-number">5</span> Understanding and Handling Outliers</a>
+  <ul class="collapse">
+  <li><a href="#types-of-outliers" id="toc-types-of-outliers" class="nav-link" data-scroll-target="#types-of-outliers"><span class="header-section-number">5.1</span> Types of Outliers</a>
+  <ul class="collapse">
+  <li><a href="#global-outliers" id="toc-global-outliers" class="nav-link" data-scroll-target="#global-outliers"><span class="header-section-number">5.1.1</span> Global Outliers</a></li>
+  <li><a href="#contextual-outliers" id="toc-contextual-outliers" class="nav-link" data-scroll-target="#contextual-outliers"><span class="header-section-number">5.1.2</span> Contextual Outliers</a></li>
+  <li><a href="#collective-outliers" id="toc-collective-outliers" class="nav-link" data-scroll-target="#collective-outliers"><span class="header-section-number">5.1.3</span> Collective Outliers</a></li>
+  </ul></li>
+  <li><a href="#considerations-for-handling-outliers" id="toc-considerations-for-handling-outliers" class="nav-link" data-scroll-target="#considerations-for-handling-outliers"><span class="header-section-number">5.2</span> Considerations For Handling Outliers</a></li>
+  <li><a href="#identifying-outliers-in-heart-rate-data-example" id="toc-identifying-outliers-in-heart-rate-data-example" class="nav-link" data-scroll-target="#identifying-outliers-in-heart-rate-data-example"><span class="header-section-number">5.3</span> Identifying Outliers in Heart Rate Data (Example)</a>
+  <ul class="collapse">
+  <li><a href="#artificially-adding-high-outliers-to-the-dataset" id="toc-artificially-adding-high-outliers-to-the-dataset" class="nav-link" data-scroll-target="#artificially-adding-high-outliers-to-the-dataset"><span class="header-section-number">5.3.1</span> Artificially Adding High Outliers to the Dataset</a></li>
+  <li><a href="#analyzing-mean-and-median" id="toc-analyzing-mean-and-median" class="nav-link" data-scroll-target="#analyzing-mean-and-median"><span class="header-section-number">5.3.2</span> Analyzing Mean and Median</a></li>
+  <li><a href="#visualizing-outliers-with-a-boxplot" id="toc-visualizing-outliers-with-a-boxplot" class="nav-link" data-scroll-target="#visualizing-outliers-with-a-boxplot"><span class="header-section-number">5.3.3</span> Visualizing Outliers with a Boxplot</a></li>
+  <li><a href="#calculating-the-interquartile-range-iqr-and-defining-outliers" id="toc-calculating-the-interquartile-range-iqr-and-defining-outliers" class="nav-link" data-scroll-target="#calculating-the-interquartile-range-iqr-and-defining-outliers"><span class="header-section-number">5.3.4</span> Calculating the Interquartile Range (IQR) and Defining Outliers</a></li>
+  <li><a href="#identifying-outliers-with-boolean-masks" id="toc-identifying-outliers-with-boolean-masks" class="nav-link" data-scroll-target="#identifying-outliers-with-boolean-masks"><span class="header-section-number">5.3.5</span> Identifying Outliers with Boolean Masks</a></li>
+  <li><a href="#visualizing-outliers-with-a-scatter-plot" id="toc-visualizing-outliers-with-a-scatter-plot" class="nav-link" data-scroll-target="#visualizing-outliers-with-a-scatter-plot"><span class="header-section-number">5.3.6</span> Visualizing Outliers with a Scatter Plot</a></li>
+  </ul></li>
+  <li><a href="#handling-outliers-in-your-dataset" id="toc-handling-outliers-in-your-dataset" class="nav-link" data-scroll-target="#handling-outliers-in-your-dataset"><span class="header-section-number">5.4</span> Handling Outliers in Your Dataset</a></li>
+  </ul></li>
+  <li><a href="#conclusion-and-reflection" id="toc-conclusion-and-reflection" class="nav-link" data-scroll-target="#conclusion-and-reflection"><span class="header-section-number">6</span> Conclusion and Reflection</a></li>
+  <li><a href="#knowledge-spot-check" id="toc-knowledge-spot-check" class="nav-link" data-scroll-target="#knowledge-spot-check"><span class="header-section-number">7</span> Knowledge Spot-Check</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Handling_Missing_Data_and_Outliers.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Integrity: Handling Missing Data and Outliers</h1>
+<p class="subtitle lead">Handling and Mitigating the Impact of Missing Data and Outliers in Sports Data Analysis</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="abstract-title">Abstract</div>
+    Explore the critical aspects of maintaining data integrity in sports and exercise science through proficient handling of missing data and outliers. This lesson guides you through identifying, understanding, and addressing these data challenges, using R to implement strategies that enhance dataset quality and reliability. Learn to apply deletion and imputation techniques for missing data and discover methods to identify and manage outliers, ensuring your data analysis is accurate and insightful. Tailored for sports analysts and data practitioners, this lesson empowers you with the skills to refine sports data, transforming potential data integrity issues into opportunities for deeper analysis and informed decision-making. Whether you’re assessing athlete performance or optimizing training programs, mastering these techniques is essential for data-driven sports science.
+  </div>
+</div>
+
+</header>
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Keywords">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Data Integrity, Sports Analytics, Missing Data, Outliers, Data Cleaning, Data Imputation, Data Visualization, R Programming, Exploratory Data Analysis (EDA), Boxplot, Scatter Plot, Mean, Median, Interquartile Range (IQR), dplyr, ggplot2, visdat, speedsR.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Lesson's Level">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorized as <span style="color:#CD7F32">BRONZE</span>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Lesson's Main Idea**">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Lesson’s Main Idea</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Ensuring data integrity through effective management of missing data and outliers is crucial in sport and exercise science analytics, ensuring analyses are based on accurate and comprehensive information.</li>
+<li>The lesson introduces practical strategies and R tools for handling missing data and outliers, including deletion, imputation, and visualization techniques, equipping practitioners with methods to enhance data reliability and analysis quality.</li>
+</ul>
+</div>
+</div>
+<div id="disclaimer" class="callout callout-style-default callout-warning callout-titled" title="Dataset Featured In This Lesson">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Dataset Featured In This Lesson
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Disclaimer</strong>: The dataset featured in this lesson is entirely fictitious and has been artificially created for pedagogical purposes. Any resemblance to actual persons, living or deceased, or real-world data is purely coincidental and not intended.</p>
+</div>
+</div>
+<section id="learning-outcomes" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning Outcomes</h1>
+<p>By the end of this lesson, you will have developed the skills to:</p>
+<ul>
+<li><p><strong>Identify and Understand Missing Data</strong>: Recognize the different types of missing data within sports and exercise science datasets and comprehend their implications on data analysis.</p></li>
+<li><p><strong>Apply Strategies for Handling Missing Data</strong>: Employ practical methods to address missing data, including deletion and imputation techniques, leveraging R’s capabilities to maintain or restore dataset integrity.</p></li>
+<li><p><strong>Visualize and Identify Outliers</strong>: Utilize visualization tools to detect outliers in the data, gaining insights into their nature and potential impact on sports analytics.</p></li>
+<li><p><strong>Implement Outlier Management Techniques</strong>: Choose and apply appropriate strategies for managing outliers, considering the context and objectives of the analysis, to enhance the reliability of conclusions drawn from the data.</p></li>
+</ul>
+</section>
+<section id="introduction-ensuring-data-integrity-in-sport-and-exercise-science" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction: Ensuring Data Integrity in Sport and Exercise Science</h1>
+<p>In the field of sports and exercise science, data serves as the cornerstone for making informed decisions that enhance athlete performance and optimize training programs. However, the utility of this data is heavily dependent on its quality — its completeness and accuracy. Missing data and outliers can significantly compromise data integrity, leading to flawed analyses and potentially misleading conclusions. This lesson explores the critical aspects of handling missing data and outliers, emphasizing their impact on sports analytics.</p>
+<section id="the-challenge-of-missing-data-and-outliers" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="the-challenge-of-missing-data-and-outliers"><span class="header-section-number">2.1</span> The Challenge of Missing Data and Outliers</h2>
+<p>Missing data occurs when no value is stored for a variable within a dataset, often indicated as N/A, NaN, or simply left blank. Outliers, on the other hand, are data points that deviate significantly from other observations. Both present unique challenges in data analysis, particularly in sports analytics, where precise measurements are crucial for performance assessment and strategic planning.</p>
+<section id="why-its-important-to-handle-missing-data" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="why-its-important-to-handle-missing-data"><span class="header-section-number">2.1.1</span> Why It’s Important to Handle Missing Data</h3>
+<p>The presence of missing data undermines the reliability of a dataset, creating gaps in information that can distort the understanding of an athlete’s performance or a team’s dynamics. Effectively handling missing data is essential to maintain statistical power and ensure accurate, evidence-based conclusions. In sports analytics, where datasets often describe populations of athletes or events, addressing missing data enables a comprehensive analysis of performance trends and health metrics.</p>
+</section>
+<section id="why-data-might-be-missing" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="why-data-might-be-missing"><span class="header-section-number">2.1.2</span> Why Data Might Be Missing</h3>
+<p>Missing data can result from a variety of causes, from systematic errors during data collection to the absence of information provided by data sources. Identifying the underlying reasons for missing data is the first step in determining the most appropriate method for addressing it.</p>
+<p>The most common reason for missing data is the failure to record a value for a variable. This omission can occur at any stage of the data collection process, whether due to technological issues or human error. Understanding these systematic causes is crucial for preventing missing data and ensuring dataset completeness.</p>
+</section>
+<section id="identifying-and-checking-for-missing-data" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="identifying-and-checking-for-missing-data"><span class="header-section-number">2.1.3</span> Identifying and Checking for Missing Data</h3>
+<p>To safeguard against the implications of missing data, it’s vital to employ strategies for its identification and resolution:</p>
+<ol type="1">
+<li><p><strong>Verifying Data Uploads</strong>: Ensuring data is accurately uploaded from the outset can prevent missing data due to technical glitches.</p></li>
+<li><p><strong>Inspecting Data Samples</strong>: Examining small portions of the dataset can help quickly identify missing values.</p></li>
+<li><p><strong>Utilizing Summary Statistics</strong>: Generating summary statistics for the dataset can highlight discrepancies in data counts, signaling the presence of missing data.</p></li>
+</ol>
+<p>The process of handling missing data in sport and exercise science involves a careful assessment of the dataset’s scope and the potential impact of any missing values. By applying appropriate strategies — from data imputation to deletion of incomplete entries — researchers and practitioners can preserve the integrity of their analyses, drawing insights that are both accurate and actionable. This foundational understanding sets the stage for exploring specific techniques and considerations in managing missing data and outliers within the sports analytics domain.</p>
+</section>
+</section>
+</section>
+<section id="understanding-missing-data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Understanding Missing Data</h1>
+<p>In the domain of sport and exercise science, data integrity plays a crucial role. This section delves into the types of missing data, each characterized by its pattern of missingness, and provides sport-specific examples to illustrate how such situations can arise in practice.</p>
+<section id="types-of-missing-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="types-of-missing-data"><span class="header-section-number">3.1</span> Types of Missing Data</h2>
+<p>Data missingness can significantly impact the conclusions drawn from a study or analysis. It is vital to understand the nature of missing data to apply the most appropriate handling methods. Missing data can be broadly categorized into three types: Missing Completely at Random (MCAR), Missing at Random (MAR), and Missing Not at Random (MNAR).</p>
+<section id="missing-completely-at-random-mcar" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="missing-completely-at-random-mcar"><span class="header-section-number">3.1.1</span> Missing Completely at Random (MCAR)</h3>
+<p>In MCAR, the likelihood of data being missing is uniform across all observations. An example in sport and exercise science might be a situation where a fitness tracking device sporadically fails to record the heart rate during a training session due to technical glitches, affecting data entries randomly.</p>
+<table class="table">
+<caption>Example of MCAR data</caption>
+<thead>
+<tr class="header">
+<th>Participant ID</th>
+<th style="text-align: left;">Activity Type</th>
+<th style="text-align: right;">Heart Rate (bpm)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: left;">Running</td>
+<td style="text-align: right;">150</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: left;">Cycling</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: left;">Swimming</td>
+<td style="text-align: right;">140</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: left;">Running</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td style="text-align: left;">Cycling</td>
+<td style="text-align: right;">160</td>
+</tr>
+</tbody>
+</table>
+<p>This example illustrates random missingness in heart rate data due to device failure, not related to any specific condition of the participants or the type of activity.</p>
+</section>
+<section id="missing-at-random-mar" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="missing-at-random-mar"><span class="header-section-number">3.1.2</span> Missing at Random (MAR)</h3>
+<p>MAR occurs when the propensity for data to be missing is related to observed data but not to the missing data itself. For instance, younger athletes might be less diligent in recording their dietary intake, making the missingness dependent on the observed data (age) but not on the dietary intake itself.</p>
+<table class="table">
+<caption>Example of MAR data</caption>
+<thead>
+<tr class="header">
+<th>Participant ID</th>
+<th style="text-align: left;">Age</th>
+<th style="text-align: right;">Dietary Intake (calories)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: left;">25</td>
+<td style="text-align: right;">2500</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: left;">30</td>
+<td style="text-align: right;">2300</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: left;">19</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td style="text-align: left;">27</td>
+<td style="text-align: right;">2200</td>
+</tr>
+</tbody>
+</table>
+<p>The pattern of missing dietary intake data among younger athletes illustrates MAR, where missingness is related to age, an observed variable.</p>
+</section>
+<section id="missing-not-at-random-mnar" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="missing-not-at-random-mnar"><span class="header-section-number">3.1.3</span> Missing Not at Random (MNAR)</h3>
+<p>MNAR happens when the missingness is related to the unobserved data itself. A relevant scenario in sport and exercise science could involve athletes with injuries being less inclined to report their performance metrics, fearing that the data might reflect poorly on their capabilities.</p>
+<table class="table">
+<caption>Example of MNAR data</caption>
+<thead>
+<tr class="header">
+<th>Participant ID</th>
+<th style="text-align: left;">Injury Status</th>
+<th style="text-align: right;">Performance Score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: left;">None</td>
+<td style="text-align: right;">85</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: left;">Minor</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: left;">None</td>
+<td style="text-align: right;">90</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: left;">Major</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td style="text-align: left;">None</td>
+<td style="text-align: right;">88</td>
+</tr>
+</tbody>
+</table>
+<p>In this case, the absence of performance scores for injured athletes signifies MNAR, as the missingness directly correlates with the undisclosed poor performance related to their injuries.</p>
+<p>Understanding these categories of missing data facilitates the development of targeted strategies for their management, crucial for maintaining the quality and reliability of data analyses in sport and exercise science. Each type requires a nuanced approach, from imputation methods tailored for MCAR situations to more sophisticated techniques for addressing MAR and MNAR, ensuring the integrity of research findings and applications in the field.</p>
+</section>
+</section>
+<section id="exploring-data-missingness-in-your-dataset" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="exploring-data-missingness-in-your-dataset"><span class="header-section-number">3.2</span> Exploring Data Missingness In Your Dataset</h2>
+<p>After discussing the types and impacts of missing data in sport and exercise science, this subsection moves to practical exploration. Using a fictitious cycling dataset from the <code>speedsR</code> package, we’ll show how to identify and visualize missing data, leveraging the concatenated dataset <code>cycling_data</code>. This demonstration is crucial for preparing the data for in-depth analysis and ensuring that subsequent decisions are informed by accurate and comprehensive information. Through a streamlined process in R, we aim to uncover the presence and patterns of missing data, equipping you with the knowledge to implement effective strategies for addressing these issues.</p>
+<section id="loading-and-preparing-data-for-analysis" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="loading-and-preparing-data-for-analysis"><span class="header-section-number">3.2.1</span> Loading and Preparing Data for Analysis</h3>
+<p>To explore data missingness, we start by accessing an array of fictitious datasets designed for educational purposes, provided through the <code>speedsR</code> package. These datasets, while synthetic, replicate the complex scenarios often faced by practitioners in sport and exercise science, making them ideal for our exploration.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co"># clear the workspace</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Libraries required for data manipulation</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co"># provides functions for manipulating datasets</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co"># provides functions for data visualizations</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr) <span class="co"># simplifies the process of working with strings, providing consistent and easy-to-understand functions</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(visdat) <span class="co"># enables visual inspection of data quality and structure</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(speedsR) <span class="co"># collection of sports-specific benchmark datasets - part of the AIS SPEEDS project</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading datasets directly from the `speedsR` package</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>dataset_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cycling_untidy_fictitious_data_1"</span>, </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"cycling_untidy_fictitious_data_2"</span>, </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"cycling_untidy_fictitious_data_3"</span>, </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"cycling_untidy_fictitious_data_4"</span>, </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"cycling_untidy_fictitious_data_5"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Concatenating datasets into a single tibble</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">lapply</span>(dataset_names, <span class="cf">function</span>(name) <span class="fu">get</span>(name)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This streamlined process creates a comprehensive dataset, <code>cycling_data</code>, ready for the analysis in this lesson. By combining datasets in this manner, we mimic the real-world scenario of working with extensive and multifaceted data, characteristic of the sport and exercise science field.</p>
+</section>
+<section id="preliminary-data-cleaning-steps" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="preliminary-data-cleaning-steps"><span class="header-section-number">3.2.2</span> Preliminary Data Cleaning Steps</h3>
+<p>Before diving into exploring missingness, it’s essential to ensure our dataset is properly cleaned and prepared. The following steps are crucial for standardizing the dataset, making it easier to work with and analyze. Detailed explanations of these steps can be found in our dedicated lesson on <a href="https://speeds.quarto.pub/speeds/Data_Wrangling_Cleaning_Tidying.html">Data Cleaning and Wrangling</a>.</p>
+<section id="initial-data-exploration" class="level4" data-number="3.2.2.1">
+<h4 data-number="3.2.2.1" class="anchored" data-anchor-id="initial-data-exploration"><span class="header-section-number">3.2.2.1</span> Initial Data Exploration</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the dataset</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+     ID Race_date  Team      participant `Gender AGE` `heart RATE` `DISTANCE km`
+  &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;               &lt;dbl&gt;         &lt;dbl&gt;
+1     1 07-06-2023 Victoria… Mary_White  &lt;NA&gt;                   NA          36.5
+2     2 15-11-2023 Queensla… Elizabeth_… F33                   146          66.3
+3     3 11-06-2023 Tasmania… Robert_Smi… M18                    73          90.6
+4     4 &lt;NA&gt;       &lt;NA&gt;      Jennifer_W… F25                   123          NA  
+5     5 18-07-2023 Tasmania… Mary_Jones  F19                    69          88.1
+6     6 20-02-2023 Queensla… Mary_Smith  F30                    67          49.1
+# ℹ 1 more variable: `VO2 MAX` &lt;chr&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a statistical summary of the dataset</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       ID        Race_date             Team           participant       
+ Min.   : 1.0   Length:35          Length:35          Length:35         
+ 1st Qu.: 9.5   Class :character   Class :character   Class :character  
+ Median :18.0   Mode  :character   Mode  :character   Mode  :character  
+ Mean   :18.0                                                           
+ 3rd Qu.:26.5                                                           
+ Max.   :35.0                                                           
+                                                                        
+  Gender AGE          heart RATE      DISTANCE km      VO2 MAX         
+ Length:35          Min.   : 60.00   Min.   :31.44   Length:35         
+ Class :character   1st Qu.: 89.75   1st Qu.:48.84   Class :character  
+ Mode  :character   Median :115.00   Median :71.23   Mode  :character  
+                    Mean   :113.67   Mean   :67.75                     
+                    3rd Qu.:139.50   3rd Qu.:83.21                     
+                    Max.   :175.00   Max.   :97.06                     
+                    NA's   :5        NA's   :7                         </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find out the number of rows in the dataset</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>nrow_cycling_data <span class="ot">&lt;-</span> <span class="fu">nrow</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="cleaning-column-names" class="level4" data-number="3.2.2.2">
+<h4 data-number="3.2.2.2" class="anchored" data-anchor-id="cleaning-column-names"><span class="header-section-number">3.2.2.2</span> Cleaning Column Names</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve and clean column names for consistency and ease of use</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>col_names <span class="ot">&lt;-</span> <span class="fu">colnames</span>(cycling_data) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tolower</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">s+|</span><span class="sc">\\</span><span class="st">s+$"</span>, <span class="st">""</span>, .) <span class="sc">%&gt;%</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">"_"</span>, .)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the cleaned column names back to the dataset</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(cycling_data) <span class="ot">&lt;-</span> col_names</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Manually rename specific columns for clarity</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> <span class="fu">rename</span>(cycling_data, <span class="at">VO2_max =</span> vo2_max, <span class="at">ID =</span> id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="investigating-missingness" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="investigating-missingness"><span class="header-section-number">3.2.3</span> Investigating Missingness</h3>
+<p>With the dataset cleaned and column names standardized, we now focus on identifying and visualizing the missing data within <code>cycling_data</code>.</p>
+<section id="identifying-and-addressing-empty-cells" class="level4" data-number="3.2.3.1">
+<h4 data-number="3.2.3.1" class="anchored" data-anchor-id="identifying-and-addressing-empty-cells"><span class="header-section-number">3.2.3.1</span> Identifying and Addressing Empty Cells</h4>
+<p>First, we convert any empty cells to NA, standardizing the representation of missing values across the dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace empty cells with NA</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>cycling_data[cycling_data <span class="sc">==</span> <span class="st">""</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="counting-missing-values" class="level4" data-number="3.2.3.2">
+<h4 data-number="3.2.3.2" class="anchored" data-anchor-id="counting-missing-values"><span class="header-section-number">3.2.3.2</span> Counting Missing Values</h4>
+<p>To assess the extent of missing data, we count the missing values in each column and the dataset as a whole.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of NA values in each column</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>NA_count_per_column <span class="ot">&lt;-</span> <span class="fu">sapply</span>(cycling_data, <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x)))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(NA_count_per_column)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         ID   race_date        team participant  gender_age  heart_rate 
+          0           6           6           0           5           5 
+distance_km     VO2_max 
+          7           4 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the total number of missing values in the dataset</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>total_NA_count <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(cycling_data))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(total_NA_count)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 33</code></pre>
+</div>
+</div>
+</section>
+<section id="visualizing-missing-data" class="level4" data-number="3.2.3.3">
+<h4 data-number="3.2.3.3" class="anchored" data-anchor-id="visualizing-missing-data"><span class="header-section-number">3.2.3.3</span> Visualizing Missing Data</h4>
+<p>Lastly, we use the <code>vis_miss()</code> function from the <code>visdat</code> package to visually inspect the distribution of missing data within our dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize missing data</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vis_miss</span>(cycling_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Handling_Missing_Data_and_Outliers_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This visualization step not only reveals the presence of missing data but also patterns that may indicate whether the data is Missing Completely at Random (MCAR), Missing at Random (MAR), or Missing Not at Random (MNAR). Such insights are invaluable, guiding us in selecting the most appropriate techniques for handling missingness, whether through imputation, deletion, or more complex statistical modeling approaches.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="approaches-for-handling-missing-data" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Approaches for Handling Missing Data</h1>
+<p>Now that we’ve identified and visualized missing data in our dataset, understanding its nature and implications, the next critical step is to select an optimal strategy for addressing this missingness, ensuring the dataset’s integrity remains intact. Handling missing data effectively is paramount in sports data analysis, as it allows for a more accurate and comprehensive understanding of athletes’ performance, health metrics, and other vital statistics. This section delves into various strategies for managing missing data, focusing on deletion and imputation techniques. We’ll explore how these approaches can be applied in sports data analysis, highlighting specific tools in R suited for these tasks and advising on the most appropriate methods based on the type of missing data encountered.</p>
+<section id="handling-missing-data-with-deletion---use-with-caution" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="handling-missing-data-with-deletion---use-with-caution"><span class="header-section-number">4.1</span> Handling Missing Data With Deletion - Use With Caution</h2>
+<p>Handling missing data with deletion is a strategy that comes with inherent risks and should be approached with caution. This method involves removing records or features from your dataset that contain missing values, through either listwise (complete-case) deletion or pairwise deletion.</p>
+<p><strong>Listwise Deletion</strong>: This approach removes entire records from the dataset if any single value is missing. It’s simple and can be easily implemented but may lead to significant data loss, especially if the dataset contains a lot of missing values. This method assumes that the missing data is Missing Completely at Random (MCAR), which may not always be the case.</p>
+<p><strong>Pairwise Deletion</strong>: Used mainly in statistical analysis, pairwise deletion allows the use of available data by analyzing pairs of variables without discarding entire records. It’s more data-efficient than listwise deletion but can introduce bias if the assumption of data being MCAR is violated.</p>
+<section id="precautions-when-using-deletion" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="precautions-when-using-deletion"><span class="header-section-number">4.1.1</span> Precautions When Using Deletion</h3>
+<p>While deletion methods can be useful, they come with precautions:</p>
+<p><strong>Data Loss</strong>: Both listwise and pairwise deletions can result in a substantial amount of data being discarded, which may reduce the statistical power of any analysis conducted on the dataset.</p>
+<p><strong>Bias</strong>: If the missing data is not MCAR, deletion methods can introduce bias into the analysis, leading to inaccurate conclusions.</p>
+<p>Because of these potential drawbacks, deletion should be considered carefully. It may be suitable for datasets where the proportion of missing data is minimal and is believed to be MCAR. However, in many cases, especially when dealing with larger amounts of missing data or when the data is not MCAR, alternative strategies such as imputation might be more appropriate to preserve the integrity and usefulness of the dataset.</p>
+</section>
+</section>
+<section id="handling-missing-data---imputation-techniques" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="handling-missing-data---imputation-techniques"><span class="header-section-number">4.2</span> Handling Missing Data - Imputation Techniques</h2>
+<p>Building on our exploration of missing data, we delve into effective imputation strategies that offer a structured approach to addressing gaps within sports and exercise science datasets. Highlighted here are key techniques including Mean/Median/Mode Imputation, K-Nearest Neighbors (KNN) Imputation, and Multiple Imputation by Chained Equations (MICE), which incorporates Predictive Mean Matching (PMM) for nuanced imputation. Each method is evaluated for its applicability and effectiveness in various scenarios, providing a comprehensive toolkit for maintaining dataset integrity.</p>
+<section id="meanmedianmode-imputation" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="meanmedianmode-imputation"><span class="header-section-number">4.2.1</span> Mean/Median/Mode Imputation</h3>
+<p><strong>How it Works</strong>: This technique imputes missing values using the central tendency of the data — mean for numeric data, median for skewed numeric data, and mode for categorical data. It is particularly suitable for data missing completely at random (MCAR), providing a straightforward and effective approach to maintaining the integrity of sports and exercise science datasets. The implementation in R is facilitated by the <code>dplyr</code> package, making it an accessible option for sport science practitioners.</p>
+<p><strong>When to Use</strong>: Best for data Missing Completely At Random (MCAR) where the absence of data is independent of any variables. For example, if data from a fitness tracker is sporadically missing due to device error, the missing values can be imputed with this method.</p>
+<p><strong>Suitable for Types of Missing Data</strong>: MCAR.</p>
+</section>
+<section id="k-nearest-neighbors-knn-imputation" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="k-nearest-neighbors-knn-imputation"><span class="header-section-number">4.2.2</span> K-Nearest Neighbors (KNN) Imputation</h3>
+<p><strong>How it Works</strong>: KNN Imputation identifies the ‘k’ closest neighbors within the observed data based on the similarity of available features to fill in missing values. This proximity is determined by the distance between data points, offering a nuanced approach that goes beyond simple averages.</p>
+<p><strong>When to Use</strong>: Particularly beneficial for MAR situations, where the pattern of missingness is related to observable data. An example includes predicting missing nutritional data for athletes during off-seasons by analyzing similar periods with complete information.</p>
+<p><strong>Suitable for Types of Missing Data</strong>: Optimally used for MAR data, as it relies on the relationships within the observed parts of the dataset to estimate missing values.</p>
+</section>
+<section id="multiple-imputation-by-chained-equations-mice-with-predictive-mean-matching-pmm" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="multiple-imputation-by-chained-equations-mice-with-predictive-mean-matching-pmm"><span class="header-section-number">4.2.3</span> Multiple Imputation by Chained Equations (MICE) with Predictive Mean Matching (PMM)</h3>
+<p><strong>How it Works</strong>: MICE addresses missing data by generating multiple imputed datasets, thus reflecting the inherent uncertainty. Through a series of regression models, each tailored to variables with missing entries, it offers a comprehensive approach to imputation. PMM, a key technique within MICE, enhances this process by selecting observed values close to the predicted values for the missing data, useful for handling skewness or outliers.</p>
+<p><strong>When to Use</strong>: This method shines when dealing with complex missing data scenarios, including MAR and MNAR, by leveraging the full dataset for more accurate imputation. It’s particularly valuable for nuanced cases, such as underreported training data among athletes.</p>
+<p><strong>Suitable for Types of Missing Data</strong>: Designed to effectively tackle both MAR and MNAR data, making it a versatile option in sports and exercise science analysis where data missingness can be multifaceted.</p>
+<p>For a detailed example of missing data imputation with MICE and PMM, refer to our lesson on synthetic data generation <a href="https://speeds.quarto.pub/speeds/Synthetic_Data_Generation_With_synthpop.html">Synthetic Data Generation</a>.</p>
+<table class="table">
+<caption>Imputation techniques summary table</caption>
+<colgroup>
+<col style="width: 40%">
+<col style="width: 27%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Technique</th>
+<th style="text-align: left;">Data Suitability</th>
+<th style="text-align: right;">Use Case Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mean/Median/Mode</td>
+<td style="text-align: left;">MCAR</td>
+<td style="text-align: right;">Missing data from a fitness tracker due to device error</td>
+</tr>
+<tr class="even">
+<td>K-Nearest Neighbors</td>
+<td style="text-align: left;">MAR</td>
+<td style="text-align: right;">Missing nutritional data during off-season based on patterns from complete data</td>
+</tr>
+<tr class="odd">
+<td>MICE (with PMM)</td>
+<td style="text-align: left;">MAR, MNAR</td>
+<td style="text-align: right;">Skilled athletes’ incomplete training logs</td>
+</tr>
+</tbody>
+</table>
+<p>These techniques offer a range of options for handling missing data in sport and exercise science, from simple approaches suitable for randomly missing data to more sophisticated methods that account for complex missing data patterns. The choice of technique should be guided by the nature of the missing data, the structure of the dataset, and the specific requirements of the analysis.</p>
+</section>
+</section>
+<section id="common-pitfalls-in-handling-missing-data" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="common-pitfalls-in-handling-missing-data"><span class="header-section-number">4.3</span> Common Pitfalls in Handling Missing Data</h2>
+<p>In tackling missing data, it’s crucial to steer clear of overly simplistic fixes. Replacing missing values with zeros or just deleting them might seem easy but can significantly bias your analysis. This is particularly true when zero values themselves can be meaningful or represent actual observations in sports and exercise science data. Misusing zeros as placeholders for missing data can distort the true picture your data presents, affecting the outcomes of exploratory data analysis (EDA) and subsequent conclusions. Remember, discerning the actual meaning of zeros in your dataset is key to accurate and insightful analysis.</p>
+</section>
+</section>
+<section id="understanding-and-handling-outliers" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Understanding and Handling Outliers</h1>
+<p>After exploring the intricacies of missing data in sport and exercise science datasets, our journey continues with understanding outliers — those extreme observations that stand apart from the rest. Outliers can significantly influence the analysis and interpretation of data, making it crucial to identify and understand them. Whether these outliers signal data entry errors, unique events, or natural variability, recognizing their presence and nature is vital. In sports and exercise science, outliers might represent extraordinary performances or unusual measurements that could skew analysis if not properly accounted for.</p>
+<section id="types-of-outliers" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="types-of-outliers"><span class="header-section-number">5.1</span> Types of Outliers</h2>
+<section id="global-outliers" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="global-outliers"><span class="header-section-number">5.1.1</span> Global Outliers</h3>
+<p>Point outliers are individual data points that diverge significantly from the rest of the data. For example, consider the recorded maximum oxygen uptake (VO2 max) values for a group of athletes, where one athlete’s value is abnormally high due to a data entry error or an exceptional physiological condition. Identifying such outliers is essential to ensure they do not distort the analysis.</p>
+</section>
+<section id="contextual-outliers" class="level3" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="contextual-outliers"><span class="header-section-number">5.1.2</span> Contextual Outliers</h3>
+<p>These outliers depend on the specific context of the data. For instance, a runner’s significantly faster lap time during a training session might be an outlier if it occurs under unusual weather conditions or on a different track surface. Contextual outliers require a nuanced approach, as they might only be considered outliers under certain conditions.</p>
+</section>
+<section id="collective-outliers" class="level3" data-number="5.1.3">
+<h3 data-number="5.1.3" class="anchored" data-anchor-id="collective-outliers"><span class="header-section-number">5.1.3</span> Collective Outliers</h3>
+<p>When a group of data points deviates from the overall pattern, they are termed collective outliers. An example within sports could be a series of performance metrics for a team that suddenly improves over a short period, possibly due to changes in training techniques or team composition. Such outliers might indicate a shift in the underlying process or condition being measured.</p>
+</section>
+</section>
+<section id="considerations-for-handling-outliers" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="considerations-for-handling-outliers"><span class="header-section-number">5.2</span> Considerations For Handling Outliers</h2>
+<p>Identifying outliers is a critical step, but deciding how to handle them requires careful consideration. Visualization tools can be instrumental in spotting unusual patterns or values in the data. The decision to remove or adjust outliers should always be made with the dataset’s context and the analysis goals in mind, ensuring that any modifications do not compromise the data’s integrity or the analysis’s objectivity.</p>
+<p>For example, removing the data of an exceptionally skilled athlete might simplify the overall analysis but would omit valuable insights into the potential for human performance. Similarly, adjusting values to account for identifiable and explainable variations (like weather conditions affecting performance) can help refine the analysis without losing the richness of the data.</p>
+</section>
+<section id="identifying-outliers-in-heart-rate-data-example" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="identifying-outliers-in-heart-rate-data-example"><span class="header-section-number">5.3</span> Identifying Outliers in Heart Rate Data (Example)</h2>
+<p>In this part of our lesson on managing outliers, we’ll use the <code>cycling_data</code> dataset to illustrate how outliers can be identified, particularly within the <code>heart_rate</code> column. Our goal is to enrich our dataset with a practical example, thereby enhancing our understanding of outlier detection techniques.</p>
+<section id="artificially-adding-high-outliers-to-the-dataset" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="artificially-adding-high-outliers-to-the-dataset"><span class="header-section-number">5.3.1</span> Artificially Adding High Outliers to the Dataset</h3>
+<p>To demonstrate outliers in <code>heart_rate</code>, we’ll introduce two artificially high values into our dataset. This R code snippet accomplishes this by appending new rows with outlier values:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding outliers to the heart_rate column</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>outlier_entries <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID =</span> <span class="fu">c</span>(<span class="fu">max</span>(cycling_data<span class="sc">$</span>ID) <span class="sc">+</span> <span class="dv">1</span>, <span class="fu">max</span>(cycling_data<span class="sc">$</span>ID) <span class="sc">+</span> <span class="dv">2</span>),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">race_date =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">team =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">participant =</span> <span class="fu">c</span>(<span class="st">"Outlier_1"</span>, <span class="st">"Outlier_2"</span>),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_age =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">heart_rate =</span> <span class="fu">c</span>(<span class="dv">230</span>, <span class="dv">260</span>), <span class="co"># Artificially high outliers for demonstration purposes</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance_km =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">VO2_max =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Inserting outliers into the cycling_data dataset randomly</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) <span class="co"># Ensuring reproducibility</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>random_rows <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(cycling_data), <span class="dv">2</span>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>cycling_data <span class="ot">&lt;-</span> <span class="fu">rbind</span>(cycling_data, outlier_entries)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="analyzing-mean-and-median" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="analyzing-mean-and-median"><span class="header-section-number">5.3.2</span> Analyzing Mean and Median</h3>
+<p>Understanding the central tendencies of <code>heart_rate</code> can hint at the data distribution’s skewness. Calculating and comparing the mean and median heart rates:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mean_heart_rate <span class="ot">&lt;-</span> <span class="fu">mean</span>(cycling_data<span class="sc">$</span>heart_rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>median_heart_rate <span class="ot">&lt;-</span> <span class="fu">median</span>(cycling_data<span class="sc">$</span>heart_rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Mean heart rate:"</span>, mean_heart_rate))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Mean heart rate: 121.875"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Median heart rate:"</span>, median_heart_rate))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Median heart rate: 120"</code></pre>
+</div>
+</div>
+<p>Observing that the mean is higher than the median suggests a right-skewed distribution, indicating the presence of outliers. This skewness indicates that there are outliers present on the higher end of the dataset. The presence of such outliers can pull the mean upwards, making it larger than the median, which is more resistant to extreme values. In the context of the <code>heart_rate</code> data, this would mean that there are values significantly higher than the majority of the data, hinting at the presence of outliers on the higher side of the heart rate measurements.</p>
+</section>
+<section id="visualizing-outliers-with-a-boxplot" class="level3" data-number="5.3.3">
+<h3 data-number="5.3.3" class="anchored" data-anchor-id="visualizing-outliers-with-a-boxplot"><span class="header-section-number">5.3.3</span> Visualizing Outliers with a Boxplot</h3>
+<p>Let’s visualize the heart rate distribution with a boxplot that will help us identify outliers:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(cycling_data<span class="sc">$</span>heart_rate,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Heart Rate Distribution"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"Heart Rate (bpm)"</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="st">"lightblue"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">notch =</span> <span class="cn">FALSE</span>) <span class="co"># Notches indicate the confidence interval around the median</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Handling_Missing_Data_and_Outliers_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This plot clearly shows our artificially added outliers beyond the box plot whiskers, emphasizing their deviation from the typical range of data.</p>
+</section>
+<section id="calculating-the-interquartile-range-iqr-and-defining-outliers" class="level3" data-number="5.3.4">
+<h3 data-number="5.3.4" class="anchored" data-anchor-id="calculating-the-interquartile-range-iqr-and-defining-outliers"><span class="header-section-number">5.3.4</span> Calculating the Interquartile Range (IQR) and Defining Outliers</h3>
+<p>To precisely identify outliers, we calculate the Interquartile Range (IQR), a critical measure in statistics representing the spread of the middle 50% of the data values. The IQR is computed as the difference between the third quartile (Q3) and the first quartile (Q1) of the dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Q1 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(cycling_data<span class="sc">$</span>heart_rate, <span class="fl">0.25</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>Q3 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(cycling_data<span class="sc">$</span>heart_rate, <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>IQR <span class="ot">&lt;-</span> Q3 <span class="sc">-</span> Q1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The IQR focuses on the central portion of the dataset and is depicted by the length of the box in a boxplot. It helps us determine the variability within the data’s middle 50%, setting the stage to identify outliers effectively:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>upper_limit <span class="ot">&lt;-</span> Q3 <span class="sc">+</span> <span class="fl">1.5</span> <span class="sc">*</span> IQR</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>lower_limit <span class="ot">&lt;-</span> Q1 <span class="sc">-</span> <span class="fl">1.5</span> <span class="sc">*</span> IQR</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Q1 (25th percentile):"</span>, Q1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Q1 (25th percentile): 91.25"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Q3 (75th percentile):"</span>, Q3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Q3 (75th percentile): 141.5"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Interquartile Range (IQR):"</span>, IQR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Interquartile Range (IQR): 50.25"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Upper Limit:"</span>, upper_limit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Upper Limit: 216.875"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Lower Limit:"</span>, lower_limit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Lower Limit: 15.875"</code></pre>
+</div>
+</div>
+<p>In statistical practice, any data point lying more than 1.5 times the IQR above the third quartile (Q3) or below the first quartile (Q1) is considered an outlier. These are the points that appear beyond the whiskers in a boxplot. However, it’s essential for data professionals to exercise caution; an outlier isn’t necessarily an error. Outliers may represent valuable information about the dataset’s behavior or indicate special cases that warrant further investigation.</p>
+</section>
+<section id="identifying-outliers-with-boolean-masks" class="level3" data-number="5.3.5">
+<h3 data-number="5.3.5" class="anchored" data-anchor-id="identifying-outliers-with-boolean-masks"><span class="header-section-number">5.3.5</span> Identifying Outliers with Boolean Masks</h3>
+<p>After establishing the upper and lower limits for what constitutes an outlier in the <code>heart_rate</code> data, we can isolate these outliers using a Boolean mask. This technique allows us to filter and examine the data points that fall outside the typical range:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Boolean mask for outliers</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>outliers_mask <span class="ot">&lt;-</span> <span class="fu">with</span>(cycling_data, heart_rate <span class="sc">&lt;</span> lower_limit <span class="sc">|</span> heart_rate <span class="sc">&gt;</span> upper_limit)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecting outliers</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>outliers <span class="ot">&lt;-</span> cycling_data[outliers_mask, ]</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Outliers based on heart rate:"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Outliers based on heart rate:"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(outliers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 8
+     ID race_date team  participant gender_age heart_rate distance_km VO2_max
+  &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;           &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+1    NA &lt;NA&gt;      &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;               NA          NA &lt;NA&gt;   
+2    NA &lt;NA&gt;      &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;               NA          NA &lt;NA&gt;   
+3    NA &lt;NA&gt;      &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;               NA          NA &lt;NA&gt;   
+4    NA &lt;NA&gt;      &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;               NA          NA &lt;NA&gt;   
+5    NA &lt;NA&gt;      &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;               NA          NA &lt;NA&gt;   
+6    36 &lt;NA&gt;      &lt;NA&gt;  Outlier_1   &lt;NA&gt;              230          NA &lt;NA&gt;   
+7    37 &lt;NA&gt;      &lt;NA&gt;  Outlier_2   &lt;NA&gt;              260          NA &lt;NA&gt;   </code></pre>
+</div>
+</div>
+<p>This code displays the rows from <code>cycling_data</code> where <code>heart_rate</code> values fall below the lower limit or above the upper limit, effectively identifying the outliers.</p>
+</section>
+<section id="visualizing-outliers-with-a-scatter-plot" class="level3" data-number="5.3.6">
+<h3 data-number="5.3.6" class="anchored" data-anchor-id="visualizing-outliers-with-a-scatter-plot"><span class="header-section-number">5.3.6</span> Visualizing Outliers with a Scatter Plot</h3>
+<p>Visualizing our data, including the outliers, can provide deeper insights into their distribution and impact. A scatter plot is an effective way to achieve this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Scatter plot for heart_rate with outliers highlighted</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cycling_data, <span class="fu">aes</span>(<span class="at">x =</span> ID, <span class="at">y =</span> heart_rate)) <span class="sc">+</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> heart_rate <span class="sc">&lt;</span> lower_limit <span class="sc">|</span> heart_rate <span class="sc">&gt;</span> upper_limit), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Heart Rate Outliers"</span>, <span class="at">x =</span> <span class="st">"Participant ID"</span>, <span class="at">y =</span> <span class="st">"Heart Rate (bpm)"</span>) <span class="sc">+</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Handling_Missing_Data_and_Outliers_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>In this scatter plot, each point represents an individual measurement from the cycling_data dataset. We use color to differentiate outliers (in red) from the typical data points (in black), based on our previously defined criteria. This visualization not only shows the outliers but also situates them within the context of the entire dataset, offering a clear view of how they compare with the other data points.</p>
+<p>By carefully identifying and visually examining outliers, we gain a fuller understanding of our dataset’s characteristics, enabling more informed decisions during data analysis and interpretation.</p>
+</section>
+</section>
+<section id="handling-outliers-in-your-dataset" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="handling-outliers-in-your-dataset"><span class="header-section-number">5.4</span> Handling Outliers in Your Dataset</h2>
+<p>Identifying outliers is a crucial step in data cleaning, but deciding how to handle them is equally important. Once outliers are detected — whether they are global, contextual, or collective — the next question is what to do with them. In exploratory data analysis (EDA), three primary strategies for handling outliers include deletion, reassignment, or retaining them in the dataset.</p>
+<p><strong>Deleting Outliers</strong>: This approach is suitable when there’s confidence that the outliers represent errors, such as data entry mistakes. Deletion should be considered carefully, especially for models or analyses where outlier removal could impact the results significantly. This method is generally less frequently employed.</p>
+<p><strong>Reassigning Outliers</strong>: For smaller datasets or in scenarios where the data will be used for modeling, deriving new values to replace outliers can be a viable option. Instead of removing outliers outright, their values can be adjusted to align with the general data distribution. This method helps preserve data integrity while mitigating the impact of outliers.</p>
+<p><strong>Leaving Outliers</strong>: Often, the best course of action might be to leave outliers in the dataset. This is particularly true for datasets intended for EDA or for models that are robust to the presence of outliers. Leaving outliers untouched is advisable when they provide valuable insights or when their removal could distort the analysis.</p>
+<p>The decision to delete, reassign, or leave outliers in a dataset depends on the specific context and objectives of your analysis. Carefully consider the nature of your data and the potential implications of each approach to make the most informed decision.</p>
+<p>By adopting a thoughtful strategy for handling outliers, you can ensure that your data analysis remains accurate and reflective of the underlying phenomena you’re investigating, enhancing the quality and reliability of your insights in sports and exercise science.</p>
+</section>
+</section>
+<section id="conclusion-and-reflection" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Conclusion and Reflection</h1>
+<p>In this lesson, we’ve navigated through the critical aspects of ensuring data integrity in sport and exercise science by focusing on handling missing data and outliers. With practical demonstrations using the cycling_data dataset, we’ve explored strategies for managing missingness through deletion and imputation, and identified and handled outliers to preserve the quality of our analysis. These techniques empower sports data analysts to maintain dataset integrity, enabling accurate and insightful interpretations that can enhance athletic performance and training strategies.</p>
+</section>
+<section id="knowledge-spot-check" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Knowledge Spot-Check</h1>
+<div class="callout callout-style-default callout-tip callout-titled" title="**What is a common method to handle missing data in sports analytics?** <br> <br> A) Always delete missing values. <br> B) Replace missing values with the variable's mean. <br> C) Ignore missing data during analysis. <br> D) Use machine learning to predict all missing values. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>What is a common method to handle missing data in sports analytics?</strong> <br> <br> A) Always delete missing values. <br> B) Replace missing values with the variable’s mean. <br> C) Ignore missing data during analysis. <br> D) Use machine learning to predict all missing values. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is B) Replace missing values with the variable’s mean.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Which type of outlier is an individual data point that significantly deviates from the rest?** <br> <br> A) Contextual outlier <br> B) Collective outlier <br> C) Global outlier <br> D) Standard outlier <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Which type of outlier is an individual data point that significantly deviates from the rest?</strong> <br> <br> A) Contextual outlier <br> B) Collective outlier <br> C) Global outlier <br> D) Standard outlier <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) Global outlier.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Why is it important to handle outliers in sports data analysis?** <br> <br> A) A) To ensure uniform data distribution. <br> B) To enhance the visual appeal of data plots. <br> C) To prevent them from skewing analysis results. <br> D) Outliers should never be handled; they represent true values. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Why is it important to handle outliers in sports data analysis?</strong> <br> <br> A) A) To ensure uniform data distribution. <br> B) To enhance the visual appeal of data plots. <br> C) To prevent them from skewing analysis results. <br> D) Outliers should never be handled; they represent true values. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) To prevent them from skewing analysis results.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**Which R package is commonly used for Multiple Imputation by Chained Equations (MICE)** <br> <br> A) ggplot2 <br> B) dplyr <br> C) mice <br> D) tidyr <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Which R package is commonly used for Multiple Imputation by Chained Equations (MICE)</strong> <br> <br> A) ggplot2 <br> B) dplyr <br> C) mice <br> D) tidyr <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is C) mice.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="**What is a practical approach for identifying outliers in a dataset?** <br> <br> A) Calculating the average speed of data entry. <br> B) Using a boxplot to visualize data distribution. <br> C) Counting the number of values above the mean. <br> D) Comparing datasets from different sports. <br> <br> Expand to see the correct answer.">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>What is a practical approach for identifying outliers in a dataset?</strong> <br> <br> A) Calculating the average speed of data entry. <br> B) Using a boxplot to visualize data distribution. <br> C) Counting the number of values above the mean. <br> D) Comparing datasets from different sports. <br> <br> Expand to see the correct answer.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The correct answer is B) Using a boxplot to visualize data distribution.</p>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+<script src="Handling_Missing_Data_and_Outliers_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
