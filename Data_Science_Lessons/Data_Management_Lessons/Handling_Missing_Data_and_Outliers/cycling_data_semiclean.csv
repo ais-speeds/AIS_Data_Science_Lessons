@@ -1,0 +1,36 @@
+ID,race_date,team,participant,gender_age,heart_rate,distance_km,VO2_max
+1,07-06-2023,Victoria_Mountain,Mary_White,NA,NA,36.5,38 mL/kg/min
+2,15-11-2023,Queensland_Track,Elizabeth_White,F33,146,66.27,60 mL/kg/min
+3,11-06-2023,Tasmania_Road,Robert_Smith,M18,73,90.55,37 mL/kg/min
+4,NA,NA,Jennifer_White,F25,123,NA,79 mL/kg/min
+5,18-07-2023,Tasmania_Track,Mary_Jones,F19,69,88.07,NA
+6,20-02-2023,Queensland_Road,Mary_Smith,F30,67,49.11,51 mL/kg/min
+7,NA,NA,Jennifer_White,F25,123,NA,79 mL/kg/min
+8,19-05-2023,Queensland_Mountain,Michael_Johnson,M20,112,41.75,52 mL/kg/min
+9,NA,NA,Elizabeth_Jones,F26,126,83.72,38 mL/kg/min
+10,08-01-2023,Queensland_Track,Tiffany_Williams,F25,140,70.41,47 mL/kg/min
+11,19-05-2023,Queensland_Mountain,Michael_Johnson,M20,112,41.75,52 mL/kg/min
+12,26-11-2023,Victoria_Track,John_Williams,NA,170,55.72,39 mL/kg/min
+13,07-11-2023,Tasmania_Road,Elizabeth_Williams,F29,136,NA,71 mL/kg/min
+14,05-12-2023,Queensland_Mountain,John_Smith,M39,NA,75.8,NA
+15,NA,Tasmania_Track,William_Jones,M39,89,83.04,30 mL/kg/min
+16,27-07-2023,Queensland_Mountain,William_White,M37,166,NA,30 mL/kg/min
+17,01-09-2023,Queensland_Track,Tiffany_Johnson,F28,NA,48.03,71 mL/kg/min
+18,13-03-2023,Queensland_Track,Tiffany_Williams,NA,122,92.51,48 mL/kg/min
+19,27-07-2023,Queensland_Mountain,William_White,M37,166,NA,30 mL/kg/min
+20,21-02-2023,Tasmania_Track,Robert_White,M28,103,31.44,37 mL/kg/min
+21,21-10-2023,NA,Michael_Johnson,M39,93,39.99,NA
+22,11-09-2023,NA,James_Williams,M26,118,35.25,NA
+23,NA,Queensland_Mountain,William_Williams,M36,147,72.05,78 mL/kg/min
+24,25-06-2023,Tasmania_Mountain,Kate_Williams,NA,92,NA,47 mL/kg/min
+25,13-11-2023,Tasmania_Track,Jennifer_White,F25,100,81.34,55 mL/kg/min
+26,18-11-2023,Tasmania_Mountain,Tiffany_Jones,F31,175,58.59,39 mL/kg/min
+27,13-11-2023,Tasmania_Track,Jennifer_White,F25,100,81.34,55 mL/kg/min
+28,02-07-2023,Queensland_Road,Tiffany_Williams,F22,NA,95.63,42 mL/kg/min
+29,NA,Queensland_Track,Kate_White,F27,76,92.47,37 mL/kg/min
+30,12-01-2023,Victoria_Road,James_Jones,M26,138,97.06,66 mL/kg/min
+31,27-03-2023,Victoria_Track,Tiffany_White,F22,NA,69.29,74 mL/kg/min
+32,03-12-2023,Victoria_Mountain,James_Williams,M25,64,77.94,73 mL/kg/min
+33,21-09-2023,Queensland_Track,William_White,NA,60,NA,60 mL/kg/min
+34,10-01-2023,NA,Michael_Smith,M34,140,63.42,41 mL/kg/min
+35,03-12-2023,Victoria_Mountain,James_Williams,M25,64,77.94,73 mL/kg/min
