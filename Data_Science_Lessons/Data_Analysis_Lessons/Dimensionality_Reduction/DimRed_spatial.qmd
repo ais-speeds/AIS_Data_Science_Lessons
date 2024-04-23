@@ -1,0 +1,84 @@
+---
+title: "Spatial Dimensionality Reduction"
+bibliography: refs_dimReduction.bib
+description: "Advanced lesson in Dimensionality Reduction Module"
+format:
+  html:
+    code-fold: false
+    toc: true
+    toc_depth: 4
+    toc-title: Contents
+    smooth-scroll: true
+    number-sections: true
+    toc-expand: true
+---
+
+```{r,  warning=FALSE, message=FALSE, echo=FALSE}
+library(gt)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
+::: callout-tip
+## Keywords
+
+Dimensionality reduction, spatial data.
+:::
+
+::: callout-note
+## Lesson's Level
+
+The level of this lesson is categorised as GOLD.
+:::
+
+::: callout-tip
+## Lesson's Main Idea
+
+-   xxx  
+:::
+
+Data used in this lesson is provided by **XYZ**.
+
+------------------------------------------------------------------------
+
+# Learning Outcomes
+
+By the end of this lesson, you will be proficient in:
+
+- xxx
+
+# Background knowledge
+
+`Introduction to Dimensionality Reduction` tutorial.
+
+## Dimensionality reduction for non-tabular data
+
+A set of images can be treated as a data matrix by first representing each image as a vector, and then combining these vectors into a matrix. Here's a general process:
+
+Flatten the Images: Convert each image into a one-dimensional vector by concatenating its rows or columns. For example, if you have an image with dimensions 100x100 pixels, you would concatenate all the pixel values along either the rows (resulting in a vector of length 10000) or the columns.
+
+Arrange the Vectors: Arrange these flattened vectors into rows or columns of a matrix. Each row or column of the matrix corresponds to one image in your dataset.
+
+**IMAGE: images to a matrix**
+
+A set of waveforms can be treated as a data matrix by representing each waveform as a vector and then combining these vectors into a matrix.
+
+**IMAGE: biomech waveforms to a matrix**
+
+Once represented as matrices, these data types can be manipulated, analyzed, and processed using various mathematical and computational techniques, including linear algebra, signal processing, and machine learning algorithms. This matrix representation allows for efficient storage, computation, and analysis of complex data structures.
+
+https://tonyelhabr.rbind.io/posts/decomposition-smoothing-soccer/
+
+https://squared2020.com/2018/10/04/understanding-trends-in-the-nba-how-nnmf-works/
+
+
+
+## References
+
+::: {#refs}
+:::
+
+
+
+

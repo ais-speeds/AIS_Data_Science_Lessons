@@ -1,0 +1,3314 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Foundational lesson for Dimensionality Reduction Module">
+
+<title>Introduction to Dimensionality Reduction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="DimRed_intro_files/libs/clipboard/clipboard.min.js"></script>
+<script src="DimRed_intro_files/libs/quarto-html/quarto.js"></script>
+<script src="DimRed_intro_files/libs/quarto-html/popper.min.js"></script>
+<script src="DimRed_intro_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="DimRed_intro_files/libs/quarto-html/anchor.min.js"></script>
+<link href="DimRed_intro_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="DimRed_intro_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="DimRed_intro_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="DimRed_intro_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="DimRed_intro_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">1</span> Learning Outcomes</a></li>
+  <li><a href="#background-knowledge" id="toc-background-knowledge" class="nav-link" data-scroll-target="#background-knowledge"><span class="header-section-number">2</span> Background knowledge</a>
+  <ul class="collapse">
+  <li><a href="#what-is-the-dimensionality-of-a-dataset" id="toc-what-is-the-dimensionality-of-a-dataset" class="nav-link" data-scroll-target="#what-is-the-dimensionality-of-a-dataset"><span class="header-section-number">2.0.1</span> What is the <em>“dimensionality”</em> of a dataset?</a></li>
+  <li><a href="#observations-as-vectors" id="toc-observations-as-vectors" class="nav-link" data-scroll-target="#observations-as-vectors"><span class="header-section-number">2.0.2</span> Observations as vectors</a></li>
+  <li><a href="#basis-vectors" id="toc-basis-vectors" class="nav-link" data-scroll-target="#basis-vectors"><span class="header-section-number">2.0.3</span> Basis vectors</a></li>
+  <li><a href="#datasets-as-matrices" id="toc-datasets-as-matrices" class="nav-link" data-scroll-target="#datasets-as-matrices"><span class="header-section-number">2.0.4</span> Datasets as matrices</a></li>
+  </ul></li>
+  <li><a href="#dimensionality-reduction-methods" id="toc-dimensionality-reduction-methods" class="nav-link" data-scroll-target="#dimensionality-reduction-methods"><span class="header-section-number">3</span> Dimensionality reduction methods</a>
+  <ul class="collapse">
+  <li><a href="#principal-component-analysis-pca" id="toc-principal-component-analysis-pca" class="nav-link" data-scroll-target="#principal-component-analysis-pca"><span class="header-section-number">3.1</span> Principal Component Analysis (PCA)</a>
+  <ul class="collapse">
+  <li><a href="#decathlon-data" id="toc-decathlon-data" class="nav-link" data-scroll-target="#decathlon-data"><span class="header-section-number">3.1.1</span> Decathlon Data</a></li>
+  <li><a href="#pca-in-r" id="toc-pca-in-r" class="nav-link" data-scroll-target="#pca-in-r"><span class="header-section-number">3.1.2</span> PCA in R</a></li>
+  <li><a href="#extensions-of-pca" id="toc-extensions-of-pca" class="nav-link" data-scroll-target="#extensions-of-pca"><span class="header-section-number">3.1.3</span> Extensions of PCA</a></li>
+  </ul></li>
+  <li><a href="#factor-analysis" id="toc-factor-analysis" class="nav-link" data-scroll-target="#factor-analysis"><span class="header-section-number">3.2</span> Factor Analysis</a>
+  <ul class="collapse">
+  <li><a href="#how-is-factor-analysis-different-to-pca" id="toc-how-is-factor-analysis-different-to-pca" class="nav-link" data-scroll-target="#how-is-factor-analysis-different-to-pca"><span class="header-section-number">3.2.1</span> How is Factor Analysis different to PCA?</a></li>
+  <li><a href="#factor-analysis-model" id="toc-factor-analysis-model" class="nav-link" data-scroll-target="#factor-analysis-model"><span class="header-section-number">3.2.2</span> Factor analysis model</a></li>
+  <li><a href="#factor-analysis-in-r" id="toc-factor-analysis-in-r" class="nav-link" data-scroll-target="#factor-analysis-in-r"><span class="header-section-number">3.2.3</span> Factor analysis in R</a></li>
+  </ul></li>
+  <li><a href="#non-linear-dimensionality-reduction" id="toc-non-linear-dimensionality-reduction" class="nav-link" data-scroll-target="#non-linear-dimensionality-reduction"><span class="header-section-number">3.3</span> Non-linear dimensionality reduction</a>
+  <ul class="collapse">
+  <li><a href="#umap" id="toc-umap" class="nav-link" data-scroll-target="#umap"><span class="header-section-number">3.3.1</span> UMAP</a></li>
+  </ul></li>
+  <li><a href="#cautions" id="toc-cautions" class="nav-link" data-scroll-target="#cautions"><span class="header-section-number">3.4</span> Cautions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">3.5</span> References</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introduction to Dimensionality Reduction</h1>
+</div>
+
+<div>
+  <div class="description">
+    Foundational lesson for Dimensionality Reduction Module
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dimensionality reduction, vectors, matrices, PCA, factor analysis, UMAP.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorised as SILVER.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Main Idea
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Knowing the basic concepts underlying dimensionality reduction.</li>
+<li>Knowing how to implement common dimensionality reduction methods.</li>
+<li>Knowing how to interpret results of dimensionality reduction algorithms.</li>
+</ul>
+</div>
+</div>
+<hr>
+<section id="learning-outcomes" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning Outcomes</h1>
+<p>By the end of this lesson, you will be proficient in:</p>
+<ul>
+<li><p>Basic linear algebra concepts that relate to dimensionality reduction.</p></li>
+<li><p>Principal Component Analysis (PCA).</p></li>
+<li><p>Factor Analysis (FA).</p></li>
+</ul>
+<p>As well as have some familiarity with non-linear dimensionality reduction methods.</p>
+</section>
+<section id="background-knowledge" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Background knowledge</h1>
+<p>Some background knowledge of <strong>vectors</strong>, <strong>matrices</strong>, and <strong>basic linear algebra</strong> is needed in order to understand many of the most common dimensionality reduction techniques such as PCA. This section of the tutorial aims to introduce these concepts in a (mostly) non-technical way.</p>
+<section id="what-is-the-dimensionality-of-a-dataset" class="level3" data-number="2.0.1">
+<h3 data-number="2.0.1" class="anchored" data-anchor-id="what-is-the-dimensionality-of-a-dataset"><span class="header-section-number">2.0.1</span> What is the <em>“dimensionality”</em> of a dataset?</h3>
+<p>The dimensionality of a dataset refers to the number of values (or variables) used to describe each object, or observation within that dataset. For example, a dataset comprising strength testing results from the squat, bench press, and deadlift for a group of athletes has dimensionality = 3 because each observation is described by 3 values. A dataset composed of 64 x 64 pixel grayscale images has dimensionality = 4096 because each image is described by 64 x 64 = 4096 pixel intensity values.</p>
+</section>
+<section id="observations-as-vectors" class="level3" data-number="2.0.2">
+<h3 data-number="2.0.2" class="anchored" data-anchor-id="observations-as-vectors"><span class="header-section-number">2.0.2</span> Observations as vectors</h3>
+<p>It is useful to think of observations within a dataset as <strong>vectors</strong>. A vector is a mathematical object with a magnitude and direction. Using the same example data as above; the observation of an athlete that lifted 150kg in the squat, 100kg in the bench press, and 200kg in the deadlift can be thought of as a 3-dimensional vector describing the point <span class="math inline">\(\bigl[\begin{smallmatrix} 150 \\ 100 \\ 200 \end{smallmatrix} \bigr]\)</span> in 3-dimensional space that can be reached by going:</p>
+<ul>
+<li><em>150 units in the “direction” of squat.</em></li>
+<li><em>100 units in the “direction” of bench press.</em></li>
+<li><em>200 units in the “direction” of deadlift.</em></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This concept is visually intuitive to us in up-to 3 dimensions, but still applies in higher dimensions. For example, if five more strength tests were added to our dataset then each observation would be described by an 8-dimensional vector. Or if our dataset contained force-plate time series measurements from countermovement jumps normalised to 1000 time points, then each observation would be a 1000-dimensional vector.</p>
+</section>
+<section id="basis-vectors" class="level3" data-number="2.0.3">
+<h3 data-number="2.0.3" class="anchored" data-anchor-id="basis-vectors"><span class="header-section-number">2.0.3</span> Basis vectors</h3>
+<p>When descibing the location of our observation at <span class="math inline">\(\bigl[\begin{smallmatrix} 150 \\ 100 \\ 200 \end{smallmatrix} \bigr]\)</span> before, it was implicit that we were using the <strong>standard basis vectors</strong> for a 3-dimensional space. These are:</p>
+<p><span class="math display">\[
+\left\{
+\mathbf{i} = \begin{bmatrix} 1\\ 0\\ 0 \end{bmatrix} ,
+\mathbf{j} = \begin{bmatrix} 0\\ 1\\ 0 \end{bmatrix} ,
+\mathbf{k} = \begin{bmatrix} 0\\ 0\\ 1 \end{bmatrix}
+\right\}
+\]</span></p>
+<p>A basis vector is like a building block for describing points in space. We can combine these basis vectors in different amounts to reach any point in our space. They give us a way to break down complex positions into simpler parts. For our observation, using the standard basis vectors, this is shown below:</p>
+<p><span class="math display">\[
+\begin{split}
+\begin{bmatrix} 150\\ 100\\ 200 \end{bmatrix} &amp;= 150 \cdot \mathbf{i} + 100 \cdot \mathbf{j} + 200 \cdot \mathbf{k} \\
+&amp;=  150 \cdot
+\begin{bmatrix} 1\\ 0\\ 0 \end{bmatrix} + 100 \cdot
+\begin{bmatrix} 0\\ 1\\ 0 \end{bmatrix} + 200 \cdot
+\begin{bmatrix} 0\\ 0\\ 1 \end{bmatrix}
+\end{split}
+\]</span></p>
+<p>However, the standard basis is not the only possible set of basis vectors. The are many other possible ways to give instructions on how to reach locations in a 3D space. For example the following three vectors also form a basis for 3D space.</p>
+<p><span class="math display">\[
+\left\{
+\mathbf{u} = \begin{bmatrix} 3\\ 1\\ 1 \end{bmatrix} ,
+\mathbf{v} = \begin{bmatrix} -1\\ 2\\ 1 \end{bmatrix} ,
+\mathbf{w} = \begin{bmatrix} -1/2\\ -2\\ 7/2 \end{bmatrix}
+\right\}
+\]</span></p>
+<p>Using <strong>these basis vectors</strong> our observation from before would be described by the vector:</p>
+<p><span class="math display">\[
+\begin{bmatrix} 750/11\\ 125/3\\ 850/33 \end{bmatrix}
+\]</span></p>
+<p>because</p>
+<p><span class="math display">\[
+\begin{split}
+\frac{750}{11} \cdot \mathbf{u} + \frac{125}{3} \cdot \mathbf{v} + \frac{850}{33} \cdot \mathbf{w}
+&amp;=  
+\frac{750}{11}
+\cdot
+\begin{bmatrix} 3\\ 1\\ 1 \end{bmatrix} +
+\frac{125}{3}
+\cdot
+\begin{bmatrix} -1\\ 2\\ 1 \end{bmatrix} + \frac{850}{33} \cdot
+\begin{bmatrix} -1/2\\ -2\\ 7/2 \end{bmatrix} \\
+&amp;= \begin{bmatrix} \frac{750}{11}\times3-\frac{125}{3} - \frac{850}{33}\times\frac{1}{2}\\
+\frac{750}{11}+\frac{125}{3}\times2 - \frac{850}{33}\times2\\
+\frac{750}{11}+\frac{125}{3} + \frac{850}{33}\times\frac{7}{2}
+\end{bmatrix} \\
+&amp;=
+\begin{bmatrix} 150\\ 100\\ 200 \end{bmatrix}
+\end{split}
+\]</span></p>
+<p>So the original information is <strong>preserved</strong> after the change of basis vectors, however the values that describe the data point are different if we view the dataset from the perspective of the different basis vectors. A <strong>change of basis operation</strong> is a transformation that allows us to express vectors in a new coordinate system. It’s like changing the perspective from which we view the vectors, while keeping their underlying meaning intact.</p>
+<p>It may not be immediately clear why using anything other than the standard basis vectors may be useful, but the concept of a basis transformation is central to many dimensionality reduction techniques.</p>
+</section>
+<section id="datasets-as-matrices" class="level3" data-number="2.0.4">
+<h3 data-number="2.0.4" class="anchored" data-anchor-id="datasets-as-matrices"><span class="header-section-number">2.0.4</span> Datasets as matrices</h3>
+<p>After making the connection between <strong>observations and vectors</strong>, it is also necessary to make the link between <strong>datasets and matrices</strong>. Consider the following simulated dataset of strength testing results, containing the observation at <span class="math inline">\(\bigl[\begin{smallmatrix} 150 \\ 100 \\ 200 \end{smallmatrix} \bigr]\)</span> in the first row.</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="fuquzvtypf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fuquzvtypf table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#fuquzvtypf thead, #fuquzvtypf tbody, #fuquzvtypf tfoot, #fuquzvtypf tr, #fuquzvtypf td, #fuquzvtypf th {
+  border-style: none;
+}
+
+#fuquzvtypf p {
+  margin: 0;
+  padding: 0;
+}
+
+#fuquzvtypf .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#fuquzvtypf .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#fuquzvtypf .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#fuquzvtypf .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#fuquzvtypf .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#fuquzvtypf .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#fuquzvtypf .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#fuquzvtypf .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#fuquzvtypf .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#fuquzvtypf .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#fuquzvtypf .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#fuquzvtypf .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#fuquzvtypf .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#fuquzvtypf .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#fuquzvtypf .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fuquzvtypf .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#fuquzvtypf .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#fuquzvtypf .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#fuquzvtypf .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fuquzvtypf .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#fuquzvtypf .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fuquzvtypf .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#fuquzvtypf .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fuquzvtypf .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fuquzvtypf .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fuquzvtypf .gt_left {
+  text-align: left;
+}
+
+#fuquzvtypf .gt_center {
+  text-align: center;
+}
+
+#fuquzvtypf .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#fuquzvtypf .gt_font_normal {
+  font-weight: normal;
+}
+
+#fuquzvtypf .gt_font_bold {
+  font-weight: bold;
+}
+
+#fuquzvtypf .gt_font_italic {
+  font-style: italic;
+}
+
+#fuquzvtypf .gt_super {
+  font-size: 65%;
+}
+
+#fuquzvtypf .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#fuquzvtypf .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#fuquzvtypf .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#fuquzvtypf .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#fuquzvtypf .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#fuquzvtypf .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#fuquzvtypf .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="ID">ID</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Squat">Squat</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Bench">Bench</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Deadlift">Deadlift</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_1</td>
+<td headers="Squat" class="gt_row gt_right">150</td>
+<td headers="Bench" class="gt_row gt_right">100</td>
+<td headers="Deadlift" class="gt_row gt_right">200</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_2</td>
+<td headers="Squat" class="gt_row gt_right">127</td>
+<td headers="Bench" class="gt_row gt_right">95</td>
+<td headers="Deadlift" class="gt_row gt_right">124</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_3</td>
+<td headers="Squat" class="gt_row gt_right">99</td>
+<td headers="Bench" class="gt_row gt_right">63</td>
+<td headers="Deadlift" class="gt_row gt_right">241</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_4</td>
+<td headers="Squat" class="gt_row gt_right">155</td>
+<td headers="Bench" class="gt_row gt_right">101</td>
+<td headers="Deadlift" class="gt_row gt_right">195</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_5</td>
+<td headers="Squat" class="gt_row gt_right">143</td>
+<td headers="Bench" class="gt_row gt_right">110</td>
+<td headers="Deadlift" class="gt_row gt_right">272</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_6</td>
+<td headers="Squat" class="gt_row gt_right">121</td>
+<td headers="Bench" class="gt_row gt_right">55</td>
+<td headers="Deadlift" class="gt_row gt_right">162</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_7</td>
+<td headers="Squat" class="gt_row gt_right">174</td>
+<td headers="Bench" class="gt_row gt_right">84</td>
+<td headers="Deadlift" class="gt_row gt_right">237</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_8</td>
+<td headers="Squat" class="gt_row gt_right">116</td>
+<td headers="Bench" class="gt_row gt_right">100</td>
+<td headers="Deadlift" class="gt_row gt_right">177</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_9</td>
+<td headers="Squat" class="gt_row gt_right">152</td>
+<td headers="Bench" class="gt_row gt_right">90</td>
+<td headers="Deadlift" class="gt_row gt_right">150</td></tr>
+    <tr><td headers="ID" class="gt_row gt_left">Athlete_10</td>
+<td headers="Squat" class="gt_row gt_right">117</td>
+<td headers="Bench" class="gt_row gt_right">94</td>
+<td headers="Deadlift" class="gt_row gt_right">220</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>This dataset has 10 observations (rows) and dimensionality = 3 because each observation is described by 3 values (meta-data such as ID or date variables are not included in the dimensionality). Thus it can be represented by a <span class="math inline">\(10 \times 3\)</span> matrix (<span class="math inline">\(\mathcal{D}\)</span>). A data matrix is a two-dimensional arrangement of numbers, where rows represent individual observations or samples, and columns represent different variables or features.</p>
+<p><span class="math display">\[
+\mathcal{D}
+=
+\begin{bmatrix}
+150 &amp; 100 &amp; 200 \\
+127 &amp; 95 &amp; 124 \\
+99 &amp; 63 &amp; 241 \\
+155 &amp; 101 &amp; 195 \\
+143 &amp; 110 &amp; 272 \\
+121 &amp; 55 &amp; 162 \\
+174 &amp; 84 &amp; 237 \\
+116 &amp; 100 &amp; 177 \\
+152 &amp; 90 &amp; 150 \\
+117 &amp; 94 &amp; 220 \\
+\end{bmatrix}
+\]</span></p>
+<p>This matrix representation makes it easy to perform various mathematical operations and analyses on the dataset, such as matrix multiplication, linear algebra operations, and statistical computations. It’s a fundamental way of organising and analysing data, especially in fields such as machine learning and data science.</p>
+<p>When discussing dimensionality reduction it is also illustrative to show the basis vectors in another matrix, where each row contains one of the basis vectors (this matrix will be of size <span class="math inline">\(N \times N\)</span> where <span class="math inline">\(N\)</span> is the dimensionality of the data). The dataset is constructed by multiplying the two matrices. Below is the dataset expressed using the standard basis vectors (shown in blue, red, and green):</p>
+<p><span class="math display">\[
+\mathcal{D}
+=
+\begin{bmatrix}
+\textit{150} &amp; \textit{100} &amp; \textit{200} \\
+127 &amp; 95 &amp; 124 \\
+99 &amp; 63 &amp; 241 \\
+155 &amp; 101 &amp; 195 \\
+143 &amp; 110 &amp; 272 \\
+121 &amp; 55 &amp; 162 \\
+174 &amp; 84 &amp; 237 \\
+116 &amp; 100 &amp; 177 \\
+152 &amp; 90 &amp; 150 \\
+117 &amp; 94 &amp; 220 \\
+\end{bmatrix}
+\times
+\begin{bmatrix}
+\textcolor{blue}{1} &amp; \textcolor{blue}{0} &amp; \textcolor{blue}{0} \\
+\textcolor{red}{0} &amp; \textcolor{red}{1} &amp; \textcolor{red}{0} \\
+\textcolor{green}{0} &amp; \textcolor{green}{0} &amp; \textcolor{green}{1}
+\end{bmatrix}
+\]</span></p>
+<p>However, as shown in the preceding sections, it is possible to express the data with respect to a different set of basis vectors. The same strength testing dataset is shown below, but using a different set of basis vectors:</p>
+<p><span class="math display">\[
+\mathcal{D}
+=
+\begin{bmatrix}
+\textit{750/11} &amp; \textit{125/3} &amp; \textit{850/33} \\
+600/11 &amp; 187/6 &amp; 361/33 \\
+... &amp; ... &amp; ... \\
+&amp;  &amp;  \\
+&amp;  &amp;  \\
+&amp;  &amp;  \\
+&amp;  &amp;  \\
+... &amp; ... &amp; ... \\
+&amp;  &amp;  \\
+665/11 &amp; 97/2 &amp; 349/11 \\
+\end{bmatrix}
+\times
+\begin{bmatrix}
+\textcolor{blue}{3} &amp; \textcolor{blue}{1} &amp; \textcolor{blue}{1} \\
+\textcolor{red}{-1} &amp; \textcolor{red}{2} &amp; \textcolor{red}{1} \\
+\textcolor{green}{-1/2} &amp; \textcolor{green}{-2} &amp; \textcolor{green}{-7/2}
+\end{bmatrix}
+\]</span></p>
+<p>In the example above the non-standard basis vectors used did not have any relevance to the data, so the change of basis did not accomplish anything particularly useful. However, it is sometimes <strong>possible to construct new basis vectors that greatly simplify how the dataset can be represented</strong>.</p>
+<hr>
+</section>
+</section>
+<section id="dimensionality-reduction-methods" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Dimensionality reduction methods</h1>
+<p>Dimensionality reduction techniques seek to find new coordinate systems for expressing data. With the goal of being able to capture as much of the information and structure in the data as possible using fewer values per observation, thus lowering the dimensionality. There are many different ways to accomplish this. The following sections aim to explain the concepts behind common dimensionality reduction techniques (PCA, Factor Analysis, and UMAP). Provide example code showing to implement these methods in <code>R</code>, as well as instruction on how to run diagnostics, visualisations, and how to interpret dimensionality reduction results.</p>
+<section id="principal-component-analysis-pca" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="principal-component-analysis-pca"><span class="header-section-number">3.1</span> Principal Component Analysis (PCA)</h2>
+<p>Principal component analysis (PCA) is a method for finding a new coordinate system to express data, this is equivalent to finding a <strong>new set of basis vectors</strong>. Specifically the PCA algorithm constructs the first basis vector to point in the direction of maximal variation in the data, then the second in the direction of maximal variation with the constraint that it must be uncorrelated with the first, and so on (see REFXXX for the full details).</p>
+<p>The concept of aligning the new basis vectors with the variation present in the data can be visualised clearly in 2-dimensions. In the figure below the raw data and standard basis vectors are shown in black, and the principal components (new basis vectors) are shown in blue. Loosely speaking, using the standard basis vectors on this dataset is like giving instructions in the form of <em>“X steps to the right/left and Y steps up/down”</em> whereas using the principal components is like instructions of the form, <em>“P steps along the positive diagonal and Q steps along the negative diagonal”.</em> It should be evident from the graph that because of the strong correlation between these two variables just giving the value of an observation along the <span class="math inline">\(PC_1\)</span> direction (i.e.&nbsp;in <strong>1-dimension</strong>) will allow us to know approximately where it is in <strong>2-dimensions</strong>. This is the benefit of aligning the basis vectors with the direction of maximal variation, it can allow us to describe the location of the observations with fewer values - thus reducing the dimensionality of the data.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="2d_pca.png" class="img-fluid figure-img" width="483"></p>
+</figure>
+</div>
+<p>There are <strong>no assumptions or requirements</strong> a dataset needs to meet before running PCA, however there is also no guarantee that the new coordinate system (basis vectors) will provide a useful or enlightening view of the data. As such PCA should be considered a mostly exploratory analysis technique, particularly useful for visualising high dimensional data, or as a pre-processing step for further analysis. It does not have an underlying model of how the data is generated <span class="citation" data-cites="jolliffe2005">(<a href="#ref-jolliffe2005" role="doc-biblioref">Jolliffe 2005</a>)</span>.</p>
+<section id="decathlon-data" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="decathlon-data"><span class="header-section-number">3.1.1</span> Decathlon Data</h3>
+<p>To work through how to perform PCA in R we will use a decathlon results dataset available through the <code>FactoMineR</code> package.</p>
+<blockquote class="blockquote">
+<p>A data frame with 41 rows and 13 columns: the first ten columns corresponds to the performance of the athletes for the 10 events of the decathlon. The columns 11 and 12 correspond respectively to the rank and the points obtained. The last column is a categorical variable corresponding to the sporting event (2004 Olympic Game or 2004 Decastar).</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FactoMineR)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(decathlon)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(<span class="fu">head</span>(decathlon[, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="fkqebcchxi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fkqebcchxi table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#fkqebcchxi thead, #fkqebcchxi tbody, #fkqebcchxi tfoot, #fkqebcchxi tr, #fkqebcchxi td, #fkqebcchxi th {
+  border-style: none;
+}
+
+#fkqebcchxi p {
+  margin: 0;
+  padding: 0;
+}
+
+#fkqebcchxi .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#fkqebcchxi .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#fkqebcchxi .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#fkqebcchxi .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#fkqebcchxi .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#fkqebcchxi .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#fkqebcchxi .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#fkqebcchxi .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#fkqebcchxi .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#fkqebcchxi .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#fkqebcchxi .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#fkqebcchxi .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#fkqebcchxi .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#fkqebcchxi .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#fkqebcchxi .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fkqebcchxi .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#fkqebcchxi .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#fkqebcchxi .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#fkqebcchxi .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fkqebcchxi .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#fkqebcchxi .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fkqebcchxi .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#fkqebcchxi .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fkqebcchxi .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fkqebcchxi .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fkqebcchxi .gt_left {
+  text-align: left;
+}
+
+#fkqebcchxi .gt_center {
+  text-align: center;
+}
+
+#fkqebcchxi .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#fkqebcchxi .gt_font_normal {
+  font-weight: normal;
+}
+
+#fkqebcchxi .gt_font_bold {
+  font-weight: bold;
+}
+
+#fkqebcchxi .gt_font_italic {
+  font-style: italic;
+}
+
+#fkqebcchxi .gt_super {
+  font-size: 65%;
+}
+
+#fkqebcchxi .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#fkqebcchxi .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#fkqebcchxi .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#fkqebcchxi .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#fkqebcchxi .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#fkqebcchxi .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#fkqebcchxi .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="100m">100m</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Long.jump">Long.jump</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Shot.put">Shot.put</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="High.jump">High.jump</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="400m">400m</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="110m.hurdle">110m.hurdle</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Discus">Discus</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Pole.vault">Pole.vault</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Javeline">Javeline</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="1500m">1500m</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="100m" class="gt_row gt_right">11.04</td>
+<td headers="Long.jump" class="gt_row gt_right">7.58</td>
+<td headers="Shot.put" class="gt_row gt_right">14.83</td>
+<td headers="High.jump" class="gt_row gt_right">2.07</td>
+<td headers="400m" class="gt_row gt_right">49.81</td>
+<td headers="110m.hurdle" class="gt_row gt_right">14.69</td>
+<td headers="Discus" class="gt_row gt_right">43.75</td>
+<td headers="Pole.vault" class="gt_row gt_right">5.02</td>
+<td headers="Javeline" class="gt_row gt_right">63.19</td>
+<td headers="1500m" class="gt_row gt_right">291.7</td></tr>
+    <tr><td headers="100m" class="gt_row gt_right">10.76</td>
+<td headers="Long.jump" class="gt_row gt_right">7.40</td>
+<td headers="Shot.put" class="gt_row gt_right">14.26</td>
+<td headers="High.jump" class="gt_row gt_right">1.86</td>
+<td headers="400m" class="gt_row gt_right">49.37</td>
+<td headers="110m.hurdle" class="gt_row gt_right">14.05</td>
+<td headers="Discus" class="gt_row gt_right">50.72</td>
+<td headers="Pole.vault" class="gt_row gt_right">4.92</td>
+<td headers="Javeline" class="gt_row gt_right">60.15</td>
+<td headers="1500m" class="gt_row gt_right">301.5</td></tr>
+    <tr><td headers="100m" class="gt_row gt_right">11.02</td>
+<td headers="Long.jump" class="gt_row gt_right">7.30</td>
+<td headers="Shot.put" class="gt_row gt_right">14.77</td>
+<td headers="High.jump" class="gt_row gt_right">2.04</td>
+<td headers="400m" class="gt_row gt_right">48.37</td>
+<td headers="110m.hurdle" class="gt_row gt_right">14.09</td>
+<td headers="Discus" class="gt_row gt_right">48.95</td>
+<td headers="Pole.vault" class="gt_row gt_right">4.92</td>
+<td headers="Javeline" class="gt_row gt_right">50.31</td>
+<td headers="1500m" class="gt_row gt_right">300.2</td></tr>
+    <tr><td headers="100m" class="gt_row gt_right">11.02</td>
+<td headers="Long.jump" class="gt_row gt_right">7.23</td>
+<td headers="Shot.put" class="gt_row gt_right">14.25</td>
+<td headers="High.jump" class="gt_row gt_right">1.92</td>
+<td headers="400m" class="gt_row gt_right">48.93</td>
+<td headers="110m.hurdle" class="gt_row gt_right">14.99</td>
+<td headers="Discus" class="gt_row gt_right">40.87</td>
+<td headers="Pole.vault" class="gt_row gt_right">5.32</td>
+<td headers="Javeline" class="gt_row gt_right">62.77</td>
+<td headers="1500m" class="gt_row gt_right">280.1</td></tr>
+    <tr><td headers="100m" class="gt_row gt_right">11.34</td>
+<td headers="Long.jump" class="gt_row gt_right">7.09</td>
+<td headers="Shot.put" class="gt_row gt_right">15.19</td>
+<td headers="High.jump" class="gt_row gt_right">2.10</td>
+<td headers="400m" class="gt_row gt_right">50.42</td>
+<td headers="110m.hurdle" class="gt_row gt_right">15.31</td>
+<td headers="Discus" class="gt_row gt_right">46.26</td>
+<td headers="Pole.vault" class="gt_row gt_right">4.72</td>
+<td headers="Javeline" class="gt_row gt_right">63.44</td>
+<td headers="1500m" class="gt_row gt_right">276.4</td></tr>
+    <tr><td headers="100m" class="gt_row gt_right">11.11</td>
+<td headers="Long.jump" class="gt_row gt_right">7.60</td>
+<td headers="Shot.put" class="gt_row gt_right">14.31</td>
+<td headers="High.jump" class="gt_row gt_right">1.98</td>
+<td headers="400m" class="gt_row gt_right">48.68</td>
+<td headers="110m.hurdle" class="gt_row gt_right">14.23</td>
+<td headers="Discus" class="gt_row gt_right">41.10</td>
+<td headers="Pole.vault" class="gt_row gt_right">4.92</td>
+<td headers="Javeline" class="gt_row gt_right">51.77</td>
+<td headers="1500m" class="gt_row gt_right">278.1</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>As a pre-processing step we will convert the time-based results (100m, 400m, 1500m, and 110m hurdles) to negative values. This is to ensure that for all variables a higher number corresponds to better performance, and therefore positive correlations between variables indicate that athletes that do well in one of those events tend to do well in the other.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dec_events <span class="ot">&lt;-</span> decathlon <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">`</span><span class="at">100m</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">1500m</span><span class="st">`</span>) <span class="sc">%&gt;%</span>  <span class="co"># select only the first 10 columns that contain the event results</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">100m</span><span class="st">`</span> <span class="ot">=</span> <span class="sc">-</span><span class="st">`</span><span class="at">100m</span><span class="st">`</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">400m</span><span class="st">`</span> <span class="ot">=</span> <span class="sc">-</span><span class="st">`</span><span class="at">400m</span><span class="st">`</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">1500m</span><span class="st">`</span> <span class="ot">=</span> <span class="sc">-</span><span class="st">`</span><span class="at">1500m</span><span class="st">`</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">110m.hurdle</span><span class="st">`</span> <span class="ot">=</span> <span class="sc">-</span><span class="st">`</span><span class="at">110m.hurdle</span><span class="st">`</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In matrix notation the processed dataset looks like this:</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+-11.04 &amp; 7.58 &amp; 14.83 &amp; 2.07 &amp; -49.81 &amp; -14.69 &amp; 43.75 &amp; 5.02 &amp; 63.19 &amp; -291.7 \\
+-10.76 &amp; 7.4 &amp; 14.26 &amp; 1.86 &amp; -49.37 &amp; -14.05 &amp; 50.72 &amp; 4.92 &amp; 60.15 &amp; -301.5 \\
+-11.02 &amp; 7.3 &amp; 14.77 &amp; 2.04 &amp; -48.37 &amp; -14.09 &amp; 48.95 &amp; 4.92 &amp; 50.31 &amp; -300.2 \\
+-11.02 &amp; 7.23 &amp; 14.25 &amp; 1.92 &amp; -48.93 &amp; -14.99 &amp; 40.87 &amp; 5.32 &amp; 62.77 &amp; -280.1 \\
+-11.34 &amp; 7.09 &amp; 15.19 &amp; 2.1 &amp; -50.42 &amp; -15.31 &amp; 46.26 &amp; 4.72 &amp; 63.44 &amp; -276.4 \\
+-11.11 &amp; 7.6 &amp; 14.31 &amp; 1.98 &amp; -48.68 &amp; -14.23 &amp; 41.1 &amp; 4.92 &amp; 51.77 &amp; -278.1 \\  
+... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ...   \\
+\end{bmatrix}
+\]</span></p>
+<p>As usual the data is expressed with respect to the <strong>standard basis vectors</strong>, so the first value in the first row, <span class="math inline">\(11.04\)</span>, tells us that observation is “<span class="math inline">\(11.04\)</span> units in the direction of 100m”. <em>It does not explicitly tell us anything more about the results of that athlete in any of the other decathlon events</em>. If you are a domain expert in athletics you may be able to estimate their results in other events based on experience, but there is nothing in the data representation itself that captures this. It is in these scenarios, where domain knowledge suggests that strong correlations exist within the data, that dimensionality reduction methods may be beneficial.</p>
+<p>Without relying on domain knowledge it is also possible to examine the correlations within a dataset using visualisations. The <code>Chart.Correlation()</code> function from the <code>PerformanceAnalytics</code> package gives a lot of information about a dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"PerformanceAnalytics"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chart.Correlation</span>(dec_events, <span class="at">histogram=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li>On the diagonal there are histograms showing the distibutions of results for each event.</li>
+<li>The lower triangle shows scatter plots of each possible pair of variables.</li>
+<li>The upper triangle gives the correlation coefficients for each possible pair of variables.</li>
+</ul>
+<p>From this is can be seen that there exists positive correlation between performance in</p>
+<ul>
+<li>the 100m, 400m, and 110m hurdles</li>
+<li>shot-put and discus</li>
+<li>400m and 1500m</li>
+</ul>
+<p>If working on a dataset with dimensionality in the 100s or 1000s then this amount of information can lead to an overly cluttered visual. An alternative is to visualise the correlation matrix of a dataset using a colour gradient to encode information about the direction and strength of correlations between variables. An example of how to do this with the <code>ggcorrplot</code> package is shown below. When viewing these kinds of graphs the presence of multiple dark red or blue tiles indicates that the application of dimensionality reduction techniques may be warranted.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggcorrplot)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggcorrplot</span>(<span class="fu">cor</span>(dec_events), <span class="at">type =</span> <span class="st">"upper"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-in-r" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="pca-in-r"><span class="header-section-number">3.1.2</span> PCA in R</h3>
+<p>There are multiple implementations of PCA in different R packages (and base R). In this tutorial we will be using the <code>PCA()</code> function from the <code>FactoMineR</code> package and some plotting functions from the <code>factoextra</code> package. The command to analyse the decathlon data with PCA is:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dec_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(dec_events, <span class="at">scale.unit =</span> <span class="cn">TRUE</span>, <span class="at">ncp =</span> <span class="dv">10</span>, <span class="at">graph =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The function options specified are:</p>
+<ul>
+<li><p><code>scale.unit = TRUE</code> (this is true by default). Setting this to <code>TRUE</code> ensures that the input data is centered and scaled so that each variable (column) has zero mean and variance equal to one. This is important if the input variables are on different measurement scales.</p></li>
+<li><p><code>ncp = 10</code>. The <code>ncp</code> parameter controls how many principal components are returned by the function. This can be set to any number between 1 and the original dimensionality of the data (in this case 10). Setting</p></li>
+<li><p><code>graph = FALSE</code>. Setting this to <code>FALSE</code> stops a results plot from being shown. We can create this plot by asking for it directly later.</p></li>
+</ul>
+<p>The <code>dec_pca</code> object contains the following information:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dec_pca</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>**Results for the Principal Component Analysis (PCA)**
+The analysis was performed on 41 individuals, described by 10 variables
+*The results are available in the following objects:
+
+   name               description                          
+1  "$eig"             "eigenvalues"                        
+2  "$var"             "results for the variables"          
+3  "$var$coord"       "coord. for the variables"           
+4  "$var$cor"         "correlations variables - dimensions"
+5  "$var$cos2"        "cos2 for the variables"             
+6  "$var$contrib"     "contributions of the variables"     
+7  "$ind"             "results for the individuals"        
+8  "$ind$coord"       "coord. for the individuals"         
+9  "$ind$cos2"        "cos2 for the individuals"           
+10 "$ind$contrib"     "contributions of the individuals"   
+11 "$call"            "summary statistics"                 
+12 "$call$centre"     "mean of the variables"              
+13 "$call$ecart.type" "standard error of the variables"    
+14 "$call$row.w"      "weights for the individuals"        
+15 "$call$col.w"      "weights for the variables"          </code></pre>
+</div>
+</div>
+<section id="what-are-the-principal-components" class="level4" data-number="3.1.2.1">
+<h4 data-number="3.1.2.1" class="anchored" data-anchor-id="what-are-the-principal-components"><span class="header-section-number">3.1.2.1</span> What are the Principal Components?</h4>
+<p>The principal components (new basis vectors) can be accessed by the command <code>dec_pca$svd$V</code>. <code>svd</code> stands for <em>Singular Value Decomposition</em>, which is the name of the matrix factorisation method used by the <code>PCA</code> function to calculate the principal components (PCs). The 10 PCs correspond to the 10 columns of this matrix.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dec_pca<span class="sc">$</span>svd<span class="sc">$</span>V <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       [,1]   [,2]   [,3]   [,4]   [,5]   [,6]   [,7]   [,8]   [,9]  [,10]
+ [1,] 0.428  0.142 -0.156  0.037 -0.365 -0.296  0.382 -0.462  0.105  0.424
+ [2,] 0.410  0.262 -0.154  0.099  0.044 -0.306 -0.628 -0.021 -0.483 -0.081
+ [3,] 0.344 -0.454  0.020  0.185  0.134  0.305  0.310 -0.314 -0.427 -0.390
+ [4,] 0.316 -0.266  0.219 -0.132  0.671 -0.468  0.091  0.125  0.244  0.106
+ [5,] 0.376  0.432  0.111 -0.029  0.106  0.333 -0.124 -0.213  0.552 -0.414
+ [6,] 0.413  0.174 -0.078 -0.283 -0.199  0.100  0.357  0.711 -0.150 -0.091
+ [7,] 0.305 -0.460 -0.036 -0.253 -0.127  0.449 -0.430  0.038  0.155  0.449
+ [8,] 0.028  0.137 -0.584  0.536  0.399  0.262  0.098  0.178  0.083  0.276
+ [9,] 0.153 -0.241  0.329  0.693 -0.369 -0.163 -0.107  0.296  0.247 -0.088
+[10,] 0.032  0.360  0.660  0.157  0.186  0.298  0.084 -0.014 -0.308  0.429</code></pre>
+</div>
+</div>
+<p>A more interpretable way of showing how the PCs relate to the input variables is to use a <strong>variable factor map</strong> (shown below using the <code>fviz_pca_var()</code> function from the <code>factoextra</code> package).</p>
+<p>The arrows in this diagram show how <strong>correlated</strong> each of the input variables is with the first two PCs.</p>
+<p><strong>XXXXXXXXXXXXX Add a few points of interpretation here.</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(dec_pca, <span class="at">axes =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">repel =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(dec_pca, <span class="at">axes =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">repel =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="how-does-the-data-look-in-the-new-coordinate-system" class="level4" data-number="3.1.2.2">
+<h4 data-number="3.1.2.2" class="anchored" data-anchor-id="how-does-the-data-look-in-the-new-coordinate-system"><span class="header-section-number">3.1.2.2</span> How does the data look in the new coordinate system?</h4>
+<p>The data expressed in the new coordinate system can be accessed by the command <code>dec_pca$ind$coord</code> (shown below rounded to two decimal places and showing just the first six of the 41 observations):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dec_pca<span class="sc">$</span>ind<span class="sc">$</span>coord) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Dim.1 Dim.2 Dim.3 Dim.4 Dim.5 Dim.6 Dim.7 Dim.8 Dim.9 Dim.10
+SEBRLE   0.79 -0.77 -0.83  1.17  0.71 -1.03 -0.55  0.44  0.14  -0.50
+CLAY     1.23 -0.57 -2.14 -0.35 -1.97  0.69 -0.71  0.60  0.65   0.27
+KARPOV   1.36 -0.48 -1.96 -1.86  0.80  0.73 -0.19  0.25  0.80  -0.52
+BERNARD -0.61  0.87 -0.89  2.22  0.36  0.28  0.05 -0.07  0.72  -0.19
+YURKOV  -0.59 -2.13  1.23  0.87  1.25 -0.10 -0.57 -0.09  0.20  -0.06
+WARNERS  0.36  1.68 -0.77 -0.59  1.00  0.03 -0.10  0.30 -0.61  -0.72</code></pre>
+</div>
+</div>
+<p>The function <code>fviz_pca_biplot()</code> returns a scatter plot of the observations in the new PC-based coordinate system with the variable loading overlayed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(dec_pca, <span class="at">axes =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">repel =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Since all events positively correlate with PC1 it can be interpreted as an “overall ability” score. The three observations with the highest values for PC1 are <code>Karpov</code>, <code>Clay</code>, and <code>Sebrle</code>. Viewing the original data for these athletes (below) shows that they made up the podium at the Olympics.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(decathlon[<span class="fu">c</span>(<span class="st">'Karpov'</span>,<span class="st">'Clay'</span>,<span class="st">'Sebrle'</span>), ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="ubjrskdqbd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ubjrskdqbd table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ubjrskdqbd thead, #ubjrskdqbd tbody, #ubjrskdqbd tfoot, #ubjrskdqbd tr, #ubjrskdqbd td, #ubjrskdqbd th {
+  border-style: none;
+}
+
+#ubjrskdqbd p {
+  margin: 0;
+  padding: 0;
+}
+
+#ubjrskdqbd .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ubjrskdqbd .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ubjrskdqbd .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ubjrskdqbd .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ubjrskdqbd .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ubjrskdqbd .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ubjrskdqbd .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ubjrskdqbd .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ubjrskdqbd .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ubjrskdqbd .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ubjrskdqbd .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ubjrskdqbd .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ubjrskdqbd .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ubjrskdqbd .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ubjrskdqbd .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubjrskdqbd .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ubjrskdqbd .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ubjrskdqbd .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ubjrskdqbd .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubjrskdqbd .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ubjrskdqbd .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubjrskdqbd .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ubjrskdqbd .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubjrskdqbd .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ubjrskdqbd .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubjrskdqbd .gt_left {
+  text-align: left;
+}
+
+#ubjrskdqbd .gt_center {
+  text-align: center;
+}
+
+#ubjrskdqbd .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ubjrskdqbd .gt_font_normal {
+  font-weight: normal;
+}
+
+#ubjrskdqbd .gt_font_bold {
+  font-weight: bold;
+}
+
+#ubjrskdqbd .gt_font_italic {
+  font-style: italic;
+}
+
+#ubjrskdqbd .gt_super {
+  font-size: 65%;
+}
+
+#ubjrskdqbd .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ubjrskdqbd .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ubjrskdqbd .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ubjrskdqbd .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ubjrskdqbd .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ubjrskdqbd .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ubjrskdqbd .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="100m">100m</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Long.jump">Long.jump</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Shot.put">Shot.put</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="High.jump">High.jump</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="400m">400m</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="110m.hurdle">110m.hurdle</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Discus">Discus</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Pole.vault">Pole.vault</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Javeline">Javeline</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="1500m">1500m</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Rank">Rank</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Points">Points</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="Competition">Competition</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="100m" class="gt_row gt_right">10.50</td>
+<td headers="Long.jump" class="gt_row gt_right">7.81</td>
+<td headers="Shot.put" class="gt_row gt_right">15.93</td>
+<td headers="High.jump" class="gt_row gt_right">2.09</td>
+<td headers="400m" class="gt_row gt_right">46.81</td>
+<td headers="110m.hurdle" class="gt_row gt_right">13.97</td>
+<td headers="Discus" class="gt_row gt_right">51.65</td>
+<td headers="Pole.vault" class="gt_row gt_right">4.6</td>
+<td headers="Javeline" class="gt_row gt_right">55.54</td>
+<td headers="1500m" class="gt_row gt_right">278.11</td>
+<td headers="Rank" class="gt_row gt_right">3</td>
+<td headers="Points" class="gt_row gt_right">8725</td>
+<td headers="Competition" class="gt_row gt_center">OlympicG</td></tr>
+    <tr><td headers="100m" class="gt_row gt_right">10.44</td>
+<td headers="Long.jump" class="gt_row gt_right">7.96</td>
+<td headers="Shot.put" class="gt_row gt_right">15.23</td>
+<td headers="High.jump" class="gt_row gt_right">2.06</td>
+<td headers="400m" class="gt_row gt_right">49.19</td>
+<td headers="110m.hurdle" class="gt_row gt_right">14.13</td>
+<td headers="Discus" class="gt_row gt_right">50.11</td>
+<td headers="Pole.vault" class="gt_row gt_right">4.9</td>
+<td headers="Javeline" class="gt_row gt_right">69.71</td>
+<td headers="1500m" class="gt_row gt_right">282.00</td>
+<td headers="Rank" class="gt_row gt_right">2</td>
+<td headers="Points" class="gt_row gt_right">8820</td>
+<td headers="Competition" class="gt_row gt_center">OlympicG</td></tr>
+    <tr><td headers="100m" class="gt_row gt_right">10.85</td>
+<td headers="Long.jump" class="gt_row gt_right">7.84</td>
+<td headers="Shot.put" class="gt_row gt_right">16.36</td>
+<td headers="High.jump" class="gt_row gt_right">2.12</td>
+<td headers="400m" class="gt_row gt_right">48.36</td>
+<td headers="110m.hurdle" class="gt_row gt_right">14.05</td>
+<td headers="Discus" class="gt_row gt_right">48.72</td>
+<td headers="Pole.vault" class="gt_row gt_right">5.0</td>
+<td headers="Javeline" class="gt_row gt_right">70.52</td>
+<td headers="1500m" class="gt_row gt_right">280.01</td>
+<td headers="Rank" class="gt_row gt_right">1</td>
+<td headers="Points" class="gt_row gt_right">8893</td>
+<td headers="Competition" class="gt_row gt_center">OlympicG</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>Athletes <code>Drews</code> and <code>YURKOV</code> are located at similar positions along PC1, but are opposites with respect to PC2. An interpretation of this is that these two athletes have similar “overall” performance, but get there by different means; <code>Drews</code> being stronger in the running events and long jump, and <code>YURKOV</code> being stronger in the throwing events and high jump. Viewing the raw data confirms this.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(decathlon[<span class="fu">c</span>(<span class="st">'Drews'</span>,<span class="st">'YURKOV'</span>), ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="uhdzjhhawc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#uhdzjhhawc table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#uhdzjhhawc thead, #uhdzjhhawc tbody, #uhdzjhhawc tfoot, #uhdzjhhawc tr, #uhdzjhhawc td, #uhdzjhhawc th {
+  border-style: none;
+}
+
+#uhdzjhhawc p {
+  margin: 0;
+  padding: 0;
+}
+
+#uhdzjhhawc .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#uhdzjhhawc .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#uhdzjhhawc .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#uhdzjhhawc .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#uhdzjhhawc .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#uhdzjhhawc .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#uhdzjhhawc .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#uhdzjhhawc .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#uhdzjhhawc .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#uhdzjhhawc .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#uhdzjhhawc .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#uhdzjhhawc .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#uhdzjhhawc .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#uhdzjhhawc .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#uhdzjhhawc .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uhdzjhhawc .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#uhdzjhhawc .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#uhdzjhhawc .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#uhdzjhhawc .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uhdzjhhawc .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#uhdzjhhawc .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uhdzjhhawc .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#uhdzjhhawc .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uhdzjhhawc .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uhdzjhhawc .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uhdzjhhawc .gt_left {
+  text-align: left;
+}
+
+#uhdzjhhawc .gt_center {
+  text-align: center;
+}
+
+#uhdzjhhawc .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#uhdzjhhawc .gt_font_normal {
+  font-weight: normal;
+}
+
+#uhdzjhhawc .gt_font_bold {
+  font-weight: bold;
+}
+
+#uhdzjhhawc .gt_font_italic {
+  font-style: italic;
+}
+
+#uhdzjhhawc .gt_super {
+  font-size: 65%;
+}
+
+#uhdzjhhawc .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#uhdzjhhawc .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#uhdzjhhawc .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#uhdzjhhawc .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#uhdzjhhawc .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#uhdzjhhawc .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#uhdzjhhawc .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="100m">100m</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Long.jump">Long.jump</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Shot.put">Shot.put</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="High.jump">High.jump</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="400m">400m</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="110m.hurdle">110m.hurdle</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Discus">Discus</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Pole.vault">Pole.vault</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Javeline">Javeline</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="1500m">1500m</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Rank">Rank</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Points">Points</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="Competition">Competition</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="100m" class="gt_row gt_right">10.87</td>
+<td headers="Long.jump" class="gt_row gt_right">7.38</td>
+<td headers="Shot.put" class="gt_row gt_right">13.07</td>
+<td headers="High.jump" class="gt_row gt_right">1.88</td>
+<td headers="400m" class="gt_row gt_right">48.51</td>
+<td headers="110m.hurdle" class="gt_row gt_right">14.01</td>
+<td headers="Discus" class="gt_row gt_right">40.11</td>
+<td headers="Pole.vault" class="gt_row gt_right">5.00</td>
+<td headers="Javeline" class="gt_row gt_right">51.53</td>
+<td headers="1500m" class="gt_row gt_right">274.21</td>
+<td headers="Rank" class="gt_row gt_right">19</td>
+<td headers="Points" class="gt_row gt_right">7926</td>
+<td headers="Competition" class="gt_row gt_center">OlympicG</td></tr>
+    <tr><td headers="100m" class="gt_row gt_right">11.34</td>
+<td headers="Long.jump" class="gt_row gt_right">7.09</td>
+<td headers="Shot.put" class="gt_row gt_right">15.19</td>
+<td headers="High.jump" class="gt_row gt_right">2.10</td>
+<td headers="400m" class="gt_row gt_right">50.42</td>
+<td headers="110m.hurdle" class="gt_row gt_right">15.31</td>
+<td headers="Discus" class="gt_row gt_right">46.26</td>
+<td headers="Pole.vault" class="gt_row gt_right">4.72</td>
+<td headers="Javeline" class="gt_row gt_right">63.44</td>
+<td headers="1500m" class="gt_row gt_right">276.40</td>
+<td headers="Rank" class="gt_row gt_right">5</td>
+<td headers="Points" class="gt_row gt_right">8036</td>
+<td headers="Competition" class="gt_row gt_center">Decastar</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>It is informative to examine the correlation between variables in the new coordinate system defined by the principal components. Recall that previously the <code>chart.correlation()</code> function showed the presence of a number of correlations in the data. Running the same visualisation on the PC transformed data shows there is no longer correlations between variables. This is expected since the PCA algorithm explicitly constructs the PCs so that they are uncorrelated.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chart.Correlation</span>(dec_pca<span class="sc">$</span>ind<span class="sc">$</span>coord)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>It is a bit hard to see in the visualisation above, but the histograms showing the distribution of the observations with respect to each PC get <strong>narrower</strong> from PC1 to PC10. This is because the first PCs are capturing the majority of the variance in the data, so the values contained in the latter PCs are small, and not really needed to describe the observations. Again, showing how PCA is able to reduce the dimensionality of the data. The graph below shows this more clearly - the variance is concentrated in the first few PCs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reshape2)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">melt</span>(dec_pca<span class="sc">$</span>ind<span class="sc">$</span>coord) <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> Var2)) <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density_ridges</span>(<span class="at">stat =</span> <span class="st">"binline"</span>, <span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept =</span> <span class="dv">0</span>), <span class="at">linetype =</span> <span class="st">'dashed'</span>) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">'Distribution of observations on each PC axes'</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">'PC'</span>) <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">limits=</span>rev)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="how-much-can-the-dimensionality-of-the-data-be-reduced" class="level4" data-number="3.1.2.3">
+<h4 data-number="3.1.2.3" class="anchored" data-anchor-id="how-much-can-the-dimensionality-of-the-data-be-reduced"><span class="header-section-number">3.1.2.3</span> How much can the dimensionality of the data be reduced?</h4>
+<p>Information about exactly <strong>how much</strong> variance was captured by the PCs can be accessed by the command <code>dec_pca$eig</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dec_pca<span class="sc">$</span>eig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        eigenvalue percentage of variance cumulative percentage of variance
+comp 1   3.2719055              32.719055                          32.71906
+comp 2   1.7371310              17.371310                          50.09037
+comp 3   1.4049167              14.049167                          64.13953
+comp 4   1.0568504              10.568504                          74.70804
+comp 5   0.6847735               6.847735                          81.55577
+comp 6   0.5992687               5.992687                          87.54846
+comp 7   0.4512353               4.512353                          92.06081
+comp 8   0.3968766               3.968766                          96.02958
+comp 9   0.2148149               2.148149                          98.17773
+comp 10  0.1822275               1.822275                         100.00000</code></pre>
+</div>
+</div>
+<p>This states that the first PC captures 32.7% of the variance, the second 17.3%, and so on. The last column is the cumulative sum of the middle column, and states that around 50% of the total variance in the data will be retained if only the first two PCs are used to represent the observations (i.e., if we reduce the dimensionality from 10 to 2).</p>
+<p>The function <code>fviz_eig()</code> returns what is known as a <strong>scree plot</strong>, that displays the variance explained information.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_eig</span>(dec_pca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The concept of <strong>variance explained</strong> is worth some more exploration. One way to do this is by looking taking the data expressed in the PC coordinate system and the PC basis vectors, removing some of them, then trying to reconstruct the original data.</p>
+<p>If we were to use only the first two PCs then the data matrix is of size <span class="math inline">\(41\times 2\)</span> and we have two basis vectors of length 10 (the first two PCs). As shown in the background section of this tutorial, multiplying these two matrices will return a dataset, however this time it will be an approximation since some information will have been lost when 8 of the PCs were discarded.</p>
+<p>In the equation below <span class="math inline">\(\mathcal{D}_{reconstructed}\)</span> is the <strong>reconstructed</strong> dataset using <strong>only the first two PCs</strong>.</p>
+<p><span class="math display">\[
+\begin{split}
+\mathcal{D}_{reconstructed} &amp;=
+\begin{bmatrix}
+0.79 &amp; -0.72 \\
+1.24 &amp; -0.58 \\
+1.36 &amp; -0.48 \\
+-0.61 &amp; 0.875 \\
+-0.59 &amp; -2.13 \\
+0.36 &amp; 1.69 \\
+... &amp; ...
+\end{bmatrix}
+\times
+\begin{bmatrix}
+0.43 &amp; 0.41 &amp; 0.34 &amp; 0.32 &amp; 0.38 &amp; 0.41 &amp; 0.31 &amp; 0.03 &amp; 0.15 &amp; 0.03 \\
+0.14 &amp; 0.26 &amp; -0.45 &amp; -0.27 &amp; 0.43 &amp; 0.17 &amp; -0.46 &amp; 0.14 &amp; -0.24 &amp; 0.36 \\
+\end{bmatrix}
+\\
+&amp;=
+\begin{bmatrix}
+0.229 &amp; 0.122 &amp; 0.623 &amp; 0.455 &amp; -0.036 &amp; 0.193 &amp; 0.597 &amp; -0.084 &amp; 0.307 &amp; -0.252 \\
+0.447 &amp; 0.356 &amp; 0.686 &amp; 0.543 &amp; 0.216 &amp; 0.41 &amp; 0.642 &amp; -0.044 &amp; 0.327 &amp; -0.167 \\
+0.513 &amp; 0.43 &amp; 0.687 &amp; 0.558 &amp; 0.301 &amp; 0.476 &amp; 0.637 &amp; -0.028 &amp; 0.324 &amp; -0.131 \\
+-0.137 &amp; -0.021 &amp; -0.607 &amp; -0.425 &amp; 0.149 &amp; -0.1 &amp; -0.589 &amp; 0.103 &amp; -0.304 &amp; 0.295 \\
+-0.554 &amp; -0.799 &amp; 0.766 &amp; 0.381 &amp; -1.141 &amp; -0.612 &amp; 0.801 &amp; -0.308 &amp; 0.423 &amp; -0.786 \\
+0.392 &amp; 0.588 &amp; -0.642 &amp; -0.335 &amp; 0.862 &amp; 0.44 &amp; -0.666 &amp; 0.241 &amp; -0.351 &amp; 0.618 \\
+... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... \\
+\end{bmatrix}
+\end{split}
+\]</span></p>
+<p>The values in this reconstructed dataset are clearly not the same as the original data, however recall that the PCA algorithm pre-processes each column to have zero mean and variance equal to one. To get back to the scale of the original observations we need to undo those operation (i.e.&nbsp;multiply by the standard deviations and add the means).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reconstructed dataset using only the first two PCs</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>recon <span class="ot">&lt;-</span> dec_pca<span class="sc">$</span>ind<span class="sc">$</span>coord[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">%*%</span> <span class="fu">t</span>(dec_pca<span class="sc">$</span>svd<span class="sc">$</span>V[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Standard deviations of the original data</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>dec_sds <span class="ot">&lt;-</span> <span class="fu">apply</span>(dec_events, <span class="dv">2</span>, sd)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-scaling each column back to the original units</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>recon_scaled <span class="ot">&lt;-</span> recon</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>){</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  recon_scaled[, i] <span class="ot">=</span> recon[, i] <span class="sc">*</span> dec_sds[i] <span class="sc">+</span> dec_pca<span class="sc">$</span>call<span class="sc">$</span>centre[i]</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the reconstructed data</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(recon_scaled) <span class="sc">%&gt;%</span> <span class="fu">round</span> (<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          [,1] [,2]  [,3] [,4]   [,5]   [,6]  [,7] [,8]  [,9]   [,10]
+SEBRLE  -10.94 7.30 14.99 2.02 -49.66 -14.51 46.34 4.74 59.80 -281.97
+CLAY    -10.88 7.37 15.04 2.03 -49.37 -14.41 46.49 4.75 59.90 -280.98
+KARPOV  -10.86 7.40 15.04 2.03 -49.27 -14.38 46.48 4.75 59.88 -280.55
+BERNARD -11.03 7.25 13.98 1.94 -49.44 -14.65 42.34 4.79 56.85 -275.58
+YURKOV  -11.14 7.01 15.11 2.01 -50.93 -14.89 47.03 4.68 60.36 -288.19
+WARNERS -10.89 7.45 13.95 1.95 -48.62 -14.40 42.08 4.83 56.62 -271.81</code></pre>
+</div>
+</div>
+<p>This is more like what we would expect for decathlon results. We can see that each athlete has realistic scores for <strong>each of the 10 events, even though we only used 2 of the PCs</strong>.</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+-10.94 &amp; 7.3 &amp; 14.99 &amp; 2.02 &amp; -49.66 &amp; -14.51 &amp; 46.34 &amp; 4.74 &amp; 59.8 &amp; -281.97 \\
+-10.88 &amp; 7.37 &amp; 15.04 &amp; 2.03 &amp; -49.37 &amp; -14.41 &amp; 46.49 &amp; 4.75 &amp; 59.9 &amp; -280.98 \\
+-10.86 &amp; 7.4 &amp; 15.04 &amp; 2.03 &amp; -49.27 &amp; -14.38 &amp; 46.48 &amp; 4.75 &amp; 59.88 &amp; -280.55 \\
+-11.03 &amp; 7.25 &amp; 13.98 &amp; 1.94 &amp; -49.44 &amp; -14.65 &amp; 42.34 &amp; 4.79 &amp; 56.85 &amp; -275.58 \\
+-11.14 &amp; 7.01 &amp; 15.11 &amp; 2.01 &amp; -50.93 &amp; -14.89 &amp; 47.03 &amp; 4.68 &amp; 60.36 &amp; -288.19 \\
+-10.89 &amp; 7.45 &amp; 13.95 &amp; 1.95 &amp; -48.62 &amp; -14.4 &amp; 42.08 &amp; 4.83 &amp; 56.62 &amp; -271.81 \\  
+... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... \\
+\end{bmatrix}
+\]</span></p>
+<p>The gif below shows how faithfully we can re-construct the original data using anywhere from 1 to 10 PCs. After around 4-5 PCs are used, the reconstructed data aligns very closely with the original observations. This agrees with the results of the PCA that reported the first 4 PCs explained ~75% of the variance and the first 5 PCs explained ~ 80%.</p>
+<p><img src="decathlon_pca.gif" class="img-fluid"></p>
+<p>Contrast this to what would happen if we only used the first two <strong>standard</strong> basis vectors. We perfectly recover the scores from the first two events but have no information at all about the other 8.</p>
+<p><span class="math display">\[
+\begin{split}
+\mathcal{D}_{reconstructed} &amp;=
+\begin{bmatrix}
+-11.04 &amp; 7.58 \\
+-10.76 &amp; 7.4 \\
+-11.02 &amp; 7.3 \\
+-11.02 &amp; 7.23 \\
+-11.34 &amp; 7.09 \\
+-11.11 &amp; 7.6 \\
+... &amp; ...
+\end{bmatrix}
+\times
+\begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\  
+\end{bmatrix}
+\\
+&amp;=
+\begin{bmatrix}
+-11.04 &amp; 7.58 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+-10.76 &amp; 7.4 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+-11.02 &amp; 7.3 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+-11.02 &amp; 7.23 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+-11.34 &amp; 7.09 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+-11.11 &amp; 7.6 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... &amp; ... \\
+\end{bmatrix}
+\end{split}
+\]</span></p>
+</section>
+<section id="how-many-principal-components-should-be-retained" class="level4" data-number="3.1.2.4">
+<h4 data-number="3.1.2.4" class="anchored" data-anchor-id="how-many-principal-components-should-be-retained"><span class="header-section-number">3.1.2.4</span> How many Principal Components should be retained?</h4>
+<p><strong>XXXXXXXXXXXXXXX this is a problem dependent question, list some of the common options</strong>.</p>
+</section>
+</section>
+<section id="extensions-of-pca" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="extensions-of-pca"><span class="header-section-number">3.1.3</span> Extensions of PCA</h3>
+<section id="sparse-pca" class="level4" data-number="3.1.3.1">
+<h4 data-number="3.1.3.1" class="anchored" data-anchor-id="sparse-pca"><span class="header-section-number">3.1.3.1</span> Sparse PCA</h4>
+<p>PCA finds new basis vectors (principal components) that capture the most variance in a dataset. However, these components involve contributions from many of the original variables. This can make them difficult to interpret in some cases.</p>
+<p>Sparse-PCA addresses this by encouraging <strong>sparsity</strong> in the PC loadings (i.e.&nbsp;more zero loadings). Sparse PCA algorithms achieve sparsity in the principal component loadings (the coefficients defining each component) by incorporating penalties into the optimization process. These penalties push the coefficients towards zero, effectively making them inactive and leading to a sparse representation. Potential benefits of Sparse-PCA include:</p>
+<ul>
+<li>Interpretability: By using only a few variables, Sparse-PCA components are easier to understand and relate back to the original data.</li>
+<li>Feature Selection: Sparse-PCA can implicitly perform feature selection, highlighting the most important variables for explaining the data’s variance.</li>
+</ul>
+<p><strong>XXXXXXXXX tidy up this example a bit</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sparse PCA</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sparsepca)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>sPCA <span class="ot">&lt;-</span> <span class="fu">spca</span>(dec_events, <span class="at">scale =</span> T, <span class="at">alpha =</span> <span class="fl">0.001</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sPCA</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># print(sPCA$loadings, digits = 3, cutoff = 0.00001)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pca-on-waveform-data" class="level4" data-number="3.1.3.2">
+<h4 data-number="3.1.3.2" class="anchored" data-anchor-id="pca-on-waveform-data"><span class="header-section-number">3.1.3.2</span> PCA on waveform data</h4>
+<p><strong>XXXXXXXXX couple of sentences regarding this and point to John’s tutorial</strong>.</p>
+<p>PCA of waveforms and functional PCA: A primer for biomechanics - <a href="https://github.com/johnwarmenhoven/PCA-FPCA" class="uri">https://github.com/johnwarmenhoven/PCA-FPCA</a></p>
+<hr>
+</section>
+</section>
+</section>
+<section id="factor-analysis" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="factor-analysis"><span class="header-section-number">3.2</span> Factor Analysis</h2>
+<section id="how-is-factor-analysis-different-to-pca" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="how-is-factor-analysis-different-to-pca"><span class="header-section-number">3.2.1</span> How is Factor Analysis different to PCA?</h3>
+<blockquote class="blockquote">
+<p>the most fundamental difference is that factor analysis explicitly specifies a model relating the observed variables to a smaller set of underlying unobservable factors. Although some authors [2, 16] express PCA in the framework of a model, its main application is as a descriptive, exploratory technique, with no thought of an underlying model. This descriptive nature means that distributional assumptions are unnecessary to apply PCA in its usual form</p>
+</blockquote>
+<p>From https://www.utstat.toronto.edu/~brunner/oldclass/431s23/textbook/Ch2.pdf</p>
+</section>
+<section id="factor-analysis-model" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="factor-analysis-model"><span class="header-section-number">3.2.2</span> Factor analysis model</h3>
+<p>In exploratory factor analysis, the goal is to describe and summarize a data set by explaining a set of observed variables in terms of a smaller number of latent variables (factors). <strong>The factors are the reason the observable variables have the correlations they do.</strong></p>
+<p>The variables are assumed to be linear combinations of the factors plus, for each variable, an error term, or specific factor. Thus we have, for j = 1, 2, …,</p>
+<p>For example, if we had a dataset with dimensionality = 6 (each observation is described by 6 values <span class="math inline">\(x_1, x_2, ..., x_6\)</span>), and we believe that these 6 values are being driven by two underlying <strong>factors</strong> (<span class="math inline">\(F_{1} \text{ and } F_{2}\)</span>). Then the factor analysis model is given by:</p>
+<p><span class="math display">\[
+\begin{split}
+\textcolor{green}{x_{i,1}} &amp;= \textcolor{blue}{\lambda_{11}} \textcolor{red}{F_{i,1}} +
+\textcolor{blue}{\lambda_{12}} \textcolor{red}{F_{i,2}} + \epsilon_1 \\
+\textcolor{green}{x_{i,2}} &amp;= \textcolor{blue}{\lambda_{21}} \textcolor{red}{F_{i,1}} +
+\textcolor{blue}{\lambda_{22}} \textcolor{red}{F_{i,2}} + \epsilon_1 \\
+&amp;... \\
+\textcolor{green}{x_{i,6}} &amp;= \textcolor{blue}{\lambda_{61}} \textcolor{red}{F_{i,1}} +
+\textcolor{blue}{\lambda_{62}} \textcolor{red}{F_{i,2}} + \epsilon_1 \\
+\end{split}
+\]</span></p>
+<p>Translating the first equation into words can help unpack the meaning of these equations:</p>
+<p><span class="math display">\[
+\begin{split}
+\text{\textcolor{green}{Person i's score for x1}} &amp;= \text{\textcolor{blue}{Loading of Factor 1 on x1}} \times \text{\textcolor{red}{Person i's score on Factor 1}} \\
+&amp; \qquad \qquad + \text{\textcolor{blue}{Loading of Factor 2 on x1}} \times \text{\textcolor{red}{Person i's score on Factor 2}} \\
+&amp; \qquad \qquad \qquad \qquad + \text{error for Person i on x1}
+\end{split}
+\]</span></p>
+<p>and in matrix notation the model can be written as:</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+x_{i,1} \\
+x_{i,2} \\
+x_{i,3} \\
+x_{i,4} \\
+x_{i,5} \\
+x_{i,6} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\lambda_{11} &amp; \lambda_{12} \\
+\lambda_{21} &amp; \lambda_{22} \\
+\lambda_{31} &amp; \lambda_{32} \\
+\lambda_{41} &amp; \lambda_{42} \\
+\lambda_{51} &amp; \lambda_{52} \\
+\lambda_{61} &amp; \lambda_{62} \\
+\end{bmatrix}
+\times
+\begin{bmatrix}
+F_{i,1} \\
+F_{i,2} \\
+\end{bmatrix} +
+\begin{bmatrix}
+\epsilon_1 \\
+\epsilon_2 \\
+\epsilon_3 \\
+\epsilon_4 \\
+\epsilon_5 \\
+\epsilon_6 \\
+\end{bmatrix}
+\]</span></p>
+<p>The <span class="math inline">\(\lambda\)</span> values are common for all observations in the data and need to be estimated, along with the factor scores for each observation.</p>
+<p>The factor analysis model accomplishes dimensionality reduction because each of the original 6-dimensional observations can instead be represented (in this example) by the 2 factor scores.</p>
+</section>
+<section id="factor-analysis-in-r" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="factor-analysis-in-r"><span class="header-section-number">3.2.3</span> Factor analysis in R</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dec_fa <span class="ot">&lt;-</span> <span class="fu">factanal</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  dec_events,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">factors =</span> <span class="dv">3</span>,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">scores =</span> <span class="st">"Bartlett"</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">rotation =</span> <span class="st">"varimax"</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(dec_fa, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+factanal(x = dec_events, factors = 3, scores = "Bartlett", rotation = "varimax")
+
+Uniquenesses:
+       100m   Long.jump    Shot.put   High.jump        400m 110m.hurdle 
+      0.411       0.396       0.106       0.697       0.264       0.491 
+     Discus  Pole.vault    Javeline       1500m 
+      0.534       0.907       0.785       0.005 
+
+Loadings:
+            Factor1 Factor2 Factor3
+100m         0.699   0.264  -0.178 
+Long.jump    0.764          -0.107 
+400m         0.815           0.263 
+110m.hurdle  0.685   0.183         
+Shot.put     0.128   0.934         
+Discus       0.152   0.618  -0.248 
+1500m        0.190           0.976 
+High.jump    0.232   0.497         
+Pole.vault   0.124          -0.278 
+Javeline             0.412   0.214 
+
+               Factor1 Factor2 Factor3
+SS loadings      2.350   1.791   1.264
+Proportion Var   0.235   0.179   0.126
+Cumulative Var   0.235   0.414   0.541
+
+Test of the hypothesis that 3 factors are sufficient.
+The chi square statistic is 17.97 on 18 degrees of freedom.
+The p-value is 0.457 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dec_fac <span class="ot">&lt;-</span> <span class="fu">fa</span>(dec_events, <span class="at">nfactors =</span> <span class="dv">4</span>, <span class="at">fm =</span> <span class="st">'ml'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required namespace: GPArotation</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dec_fac)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Factor analysis with Call: fa(r = dec_events, nfactors = 4, fm = "ml")
+
+Test of the hypothesis that 4 factors are sufficient.
+The degrees of freedom for the model is 11  and the objective function was  0.28 
+The number of observations was  41  with Chi Square =  9.2  with prob &lt;  0.6 
+
+The root mean square of the residuals (RMSA) is  0.04 
+The df corrected root mean square of the residuals is  0.08 
+
+Tucker Lewis Index of factoring reliability =  1.094
+RMSEA index =  0  and the 10 % confidence intervals are  0 0.144
+BIC =  -31.65
+ With factor correlations of 
+     ML4   ML2   ML3   ML1
+ML4 1.00  0.30  0.11  0.08
+ML2 0.30  1.00 -0.15 -0.04
+ML3 0.11 -0.15  1.00 -0.15
+ML1 0.08 -0.04 -0.15  1.00</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(dec_fac)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Factor Analysis using method =  ml
+Call: fa(r = dec_events, nfactors = 4, fm = "ml")
+Standardized loadings (pattern matrix) based upon correlation matrix
+              ML4   ML2   ML3   ML1   h2    u2 com
+100m         0.72  0.13 -0.14 -0.02 0.59 0.409 1.1
+Long.jump    0.78 -0.05 -0.05  0.11 0.61 0.386 1.1
+Shot.put    -0.02  1.01  0.03  0.06 1.00 0.005 1.0
+High.jump    0.20  0.44  0.04 -0.17 0.32 0.680 1.8
+400m         0.76 -0.04  0.32  0.06 0.73 0.270 1.4
+110m.hurdle  0.73  0.04 -0.07 -0.09 0.54 0.464 1.1
+Discus       0.17  0.54 -0.26 -0.22 0.51 0.492 2.1
+Pole.vault   0.03  0.03 -0.04  0.99 1.00 0.005 1.0
+Javeline    -0.10  0.44  0.25  0.03 0.20 0.800 1.7
+1500m        0.02  0.01  0.99 -0.06 1.00 0.005 1.0
+
+                       ML4  ML2  ML3  ML1
+SS loadings           2.38 1.77 1.24 1.09
+Proportion Var        0.24 0.18 0.12 0.11
+Cumulative Var        0.24 0.41 0.54 0.65
+Proportion Explained  0.37 0.27 0.19 0.17
+Cumulative Proportion 0.37 0.64 0.83 1.00
+
+ With factor correlations of 
+     ML4   ML2   ML3   ML1
+ML4 1.00  0.30  0.11  0.08
+ML2 0.30  1.00 -0.15 -0.04
+ML3 0.11 -0.15  1.00 -0.15
+ML1 0.08 -0.04 -0.15  1.00
+
+Mean item complexity =  1.3
+Test of the hypothesis that 4 factors are sufficient.
+
+df null model =  45  with the objective function =  3.72 with Chi Square =  133.24
+df of  the model are 11  and the objective function was  0.28 
+
+The root mean square of the residuals (RMSR) is  0.04 
+The df corrected root mean square of the residuals is  0.08 
+
+The harmonic n.obs is  41 with the empirical chi square  5.13  with prob &lt;  0.92 
+The total n.obs was  41  with Likelihood Chi Square =  9.2  with prob &lt;  0.6 
+
+Tucker Lewis Index of factoring reliability =  1.094
+RMSEA index =  0  and the 90 % confidence intervals are  0 0.144
+BIC =  -31.65
+Fit based upon off diagonal values = 0.98
+Measures of factor score adequacy             
+                                                   ML4  ML2  ML3  ML1
+Correlation of (regression) scores with factors   0.93 1.00 1.00 1.00
+Multiple R square of scores with factors          0.87 1.00 0.99 0.99
+Minimum correlation of possible factor scores     0.73 0.99 0.99 0.99</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fa.diagram</span>(dec_fac)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>cmjdata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">'cleaned_cmj_jnrAF.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>cmj_fa <span class="ot">&lt;-</span> <span class="fu">fa</span>(cmjdata, <span class="at">nfactors =</span> <span class="dv">3</span>, <span class="at">fm =</span> <span class="st">'ml'</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fa.diagram</span>(cmj_fa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="how-to-choose-the-number-of-factors" class="level4" data-number="3.2.3.1">
+<h4 data-number="3.2.3.1" class="anchored" data-anchor-id="how-to-choose-the-number-of-factors"><span class="header-section-number">3.2.3.1</span> How to choose the number of factors</h4>
+</section>
+<section id="non-identifiability-and-rotations" class="level4" data-number="3.2.3.2">
+<h4 data-number="3.2.3.2" class="anchored" data-anchor-id="non-identifiability-and-rotations"><span class="header-section-number">3.2.3.2</span> Non-identifiability and rotations</h4>
+<p>Non-identifiability: This means the data doesn’t provide enough information to pinpoint unique values for the factors and loadings. Imagine a situation where you can rotate the factors in a certain way and still get the same fit for the observed data. In such a scenario, you wouldn’t be able to distinguish between the original and rotated factors, leading to non-identifiability.</p>
+<p>Rotation methods such as varimax or promax are commonly used to address rotational indeterminacy in factor analysis.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="non-linear-dimensionality-reduction" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="non-linear-dimensionality-reduction"><span class="header-section-number">3.3</span> Non-linear dimensionality reduction</h2>
+<p>In PCA the new basis vectors (or principal components) are constructed as a <strong>linear combination of the original input variables</strong>. In Factor Analysis, the observations are assumed to be a <strong>linear combination of the underlying factors</strong>.</p>
+<p><strong>XXXXXXXXX bit more on NLDR</strong></p>
+<section id="umap" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="umap"><span class="header-section-number">3.3.1</span> UMAP</h3>
+<p><strong>UMAP</strong>, which stands for <strong>U</strong>niform <strong>M</strong>anifold <strong>A</strong>pproximation and <strong>P</strong>rojection, is a technique used to reduce the dimensionality of data for visualization and analysis. It was published in 2018 and XXXXXXXX</p>
+<p>The technical details of how the UMAP algorithm works are beyond the scope of this tutorial (see [here](https://umap-learn.readthedocs.io/en/latest/how_umap_works.html) for an intermediate level explanation, and [here](https://arxiv.org/pdf/1802.03426.pdf) for the complete formulation).</p>
+<p><strong>XXXXXX working on a plainer language description of the concept</strong></p>
+<p>UMAP employs a distance-dependent nearest neighbor approach within the initial high-dimensional space to fine localized regions where data points tend to be interconnected. These connections are depicted through a directed graph model, with many points remaining unconnected.</p>
+<p>Subsequently, UMAP transposes graph points into a lower-dimensional space. Through an optimization procedure leveraging cross-entropy, the algorithm efficiently maps data points onto a reduced feature set, ensuring a robust approximation of the graph.</p>
+<section id="afl-player-statistics" class="level4" data-number="3.3.1.1">
+<h4 data-number="3.3.1.1" class="anchored" data-anchor-id="afl-player-statistics"><span class="header-section-number">3.3.1.1</span> AFL player statistics</h4>
+<p><strong>Explain the dataset</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>afl <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">'afl_stats_2012_23_means.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggcorrplot</span>(<span class="fu">cor</span>(afl[, <span class="dv">5</span><span class="sc">:</span><span class="dv">54</span>]), <span class="at">type =</span> <span class="st">"upper"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="umap-in-r" class="level4" data-number="3.3.1.2">
+<h4 data-number="3.3.1.2" class="anchored" data-anchor-id="umap-in-r"><span class="header-section-number">3.3.1.2</span> UMAP in R</h4>
+<p>The UMAP algorithm can be</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(uwot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'Matrix'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:tidyr':
+
+    expand, pack, unpack</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>umap_afl <span class="ot">&lt;-</span> <span class="fu">umap</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> afl[, <span class="dv">5</span><span class="sc">:</span><span class="dv">54</span>],</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_neighbors =</span> <span class="dv">5</span>,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_components =</span> <span class="dv">2</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">"euclidean"</span>,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">init =</span> <span class="st">'random'</span>,</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">scale =</span> T</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>What does the function return</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(umap_afl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> num [1:1331, 1:2] 4.41 -4.23 -1.5 -5.64 -2 ...
+ - attr(*, "scaled:center")= num [1:2] 0.695 -0.236</code></pre>
+</div>
+</div>
+<p>Plot the data in the new coordinate system</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(umap_afl), <span class="fu">aes</span>(<span class="at">x =</span> X1, <span class="at">y =</span> X2)) <span class="sc">+</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>umap_afl_data <span class="ot">&lt;-</span> <span class="fu">cbind</span>(afl, <span class="fu">data.frame</span>(umap_afl))</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>umap_afl_data <span class="sc">%&gt;%</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># filter(position_mode != 'BENCH') %&gt;%</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> X1, <span class="at">y =</span> X2)) <span class="sc">+</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col =</span> position_mode)) <span class="sc">+</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="DimRed_intro_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(um_afl_data, aes(x = `2`, y = `3`)) +</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_point() +</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_point(data = subset(um_afl_data, player %in% highlight_players),</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co">#              aes(col = player),</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="co">#              size = 4) +</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   theme_bw()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="cautions" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="cautions"><span class="header-section-number">3.4</span> Cautions</h2>
+<p>No analysis method is without potential issues that can lead to misinterpreting data. Dimensionality reduction methods are no exception to this. As always there is no substitute for careful thinking, checking and re-checking, and being cautious.</p>
+</section>
+<section id="references" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="references"><span class="header-section-number">3.5</span> References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-jolliffe2005" class="csl-entry" role="listitem">
+Jolliffe, Ian. 2005. <span>“Principal Component Analysis.”</span> In, 1580–84. Encyclopedia of Statistics in Behavioral Science.
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+<script src="DimRed_intro_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
