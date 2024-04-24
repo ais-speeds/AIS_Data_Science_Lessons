@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Regression Modelling Strategies 4</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="output4_files/libs/clipboard/clipboard.min.js"></script>
+<script src="output4_files/libs/quarto-html/quarto.js"></script>
+<script src="output4_files/libs/quarto-html/popper.min.js"></script>
+<script src="output4_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="output4_files/libs/quarto-html/anchor.min.js"></script>
+<link href="output4_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="output4_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="output4_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="output4_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="output4_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#introduction-linear-mixed-models" id="toc-introduction-linear-mixed-models" class="nav-link active" data-scroll-target="#introduction-linear-mixed-models"><span class="toc-section-number">1</span>  Introduction: LINEAR MIXED MODELS</a>
+  <ul class="collapse">
+  <li><a href="#why-linear-mixed-models" id="toc-why-linear-mixed-models" class="nav-link" data-scroll-target="#why-linear-mixed-models"><span class="toc-section-number">1.1</span>  Why Linear Mixed Models?</a></li>
+  <li><a href="#correlated-data-structures-icc" id="toc-correlated-data-structures-icc" class="nav-link" data-scroll-target="#correlated-data-structures-icc"><span class="toc-section-number">1.2</span>  Correlated data structures &amp; ICC</a></li>
+  <li><a href="#levels" id="toc-levels" class="nav-link" data-scroll-target="#levels"><span class="toc-section-number">1.3</span>  Levels</a></li>
+  <li><a href="#fixed-and-random-effects" id="toc-fixed-and-random-effects" class="nav-link" data-scroll-target="#fixed-and-random-effects"><span class="toc-section-number">1.4</span>  Fixed and Random Effects</a>
+  <ul class="collapse">
+  <li><a href="#fixed-effects" id="toc-fixed-effects" class="nav-link" data-scroll-target="#fixed-effects"><span class="toc-section-number">1.4.1</span>  Fixed Effects:</a></li>
+  <li><a href="#random-effects" id="toc-random-effects" class="nav-link" data-scroll-target="#random-effects"><span class="toc-section-number">1.4.2</span>  Random Effects:</a></li>
+  <li><a href="#fixed-vs.-random-effects" id="toc-fixed-vs.-random-effects" class="nav-link" data-scroll-target="#fixed-vs.-random-effects"><span class="toc-section-number">1.4.3</span>  Fixed vs.&nbsp;Random Effects:</a></li>
+  <li><a href="#slopes-intercepts" id="toc-slopes-intercepts" class="nav-link" data-scroll-target="#slopes-intercepts"><span class="toc-section-number">1.4.4</span>  Slopes &amp; Intercepts</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions"><span class="toc-section-number">2</span>  Assumptions</a></li>
+  <li><a href="#case-study" id="toc-case-study" class="nav-link" data-scroll-target="#case-study"><span class="toc-section-number">3</span>  Case Study</a>
+  <ul class="collapse">
+  <li><a href="#what-to-expect" id="toc-what-to-expect" class="nav-link" data-scroll-target="#what-to-expect"><span class="toc-section-number">3.1</span>  What to expect</a></li>
+  <li><a href="#data-loading-and-cleaning" id="toc-data-loading-and-cleaning" class="nav-link" data-scroll-target="#data-loading-and-cleaning"><span class="toc-section-number">3.2</span>  Data Loading and Cleaning</a></li>
+  <li><a href="#initial-exploratory-analyses" id="toc-initial-exploratory-analyses" class="nav-link" data-scroll-target="#initial-exploratory-analyses"><span class="toc-section-number">3.3</span>  Initial Exploratory Analyses</a>
+  <ul class="collapse">
+  <li><a href="#data-organisation" id="toc-data-organisation" class="nav-link" data-scroll-target="#data-organisation"><span class="toc-section-number">3.3.1</span>  Data organisation</a></li>
+  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics"><span class="toc-section-number">3.3.2</span>  Summary statistics</a></li>
+  <li><a href="#time-effects" id="toc-time-effects" class="nav-link" data-scroll-target="#time-effects"><span class="toc-section-number">3.3.3</span>  Time effects</a></li>
+  </ul></li>
+  <li><a href="#buldining-the-lmm" id="toc-buldining-the-lmm" class="nav-link" data-scroll-target="#buldining-the-lmm"><span class="toc-section-number">3.4</span>  Buldining the LMM</a>
+  <ul class="collapse">
+  <li><a href="#an-initial-model" id="toc-an-initial-model" class="nav-link" data-scroll-target="#an-initial-model"><span class="toc-section-number">3.4.1</span>  An initial model</a></li>
+  <li><a href="#adding-effects" id="toc-adding-effects" class="nav-link" data-scroll-target="#adding-effects"><span class="toc-section-number">3.4.2</span>  Adding effects</a></li>
+  <li><a href="#random-intercepts-slopes" id="toc-random-intercepts-slopes" class="nav-link" data-scroll-target="#random-intercepts-slopes"><span class="toc-section-number">3.4.3</span>  Random Intercepts &amp; Slopes</a></li>
+  <li><a href="#checking-assumptions" id="toc-checking-assumptions" class="nav-link" data-scroll-target="#checking-assumptions"><span class="toc-section-number">3.4.4</span>  Checking assumptions</a></li>
+  </ul></li>
+  <li><a href="#conclusion-reflection" id="toc-conclusion-reflection" class="nav-link" data-scroll-target="#conclusion-reflection"><span class="toc-section-number">3.5</span>  Conclusion &amp; Reflection</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regression Modelling Strategies 4</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+
+</div>
+<p>Linear Mixed Models</p>
+<p>ABSTRACT</p>
+<p>Linear mixed models (LMMs) stand as a versatile and robust statistical framework extensively employed in sports science to delve into complex data structures and uncover nuanced relationships among variables. In the realm of sports research, LMMs serve as a cornerstone for analyzing longitudinal or repeated measures data, accounting for both fixed effects—such as player performance or training interventions—and random effects, which encapsulate individual variability or team-specific characteristics. This modeling approach proves particularly adept at handling data with hierarchical or clustered structures, where observations are nested within players, teams, or seasons. Within the sporting domain, LMMs find application in various contexts, including performance analysis, injury prevention, talent identification, and training optimization. For instance, in assessing the effectiveness of training interventions over time, LMMs allow researchers to discern not only the overall impact of a training regimen but also how individual athletes respond differently to the same intervention. Moreover, LMMs enable the exploration of within-subject variability and the identification of factors contributing to fluctuations in performance or injury occurrence across different phases of a season or competition cycle.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Mixed models, multi-level models, fixed and random effects</p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorised as SILVER.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Lesson’s Main Idea
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Understand the importance of correlated data structures and the assumption of independence</p></li>
+<li><p>Construct linear mixed models that consist of different random effects (e.g.&nbsp;random intercepts, random slopes, random intercepts and slopes)</p></li>
+<li><p>Use fit metrics, such as BIC and AIC, to build towards a final model</p></li>
+<li><p>Interpret model parameters (including fixed effects and variance components) from a linear mixed model</p></li>
+</ul>
+</div>
+</div>
+<p>Date used in this lesson is provided by XYZ</p>
+<section id="introduction-linear-mixed-models" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction: LINEAR MIXED MODELS</h1>
+<section id="why-linear-mixed-models" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="why-linear-mixed-models"><span class="header-section-number">1.1</span> Why Linear Mixed Models?</h2>
+<p>In the previous lessons, we explored regression models that did not violate the assumption of Independence.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Reminder: Independence
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The assumption of independence refers to the assumption that the occurrence or outcome of one event is not influenced by the occurrence or outcome of another event. For example, if Team A is playing against Team B in one match and Team X is playing against Team Y in another match, the assumption of independence implies that the result of the Team A vs.&nbsp;Team B match does not influence the result of the Team X vs.&nbsp;Team Y match. Whether Team A wins or loses does not affect the likelihood of Team X winning or losing their match. Each match’s outcome is independent of the other.</p>
+</div>
+</div>
+<p>Quite often, especially in sport and exercise science, you will encounter situations that violate the assumption of independence. Unfortunately, if we ignore this assumption (and just use our regular linear regression techniques), our estimates may be completely biased and incorrect. This is where the Linear Mixed Model can help.</p>
+<p>Consider a data set that consists of two variables for 40 different athletes:</p>
+<ul>
+<li><code>Match performance</code> (a continuous variable where higher values represent better performance on the day of an important match)</li>
+<li><code>Days without training</code> (the number of days the athlete has missed / skipped training before said match)</li>
+</ul>
+<p>Click on the tabs below to explore this scenario and see what happens when Independence is ignored.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">1.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">2.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">3.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">4.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false" href="">5.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-6" role="tab" aria-controls="tabset-1-6" aria-selected="false" href="">6.</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>If we were to plot this data, then the graph would illustrate this relationship. Visually, it appears that there is a linear relationship between the two variables (i.e.&nbsp;more days of training missing <span class="math inline">\(=\)</span> better match performance). This is an odd finding!</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output4_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>Using Linear Regression, we can add a linear model to this data. This model does indeed confirm what we suspected visually (more days of training missing <span class="math inline">\(=\)</span> better match performance). <strong>Quick Reminder</strong>: One of the assumptions of Linear Regression is <em>Independence</em>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output4_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p>Now assume that each of the 40 athletes belong to 1 of 4 different coaches. Here, I have color coded the coaches to make it easier to distinguish the athletes. Such data violates the assumption of <em>Independence</em>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output4_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<p>If we model the data separately (based on the coach), we can see that there is actually a negative relationship for each of the different models! That is to say: <br> <em>more days of training missed</em> <span class="math inline">\(=\)</span> worse performance</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output4_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
+<p>So applying Linear Regression when our data violates <em>Independence</em> (i.e.&nbsp;ignoring the effect of different coaches) would estimate the slope of the overall relationship backwards! <br> Naturally, this would lead us to interpret the results backwards as well!</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output4_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-6-tab">
+<p>Enter: the Linear Mixed Model (LMM), which can be used when <em>Independence</em> is violated. As we can see from the plot below, the LMM is consistent with the individual models for the 4 coaches.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output4_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="correlated-data-structures-icc" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="correlated-data-structures-icc"><span class="header-section-number">1.2</span> Correlated data structures &amp; ICC</h2>
+<p>Correlated data structures refer to a concept where entities within a dataset exhibit relationships or dependencies with one another. These relationships can be based on various factors such as similarity, association, or interaction. in the previous example, we saw how athletes trained by the same coach often form a correlated data structure due to the shared influence and guidance they receive from their coach. Other examples could include:</p>
+<ul>
+<li>The sprint times of the same track athlete across multiple training sessions tend to be more related than the times of different athletes across similar sessions.</li>
+<li>Injury rehabilitation outcomes of athletes under the care of the same sports physiotherapist are more similar than outcomes of athletes under different physiotherapists.</li>
+<li>The coordination and teamwork of players within the same team tend to be more synchronized than those of players from different teams.</li>
+</ul>
+<p>The structure of these data sets suggest inherent patterns of similarities or correlation among outcomes. This kind of correlation is referred to as the Intraclass Correlation Coefficient (ICC). Intraclass Correlation Coefficient (ICC) is a statistical measure commonly used to quantify the degree of agreement or correlation among observations or measurements within the same group or cluster. In the context of correlated data structures, ICC provides valuable insights into the consistency and reliability of measurements taken on related entities, such as repeated testing of the same athlete or observations within the same training group.</p>
+<p>ICC assesses the proportion of total variance in measurements that can be attributed to differences between entities within the same group relative to the total variance, thereby quantifying the degree of agreement or correlation among these entities. A high ICC value indicates strong agreement or consistency among observations within the group, suggesting a high degree of correlation among the entities.</p>
+<p>For example, when analyzing the sprint times of the same track athlete across multiple training sessions, a high ICC value would indicate that the athlete’s performance is consistent across sessions, reflecting a strong correlation among the measurements. This suggests that the athlete’s sprint times are influenced by factors such as their training regimen, physical condition, and technique, rather than random variability or measurement error.</p>
+<p>ICC is particularly useful for evaluating the reliability of measurements within correlated data structures, as it accounts for both within-group variability (variability among individual entities within the group) and between-group variability (variability between different groups). By quantifying the degree of agreement among related observations, ICC enhances the interpretation and reliability of data in sports science and related fields, enabling researchers to make more informed decisions and draw meaningful conclusions based on the observed correlations.</p>
+</section>
+<section id="levels" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="levels"><span class="header-section-number">1.3</span> Levels</h2>
+<p>In the context of correlated data structures, such as athletes trained by the same coach or patients treated by the same healthcare provider, the concept of levels refers to the hierarchical structure of the data. Each level represents a different unit of analysis or aggregation within the dataset, with higher levels encompassing lower levels and potentially introducing additional sources of variability or correlation.</p>
+<p>For example, consider a study analyzing the performance of athletes within the same sports team. In this scenario, the hierarchical structure may consist of the following levels:</p>
+<ul>
+<li><strong>Level 1 - Individual Athletes</strong>: This level represents the lowest level of analysis, with each individual athlete serving as a separate unit of observation. Data collected at this level may include athlete-specific characteristics, such as age, gender, skill level, and performance metrics (e.g., sprint times, jump heights).</li>
+<li><strong>Level 2 - Sports Teams</strong>: This level represents the aggregation of individual athletes into sports teams or groups. Data collected at this level may include team-specific variables, such as coaching style, team dynamics, training regimen, and overall team performance.</li>
+</ul>
+<p><img src="https://i.ibb.co/C1kqKS6/Level1a.png" class="img-fluid"></p>
+<p>Within this hierarchical structure, correlations and dependencies may exist both within each level (e.g., similarities among athletes within the same team) and between different levels (e.g., similarities between teams coached by the same coach). Analyzing data at multiple levels allows researchers to account for the nested nature of the data and explore the effects of both individual-level and group-level factors on outcomes of interest.</p>
+</section>
+<section id="fixed-and-random-effects" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="fixed-and-random-effects"><span class="header-section-number">1.4</span> Fixed and Random Effects</h2>
+<p>In statistical modeling, particularly in the context of correlated data structures with hierarchical levels, researchers often need to make decisions about whether to include fixed effects, random effects, or both in their models. Understanding the differences between fixed and random effects is crucial for appropriately modeling the data and drawing accurate conclusions. Let’s delve into each:</p>
+<section id="fixed-effects" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="fixed-effects"><span class="header-section-number">1.4.1</span> Fixed Effects:</h3>
+<p>Fixed effects are parameters that are treated as constants in the model, representing specific levels or categories of a factor. They are called “fixed” because they are assumed to be fixed and known quantities, rather than being sampled from a larger population.</p>
+<p><strong>Characteristics</strong>:</p>
+<ul>
+<li><strong>Specific Levels</strong>: Fixed effects are used to estimate the effect of specific levels or categories of a factor on the outcome variable.</li>
+<li><strong>Parameter Estimation</strong>: In a model with fixed effects, separate coefficients are estimated for each level of the factor.</li>
+<li><strong>Interpretation</strong>: The coefficients associated with fixed effects provide information about the average effect of each level of the factor on the outcome variable.</li>
+</ul>
+<p><strong>Example</strong>: In a study examining the effect of different training programs on sprint performance, fixed effects would estimate the average improvement in sprint times associated with each training program.</p>
+</section>
+<section id="random-effects" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="random-effects"><span class="header-section-number">1.4.2</span> Random Effects:</h3>
+<p>Random effects, on the other hand, are variables that are treated as random draws from a larger population. They represent variability within a particular level of a factor, capturing unobserved heterogeneity or random variation that is shared among observations within the same level.</p>
+<p><strong>Characteristics</strong>:</p>
+<ul>
+<li><strong>Shared Variability</strong>: Random effects capture variability that is shared among observations within the same level of a factor.</li>
+<li><strong>Parameter Estimation</strong>: In a model with random effects, parameters are estimated for the distribution of the random effects rather than for each individual level of the factor.</li>
+<li><strong>Interpretation</strong>: The variance component associated with random effects quantifies the amount of variability within each level of the factor.</li>
+</ul>
+<p><strong>Example</strong>: In a study analyzing the effect of coaching style on athlete performance, random effects would capture the variability in performance outcomes that is shared among athletes coached by the same coach.</p>
+</section>
+<section id="fixed-vs.-random-effects" class="level3" data-number="1.4.3">
+<h3 data-number="1.4.3" class="anchored" data-anchor-id="fixed-vs.-random-effects"><span class="header-section-number">1.4.3</span> Fixed vs.&nbsp;Random Effects:</h3>
+<p><strong>Considerations</strong>:</p>
+<ul>
+<li><strong>Interpretation</strong>: Fixed effects provide information about the average effect of specific levels of a factor, while random effects capture variability within levels.</li>
+<li><strong>Model Complexity</strong>: Including random effects can increase the complexity of the model but may provide a more accurate representation of the data structure.</li>
+<li><strong>Inference</strong>: Fixed effects are often used for hypothesis testing and making inferences about specific levels of a factor, while random effects are useful for estimating overall variance and accounting for clustering within levels.</li>
+</ul>
+<p><strong>Integration</strong>: In many cases, both fixed and random effects may be included in the same model to account for different sources of variability and provide a comprehensive understanding of the data. This approach, known as mixed-effects modeling, allows researchers to simultaneously estimate fixed effects associated with specific factors of interest and random effects associated with variability within levels of those factors.</p>
+</section>
+<section id="slopes-intercepts" class="level3" data-number="1.4.4">
+<h3 data-number="1.4.4" class="anchored" data-anchor-id="slopes-intercepts"><span class="header-section-number">1.4.4</span> Slopes &amp; Intercepts</h3>
+<p>Now that we understand the distinctions between fixed and random effects, let’s delve deeper into the critical decisions surrounding <em>slopes</em> and <em>intercepts</em> when constructing LMMs for correlated data structures. See the textbox below for a reminder on intercepts and slopes.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Reminder: Intercepts &amp; Slopes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Intercept</strong>: In statistical modeling, the intercept (often denoted as β<sub>0</sub>) is a constant term in the model equation that represents the predicted value of the outcome variable when all predictor variables are set to zero. It represents the starting point of the regression line when all predictors have zero values.</p>
+<p><strong>Slope</strong>: The slope (often denoted as β<sub>1</sub>) represents the rate of change in the outcome variable for a one-unit change in the predictor variable. It quantifies the strength and direction of the relationship between the predictor and outcome variables.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="output4_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+<p>Click on the tabs below to visualise models with different fixed and random effects for intercepts and slopes:</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">1.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">2.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">3.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">4.</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false" href="">5.</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p><strong>The data</strong> <br> We will consider the same example from section 1 (athletes clustered within different coaches). In the plot below, each point represents a different athlete. The colors represent different coaches (or clusters). The dependent variable is performance score, and the independent variable is weeks of training missed.</p>
+<p><img src="https://i.ibb.co/gr1K24T/lmm-eg-1.png" class="img-fluid"></p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p><strong>Fixed Intercept &amp; Slope</strong> <br> Fitting an ordinary linear model, with fixed intercept and slope, would ignore the correlated data structure, and assume each athlete has the same starting performance score (intercept), and the same rate of decrease in performance score (slope). <br><br></p>
+<p><img src="https://i.ibb.co/VpDd03p/lmm-eg-2.png" class="img-fluid"></p>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<p><strong>Random Intercepts</strong> <br> It may be the case that each coach has a different starting performance score for their athletes, while the rate at which performance decreases is consistent across all athletes. If we believe this to be the case, we would want to allow the intercept to vary by coach.<br><br></p>
+<p><img src="https://i.ibb.co/JdKPMJM/lmm-eg-3.png" class="img-fluid"></p>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<p><strong>Random Slopes</strong> <br> Alternatively, we could imagine that athletes performance starts at the same level (fixed intercept) but decreases at different rates depending on the coach. We could incorporate this idea into a statistical model by allowing the slope to vary, rather than the intercept. <br><br></p>
+<p><img src="https://i.ibb.co/THw8mtq/lmm-eg-4.png" class="img-fluid"></p>
+</div>
+<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
+<p><strong>Random Intercepts &amp; Slopes</strong> <br> It’s reasonable to imagine that the most realistic situation is a combination of the scenarios described as: “Athletic performance start at different levels and decrease at different rates depending on the coach.” To incorporate both of these realities into our model, we want both the slope and the intercept to vary.</p>
+<p><img src="https://i.ibb.co/8dm5sV9/lmm-eg-5.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="assumptions" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Assumptions</h1>
+<ol type="1">
+<li><strong>Linearity</strong>: The relationship between the predictors and the response variable is assumed to be linear.</li>
+<li><strong>Normality of residuals</strong>: The residuals are assumed to be normally distributed.</li>
+<li><strong>Homogeneity of variances</strong>: The variance of the residuals is constant across all levels of the predictors.</li>
+<li><strong>Normality of random effects</strong>: The random effects are assumed to be normally distributed.</li>
+</ol>
+</section>
+<section id="case-study" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Case Study</h1>
+<section id="what-to-expect" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="what-to-expect"><span class="header-section-number">3.1</span> What to expect</h2>
+<p>In this lesson we will investigate the impact of recovery methods, such as compression garments and electrical stimulation, on the countermovement jump (CMJ) height of elite cross-country skiers relative to a control group, post competition. Measurements will be conducted at baseline and at 8, 20, 44, and 66 hours after a competition.</p>
+<p>Specifically, we will investigate if there is a main effect for <code>TIME</code> and <code>CONDITION</code>, as well as an interaction effect for <code>TIME</code><span class="math inline">\(\times\)</span><code>CONDITION</code>.</p>
+</section>
+<section id="data-loading-and-cleaning" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="data-loading-and-cleaning"><span class="header-section-number">3.2</span> Data Loading and Cleaning</h2>
+<p>For this exercise, we will use the <code>Govus_2018_Recovery</code> data set, which [update this section when this gets added to the speedsR package, for now I will just load it locally].</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Recovery <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/Govus_2018_Recovery.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="initial-exploratory-analyses" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="initial-exploratory-analyses"><span class="header-section-number">3.3</span> Initial Exploratory Analyses</h2>
+<section id="data-organisation" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="data-organisation"><span class="header-section-number">3.3.1</span> Data organisation</h3>
+<p><code>Govus_2018_Recovery</code> is a data set that contains 9 variables:</p>
+<ul>
+<li><code>ID</code>: Athlete ID</li>
+<li><code>SEX</code>: Male, Female</li>
+<li><code>TIME</code>: Baseline, 8 hours post-race; 20 hours post-race; 44 hours post-race; 68 hours post-race</li>
+<li>C<code>ONDITION</code>: Recovery Condition (Control; compression garment; electrical stimulation)</li>
+<li><code>CK</code>: Creatine kinase (ukat)</li>
+<li><code>UREA</code>: Urea (mmol/L)</li>
+<li><code>DP_PEAK</code>: Double pole ergometer test peak power (W)</li>
+<li><code>CMJ_HEIGHT</code>: Countermovement jump height (cm)</li>
+<li><code>SLEEP_HOURS</code>: Self reported sleep (hours)</li>
+</ul>
+<p>To begin, we’re going to clean our data. This will involve converting some of the variables to factors and redefining the levels within <code>TIME</code> and <code>CONDITION</code> so that “Baseline” and “Control” can be used as reference levels.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Recovery_cleaned <span class="ot">&lt;-</span> Recovery <span class="sc">|&gt;</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">c</span>(<span class="st">'ID'</span>,<span class="st">'SEX'</span>), as.factor) <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">TIME =</span> <span class="fu">factor</span>(TIME, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'Baseline'</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                                        <span class="st">'8 h Post-Race'</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                                        <span class="st">'20 h Post-Race'</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                                        <span class="st">'44 h Post-Race'</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                                        <span class="st">'68 h Post-Race'</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">CONDITION =</span> <span class="fu">factor</span>(CONDITION, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'Control'</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">'Compression'</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                                                  <span class="st">'Electrical Stimulation'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Given the known sex differences for urea and CMJ height, we will construct separate models for males and females:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Recovery_cleaned_F <span class="ot">&lt;-</span> Recovery_cleaned <span class="sc">|&gt;</span> <span class="fu">filter</span>(SEX <span class="sc">==</span> <span class="st">'F'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Recovery_cleaned_M <span class="ot">&lt;-</span> Recovery_cleaned <span class="sc">|&gt;</span> <span class="fu">filter</span>(SEX <span class="sc">==</span> <span class="st">'M'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="summary-statistics" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="summary-statistics"><span class="header-section-number">3.3.2</span> Summary statistics</h3>
+<p>An initial exploration of <code>CMJ_HEIGHT</code> reveals a some-what normal distribution, with values primarily between 16cm and 46cm.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Recovery_cleaned, <span class="fu">aes</span>(CMJ_HEIGHT)) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output4_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>There is an outlier at 0cm (a male participant) - which does not make sense (I think? Even if you just raise your heal off the ground, that should be &gt; 0?) and will be removed from further analyses:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for full data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>Recovery_cleaned <span class="ot">&lt;-</span> Recovery_cleaned <span class="sc">|&gt;</span> <span class="fu">filter</span>(CMJ_HEIGHT <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for males</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>Recovery_cleaned_M <span class="ot">&lt;-</span> Recovery_cleaned <span class="sc">|&gt;</span> <span class="fu">filter</span>(SEX <span class="sc">==</span> <span class="st">'M'</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                                                 CMJ_HEIGHT <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can use the <code>skimr</code> package to quicky obtain summary statistics for our chosen variables:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>skim_m <span class="ot">&lt;-</span> skimr<span class="sc">::</span><span class="fu">skim</span>(Recovery_cleaned_M)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>skim_f <span class="ot">&lt;-</span> skimr<span class="sc">::</span><span class="fu">skim</span>(Recovery_cleaned_F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>skim_m <span class="sc">|&gt;</span> <span class="fu">filter</span>(skim_type <span class="sc">==</span> <span class="st">'factor'</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="dv">2</span>,<span class="dv">6</span>,<span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  skim_variable factor.n_unique factor.top_counts                 
+  &lt;chr&gt;                   &lt;int&gt; &lt;chr&gt;                             
+1 ID                         18 1: 5, 4: 5, 6: 5, 7: 5            
+2 SEX                         1 M: 87, F: 0                       
+3 TIME                        5 Bas: 18, 68 : 18, 8 h: 17, 20 : 17
+4 CONDITION                   3 Con: 30, Ele: 30, Com: 27         </code></pre>
+</div>
+</div>
+<p>In the output above (for men) we can see that each of the 18 <code>ID</code>s have 5 measurements (Baseline to 68h post competition). As explained in section 1, this is a correlated data structure, where CMJ height measurements will be similar within the same athlete. Thus, we can treat <code>ID</code> as a cluster variable.</p>
+</section>
+<section id="time-effects" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="time-effects"><span class="header-section-number">3.3.3</span> Time effects</h3>
+<p>Next, let us explore how <code>CMJ_HEIGHT</code> changes over time. Given the known biological differences between males and females, we will split the plots by <code>SEX</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Relabel the time factors so it fits better on the plots</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Recovery_cleaned_Time<span class="fl">.01</span> <span class="ot">&lt;-</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  Recovery_cleaned <span class="sc">|&gt;</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">TIME =</span> <span class="fu">case_when</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    TIME <span class="sc">==</span> <span class="st">'Baseline'</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    TIME <span class="sc">==</span> <span class="st">'8 h Post-Race'</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    TIME <span class="sc">==</span> <span class="st">'20 h Post-Race'</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    TIME <span class="sc">==</span> <span class="st">'44 h Post-Race'</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    TIME <span class="sc">==</span> <span class="st">'68 h Post-Race'</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a plot for TIME versus CMJ Height</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Recovery_cleaned_Time<span class="fl">.01</span>, <span class="fu">aes</span>(TIME, CMJ_HEIGHT)) <span class="sc">+</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID), <span class="at">color =</span> <span class="st">'dark grey'</span>) <span class="sc">+</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>), <span class="at">color =</span> <span class="st">'black'</span>) <span class="sc">+</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>SEX)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Same as above but factoring in CONDITION</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Recovery_cleaned_Time<span class="fl">.01</span>, <span class="fu">aes</span>(TIME, CMJ_HEIGHT, <span class="at">color =</span> CONDITION)) <span class="sc">+</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> ID), <span class="at">color =</span> <span class="st">'dark grey'</span>) <span class="sc">+</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> CONDITION)) <span class="sc">+</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'right'</span>,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>SEX)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Place the plots on top of each other</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>n1 <span class="sc">/</span> n2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output4_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>In the plot above, the gray lines represent individual IDs and their change in <code>CMJ_HEIGHT</code> over the 5 time points. The black line (top panel) represents the main effect for time (i.e.&nbsp;when you average all of the individual effects).</p>
+<ul>
+<li>From the top panel, we can see that whilst Males typically have higher <code>CMJ_HEIGHTS</code> compared the females (as expected), the change over time appears quite similar for both sexes.</li>
+<li>In the bottom panel, we can see how CMJ height changes over time when split by recovery condition. There are some noticeable differences here, so we should take note of these when we ran the main analysis.</li>
+</ul>
+</section>
+</section>
+<section id="buldining-the-lmm" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="buldining-the-lmm"><span class="header-section-number">3.4</span> Buldining the LMM</h2>
+<section id="an-initial-model" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="an-initial-model"><span class="header-section-number">3.4.1</span> An initial model</h3>
+<p>The first model fit in almost any multilevel context should be the unconditional means model, also called a random intercepts model. In this model, there are no predictors at either level; rather, the purpose of the unconditional means model is to assess the amount of variation at each level—to compare variability within subject to variability between subjects. Expanded models will then attempt to explain sources of between and within subject variability.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load libraries</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Build unconditional means model for females</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>mod0_F <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID), <span class="at">data =</span> Recovery_cleaned_F)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Build unconditional means model for males</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>mod0_M <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID), <span class="at">data =</span> Recovery_cleaned_M)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Using the <code>summary</code> function, let us examine the random effects in the model (we don’t care about the fixed effects now because we haven’t added any predictors yet)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>VCrandom_F <span class="ot">&lt;-</span> <span class="fu">VarCorr</span>(mod0_F)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(VCrandom_F, <span class="at">comp =</span> <span class="fu">c</span>(<span class="st">"Variance"</span>, <span class="st">"Std.Dev."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Groups   Name        Variance Std.Dev.
+ ID       (Intercept) 8.5842   2.9299  
+ Residual             1.7150   1.3096  </code></pre>
+</div>
+</div>
+<style>
+div.green { background-color:#b3ffb3; border-radius: 5px; padding: 20px;}
+</style>
+<div class="green">
+<p>From this output:</p>
+<ul>
+<li><span class="math inline">\(\sigma^2=1.72\)</span>: the estimated variance in within-person deviations.</li>
+<li><span class="math inline">\(\sigma^2_u=8.58\)</span>: the estimated variance in between-persons deviations.</li>
+</ul>
+<p>The relative levels of between- and within-person variabilities can be compared through the intraclass correlation coefficient (ICC):</p>
+<p><span class="math display">\[ICC=\frac{Between\space variability}{Total\space variability}=\frac{8.58}{8.58+1.72}=.833\]</span></p>
+<p>Thus, 83.3% of the total variability in CMJ height for females are attributable to differences among subject. Note: as ICC approaches 0, responses from an individual are essentially independent and accounting for the multilevel structure of the data becomes less crucial. However, as ICC approaches 1, repeated observations from the same individual essentially provide no additional information and accounting for the multilevel structure becomes very important.</p>
+</div>
+<p>Repeating this for males:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>VCrandom_M <span class="ot">&lt;-</span> <span class="fu">VarCorr</span>(mod0_M)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(VCrandom_M, <span class="at">comp =</span> <span class="fu">c</span>(<span class="st">"Variance"</span>, <span class="st">"Std.Dev."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Groups   Name        Variance Std.Dev.
+ ID       (Intercept) 26.4708  5.1450  
+ Residual              2.5833  1.6073  </code></pre>
+</div>
+</div>
+<div class="green">
+<p>Here, the ICC (<span class="math inline">\(\frac{26.47}{26.47+2.58}=.911\)</span>) tells us that 91.1% the total variability in CMJ height for males are attributable to differences among subject.</p>
+</div>
+</section>
+<section id="adding-effects" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="adding-effects"><span class="header-section-number">3.4.2</span> Adding effects</h3>
+<p>Let us now add in the main and interaction effects to our models:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build model for females</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mod1_F <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> TIME <span class="sc">+</span> CONDITION <span class="sc">+</span> TIME<span class="sc">:</span>CONDITION <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID), </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> Recovery_cleaned_F)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Build model for males</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>mod1_M <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> TIME <span class="sc">+</span> CONDITION <span class="sc">+</span> TIME<span class="sc">:</span>CONDITION <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID), </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> Recovery_cleaned_M)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can use the <code>anova</code> function to create an analysis of variance table which tests whether the model terms are significant. The function can also be used to compared deviances from different models to assess model fit. In our example, we are using it to see if the interaction time TIME<span class="math inline">\(\times\)</span>CONDITION is significant. As a reminder (see Lesson 1), our goal with modeling should be to obtain the simplest model possible while retaining its predictive and explanatory power. Thus, removing non-significant interactions identified helps streamline the model’s complexity, ensuring that it remains parsimonious without sacrificing its ability to capture essential relationships between variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod1_F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Type III Analysis of Variance Table with Satterthwaite's method
+                Sum Sq Mean Sq NumDF DenDF F value Pr(&gt;F)  
+TIME           18.1087  4.5272     4    44  3.3582 0.0175 *
+CONDITION       1.1898  0.5949     2    11  0.4413 0.6541  
+TIME:CONDITION 16.5989  2.0749     8    44  1.5391 0.1715  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod1_M)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Type III Analysis of Variance Table with Satterthwaite's method
+               Sum Sq Mean Sq NumDF  DenDF F value    Pr(&gt;F)    
+TIME           45.363 11.3408     4 57.044  5.8839 0.0004911 ***
+CONDITION       2.471  1.2356     2 15.007  0.6411 0.5405550    
+TIME:CONDITION 23.261  2.9077     8 57.042  1.5086 0.1746394    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<div class="green">
+<p>In the two outputs above, we can see that the neither interaction effects are statistically significant. Thus, it makes sense to remove them for model simplicity.</p>
+</div>
+<p>Our next models will become:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build model for females</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>mod2_F <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> TIME <span class="sc">+</span> CONDITION <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID), </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> Recovery_cleaned_F)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Build model for males</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>mod2_M <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> TIME <span class="sc">+</span> CONDITION <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID), </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> Recovery_cleaned_M)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can use the <code>anova</code> function to compare</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod2_F,mod1_F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>refitting model(s) with ML (instead of REML)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: Recovery_cleaned_F
+Models:
+mod2_F: CMJ_HEIGHT ~ TIME + CONDITION + (1 | ID)
+mod1_F: CMJ_HEIGHT ~ TIME + CONDITION + TIME:CONDITION + (1 | ID)
+       npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)  
+mod2_F    9 284.75 304.99 -133.38   266.75                       
+mod1_F   17 286.94 325.16 -126.47   252.94 13.817  8    0.08666 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>As a reminder from lesson 1, AIC and BIC are metrics that we can use to assess model fit, with lower values representing better fit. From the output above, model 2 (no interaction effect) fits the data better compared to model 1 (with the time<span class="math inline">\(\times\)</span>condition effect). A test of the model deviances revealed no significant difference between the two (<em>p</em> = .087). Thus, the simpler method (without the interaction) should be the preferred model.</p>
+<p>A similar observation is noted for males as well:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod2_M,mod1_M)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>refitting model(s) with ML (instead of REML)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: Recovery_cleaned_M
+Models:
+mod2_M: CMJ_HEIGHT ~ TIME + CONDITION + (1 | ID)
+mod1_M: CMJ_HEIGHT ~ TIME + CONDITION + TIME:CONDITION + (1 | ID)
+       npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)
+mod2_M    9 395.03 417.22 -188.51   377.03                     
+mod1_M   17 397.75 439.67 -181.88   363.75 13.278  8     0.1026</code></pre>
+</div>
+</div>
+<p>We can also use the <code>tab_model()</code> function from the sjPlot package to view both the fixed and random effects in a table. The function also computes the ICC for us:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>sjPlot<span class="sc">::</span><span class="fu">tab_model</span>(mod2_F, mod2_M,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">dv.labels =</span> <span class="fu">c</span>(<span class="st">'CMJ Height Females'</span>,<span class="st">'CMJ Height Males'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="border-collapse:collapse; border:none;">
+<tbody><tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">CMJ Height Females</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">CMJ Height Males</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col7">p</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">27.91</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">24.73&nbsp;–&nbsp;31.08</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">32.05</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">27.69&nbsp;–&nbsp;36.42</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7"><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TIME [8 h Post-Race]</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.13</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.04&nbsp;–&nbsp;0.78</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.779</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.40</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.57&nbsp;–&nbsp;1.37</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">0.414</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TIME [20 h Post-Race]</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.68</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.59&nbsp;–&nbsp;0.23</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.142</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.70</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.67&nbsp;–&nbsp;0.27</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">0.154</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TIME [44 h Post-Race]</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.36</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-2.27&nbsp;–&nbsp;-0.44</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>0.004</strong></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.53</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-2.50&nbsp;–&nbsp;-0.56</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7"><strong>0.002</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TIME [68 h Post-Race]</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.14</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-2.06&nbsp;–&nbsp;-0.23</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>0.015</strong></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.23</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-2.18&nbsp;–&nbsp;-0.28</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7"><strong>0.012</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">CONDITION [Compression]</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">1.34</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-2.85&nbsp;–&nbsp;5.53</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.525</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.06</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.05&nbsp;–&nbsp;6.18</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">0.984</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">CONDITION [Electrical<br>Stimulation]</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.46</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.65&nbsp;–&nbsp;3.74</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.828</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">2.99</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-3.12&nbsp;–&nbsp;9.10</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">0.333</td>
+</tr>
+<tr>
+<td colspan="7" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1.46</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2.04</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">9.47 <sub>ID</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">27.83 <sub>ID</sub></td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.87</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.93</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">14 <sub>ID</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">18 <sub>ID</sub></td>
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">70</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">87</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.077 / 0.877</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.078 / 0.937</td>
+</tr>
+
+</tbody></table>
+
+</div>
+</div>
+<div class="green">
+<p>From the output above we can see that:</p>
+<p>For females, CMJ height is 1.36m lower at 44h post-race compared to baseline (95% CI = -2.27 to -0.44, <em>p</em> = .004); and 1.14m lower at 68h post-race compared to baseline (95% CI = -2.06 to -0.23, <em>p</em> = 0.015), when controlling for recovery condition. The ICC reveals that 87% of the total variability in CMJ height can be attributed to differences among individual subjects.</p>
+<p>For males, CMJ height is 1.53m lower at 44h post-race compared to baseline (95% CI = -2.50 to -0.56, <em>p</em> = .002); and 1.23m lower at 68h post-race compared to baseline (95% CI = -2.18 to -0.28, <em>p</em> = 0.012), when controlling for recovery condition. The ICC reveals that 93% of the total variability in CMJ height can be attributed to differences among individual subjects.</p>
+</div>
+</section>
+<section id="random-intercepts-slopes" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="random-intercepts-slopes"><span class="header-section-number">3.4.3</span> Random Intercepts &amp; Slopes</h3>
+<p>Now that we have seen how to add random intercepts to a model, the next step is to consider the inclusion of random slopes. While random intercepts account for variations in the baseline level of the response variable across different groups or individuals, random slopes take our modeling capabilities a step further by allowing for the exploration of varying relationships between predictors and the response <em>within</em> these groups. Incorporating random slopes acknowledges that the effect of predictors may not remain constant across different levels of grouping factors. Instead, it acknowledges the possibility that individuals or groups may exhibit distinct trends or patterns in their responses, resulting in variations in the slopes of regression lines.</p>
+<p>A common challenge with building a mixed model is determine which of your variables should be fixed, and which should be random (or both fixed and random). In our current example, we had previously fit <code>CONDITION</code> as a fixed effect only. Let us now explore fitting it as a random slope as well:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build model for females</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>mod2_F_slopes <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> TIME <span class="sc">+</span> CONDITION <span class="sc">+</span> (CONDITION<span class="sc">|</span>ID), </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> Recovery_cleaned_F)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Build model for males</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>mod2_M_slopes <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> TIME <span class="sc">+</span> CONDITION <span class="sc">+</span> (CONDITION<span class="sc">|</span>ID), </span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> Recovery_cleaned_M)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let us now compare this random intercepts slopes model to our previous random intercepts only model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod2_F_slopes, mod2_F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>refitting model(s) with ML (instead of REML)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: Recovery_cleaned_F
+Models:
+mod2_F: CMJ_HEIGHT ~ TIME + CONDITION + (1 | ID)
+mod2_F_slopes: CMJ_HEIGHT ~ TIME + CONDITION + (CONDITION | ID)
+              npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)
+mod2_F           9 284.75 304.99 -133.38   266.75                     
+mod2_F_slopes   14 292.66 324.14 -132.33   264.66 2.0919  5     0.8363</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod2_M_slopes, mod2_M)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>refitting model(s) with ML (instead of REML)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: Recovery_cleaned_M
+Models:
+mod2_M: CMJ_HEIGHT ~ TIME + CONDITION + (1 | ID)
+mod2_M_slopes: CMJ_HEIGHT ~ TIME + CONDITION + (CONDITION | ID)
+              npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)
+mod2_M           9 395.03 417.22 -188.51   377.03                     
+mod2_M_slopes   14 400.78 435.31 -186.39   372.78 4.2447  5     0.5147</code></pre>
+</div>
+</div>
+<div class="green">
+<p>The output here suggests that adding Recovery Condition as a random slope does improve model fit for neither females or males. In both instances, the random intercept only model has lower AIC and BIC values. In addition, there is no significant change in the deviances (<em>p</em> = .836 and <em>p</em> = .515, respectively).</p>
+</div>
+<p>Note: In general, we should consider the <em>theory</em> behind the effects first, as this can save us some valuable time in the modelling process. E.g. if there is no scientific reason that Recovery Condition would vary for each ID, then there would be no reason to fit it as a random slope.</p>
+</section>
+<section id="checking-assumptions" class="level3" data-number="3.4.4">
+<h3 data-number="3.4.4" class="anchored" data-anchor-id="checking-assumptions"><span class="header-section-number">3.4.4</span> Checking assumptions</h3>
+<p>As we have done in previous lessons, we can use the <code>check_model()</code> function from the ‘performance’ package to check the assumptions of the models:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_model</span>(mod2_F,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">check =</span> <span class="fu">c</span>(<span class="st">'linearity'</span>,<span class="st">'homogeneity'</span>,<span class="st">'qq'</span>,<span class="st">'reqq'</span>,<span class="st">'vif'</span>,<span class="st">'outliers'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output4_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_model</span>(mod2_M,</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">check =</span> <span class="fu">c</span>(<span class="st">'linearity'</span>,<span class="st">'homogeneity'</span>,<span class="st">'qq'</span>,<span class="st">'reqq'</span>,<span class="st">'vif'</span>,<span class="st">'outliers'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output4_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>For both models, whilst there is some variation, the assumptions are relatively satisfied, and we can we happy to proceed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>mod9_F <span class="ot">&lt;-</span> <span class="fu">lmer</span>(CMJ_HEIGHT <span class="sc">~</span> UREA<span class="sc">:</span>CONDITION <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID),</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> Recovery_cleaned_F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="conclusion-reflection" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="conclusion-reflection"><span class="header-section-number">3.5</span> Conclusion &amp; Reflection</h2>
+<p>In conclusion, this guide has provided an overview of linear mixed models, beginning with a vignette for the importance of not violating <em>Independence</em>. We then learnt about correlated data structures, as well as exploring the difference between fixed and random intercepts / slopes. We then learnt how to fit different types of models to our Recovery data.</p>
+<p>In addition to their versatility in handling correlated data structures, linear mixed models (LMMs) offer a significant advantage over regular linear models (LMs) by accommodating various types of data distributions and complexities. Unlike LMs, which assume independent observations, LMMs can effectively model correlated data, making them more robust and reliable in real-world applications. Moreover, the concepts learned in Lesson 2 on Poisson regression and Lesson 3 on Logistic Regression extend to generalized linear mixed models (GLMMs), providing a comprehensive toolkit for analyzing correlated data across different scenarios. Understanding the principles of GLMMs opens avenues for exploring more sophisticated statistical techniques in future lessons, enriching our understanding and application of advanced modeling approaches.</p>
+<p>Given the inherently multifaceted nature of data collected in sport and exercise science, ranging from athlete performance metrics to physiological responses, the ability to account for correlated structures is paramount. LMMs and GLMMs enable researchers and practitioners to analyze complex datasets while appropriately addressing dependencies, thereby yielding more accurate insights into athlete performance, injury prevention, training optimization, and other critical aspects of sports science. As such, mastering these techniques not only enhances the statistical rigor of analyses but also empowers professionals in sport and exercise science to make informed decisions and drive advancements in athletic performance and well-being.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

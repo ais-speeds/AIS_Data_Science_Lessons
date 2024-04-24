@@ -1,0 +1,678 @@
+---
+title: "Regression Modelling Strategies 4"
+format: 
+  html:
+    toc: true
+    toc-title: Contents
+    number-sections: true
+editor: visual
+---
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+Linear Mixed Models
+
+ABSTRACT
+
+Linear mixed models (LMMs) stand as a versatile and robust statistical framework extensively employed in sports science to delve into complex data structures and uncover nuanced relationships among variables. In the realm of sports research, LMMs serve as a cornerstone for analyzing longitudinal or repeated measures data, accounting for both fixed effects—such as player performance or training interventions—and random effects, which encapsulate individual variability or team-specific characteristics. This modeling approach proves particularly adept at handling data with hierarchical or clustered structures, where observations are nested within players, teams, or seasons. Within the sporting domain, LMMs find application in various contexts, including performance analysis, injury prevention, talent identification, and training optimization. For instance, in assessing the effectiveness of training interventions over time, LMMs allow researchers to discern not only the overall impact of a training regimen but also how individual athletes respond differently to the same intervention. Moreover, LMMs enable the exploration of within-subject variability and the identification of factors contributing to fluctuations in performance or injury occurrence across different phases of a season or competition cycle.
+
+
+::: callout-tip
+## Keywords
+
+Mixed models, multi-level models, fixed and random effects
+
+:::
+
+::: callout-note
+## Lesson's Level
+
+The level of this lesson is categorised as SILVER.
+:::
+
+::: callout-tip
+## Lesson's Main Idea
+
+-   Understand the importance of correlated data structures and the assumption of independence
+
+-   Construct linear mixed models that consist of different random effects (e.g. random intercepts, random slopes, random intercepts and slopes)
+
+-   Use fit metrics, such as BIC and AIC, to build towards a final model
+
+-   Interpret model parameters (including fixed effects and variance components) from a linear mixed model
+:::
+
+Date used in this lesson is provided by XYZ
+
+# Introduction: LINEAR MIXED MODELS
+
+## Why Linear Mixed Models?
+
+In the previous lessons, we explored regression models that did not violate the assumption of Independence.
+
+::: callout-tip
+### Reminder: Independence
+
+The assumption of independence refers to the assumption that the occurrence or outcome of one event is not influenced by the occurrence or outcome of another event. For example, if Team A is playing against Team B in one match and Team X is playing against Team Y in another match, the assumption of independence implies that the result of the Team A vs. Team B match does not influence the result of the Team X vs. Team Y match. Whether Team A wins or loses does not affect the likelihood of Team X winning or losing their match. Each match's outcome is independent of the other.
+:::
+
+Quite often, especially in sport and exercise science, you will encounter situations that violate the assumption of independence. Unfortunately, if we ignore this assumption (and just use our regular linear regression techniques), our estimates may be completely biased and incorrect. This is where the Linear Mixed Model can help.
+
+Consider a data set that consists of two variables for 40 different athletes:
+
+-   `Match performance` (a continuous variable where higher values represent better performance on the day of an important match)
+-   `Days without training` (the number of days the athlete has missed / skipped training before said match)
+
+Click on the tabs below to explore this scenario and see what happens when Independence is ignored.
+
+::: panel-tabset
+## 1.
+
+If we were to plot this data, then the graph would illustrate this relationship. Visually, it appears that there is a linear relationship between the two variables (i.e. more days of training missing $=$ better match performance). This is an odd finding!
+
+```{r, include=FALSE}
+subject = c(rep(1,10),rep(2,10),rep(3,10),rep(4,10))
+lambda0 = c(rep(10,10),rep(20,10),rep(30,10),rep(40,10))
+lambda1 = rep(-0.5,40)
+previj = c(1:10,4:13,7:16,10:19)
+eij = rnorm(40,0,1)
+yij = lambda0 + lambda1*previj + eij
+simdata = data.frame(subject=subject,lambda0=lambda0,
+                     lambda1=lambda1,previj=previj,eij=eij,yij=yij)
+
+library(lme4)
+plot(yij~previj)
+olsreg.sim = lm(yij~previj)
+AIC(olsreg.sim); BIC(olsreg.sim)
+mlm.sim = lmer(yij~previj + (1|subject), data=simdata)
+
+ints.sim = fixef(mlm.sim)[1] + ranef(mlm.sim)[[1]][1]
+slopes.sim = rep(fixef(mlm.sim)[2],4)
+subj.sim = c("Subject 1", "Subject 2", 
+             "Subject 3", "Subject 4")
+sim1.plot = data.frame(id=subj.sim,
+                       ints.sim=ints.sim[[1]],slopes.sim=slopes.sim)
+sim1.plot2 = data.frame(model=c("MLM","Linear Regression"),
+                        int2=c(fixef(mlm.sim)[1],
+                               summary(olsreg.sim)$coefficients[1,1]),
+                        slp2=c(fixef(mlm.sim)[2],
+                               summary(olsreg.sim)$coefficients[2,1]))
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+library(ggplot2)
+g1 <- ggplot(simdata, aes(x = previj, y = yij)) +
+  geom_point() +
+  labs(x = "Days without training", y = "Match performance") + 
+  xlim(0,20)+
+  ylim(0,40)
+g1
+```
+
+## 2.
+
+Using Linear Regression, we can add a linear model to this data. This model does indeed confirm what we suspected visually (more days of training missing $=$ better match performance). **Quick Reminder**: One of the assumptions of Linear Regression is *Independence*.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+g2 <- ggplot(simdata, aes(x = previj, y = yij)) +
+  geom_point() +
+  geom_abline(intercept = 6.568, slope = 1.359) +
+  labs(x = "Days without training", y = "Match performance") +  
+  xlim(0,20) +
+  ylim(0,40)
+g2
+```
+
+## 3.
+
+Now assume that each of the 40 athletes belong to 1 of 4 different coaches. Here, I have color coded the coaches to make it easier to distinguish the athletes. Such data violates the assumption of *Independence*.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+g3 <- ggplot() +  
+  geom_point(data=simdata, aes(x=previj,y=yij, color = as.factor(subject)))+
+  labs(x = "Days without training", y = "Match performance") + 
+  theme(legend.position = "none") + 
+  xlim(0,20) +
+  ylim(0,40)
+g3
+```
+
+## 4.
+
+If we model the data separately (based on the coach), we can see that there is actually a negative relationship for each of the different models! That is to say: <br/> *more days of training missed* $=$ worse performance
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+g4 <- ggplot() +  
+  geom_point(data=simdata, aes(x=previj,y=yij, color = as.factor(subject))) + 
+  geom_abline(data=sim1.plot, 
+              aes(intercept=ints.sim,
+                  slope=slopes.sim, 
+                  linetype=id, 
+                  group=id), 
+              colour = "gray") +
+  labs(x = "Days without training", y = "Match performance") + 
+  theme(legend.position = "none") + 
+  xlim(0,20) +
+  ylim(0,40)
+g4
+```
+
+## 5.
+
+So applying Linear Regression when our data violates *Independence* (i.e. ignoring the effect of different coaches) would estimate the slope of the overall relationship backwards! <br/> Naturally, this would lead us to interpret the results backwards as well!
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+g6 <- ggplot() +  
+  geom_point(data=simdata, aes(x=previj,y=yij, color = as.factor(subject))) + 
+  geom_abline(data=sim1.plot, 
+              aes(intercept=ints.sim,
+                  slope=slopes.sim, 
+                  linetype=id, group=id), 
+              colour = "gray") +
+  geom_abline(intercept=6.6, slope=1.4, lty = 5, lwd = 1.5) +
+  labs(x = "Days without training", y = "Match performance") + 
+  theme(legend.position = "none") + 
+  xlim(0,20) +
+  ylim(0,40)
+g6
+```
+
+## 6.
+
+Enter: the Linear Mixed Model (LMM), which can be used when *Independence* is violated. As we can see from the plot below, the LMM is consistent with the individual models for the 4 coaches.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+g5 <- ggplot() +  
+  geom_point(data=simdata, aes(x=previj,y=yij, color = as.factor(subject))) + 
+  geom_abline(data=sim1.plot, 
+              aes(intercept=ints.sim,
+                  slope=slopes.sim, 
+                  linetype=id, 
+                  group=id), 
+              colour = "gray") +
+  geom_abline(intercept=25.843, slope=-.569, lty = 5, lwd = 1.5) +
+  labs(x = "Days without training", y = "Match performance") + 
+  theme(legend.position = "none") + 
+  xlim(0,20) +
+  ylim(0,40)
+g5
+```
+:::
+
+## Correlated data structures & ICC
+
+Correlated data structures refer to a concept where entities within a dataset exhibit relationships or dependencies with one another. These relationships can be based on various factors such as similarity, association, or interaction. in the previous example, we saw how athletes trained by the same coach often form a correlated data structure due to the shared influence and guidance they receive from their coach. Other examples could include:
+
+-   The sprint times of the same track athlete across multiple training sessions tend to be more related than the times of different athletes across similar sessions.
+-   Injury rehabilitation outcomes of athletes under the care of the same sports physiotherapist are more similar than outcomes of athletes under different physiotherapists.
+-   The coordination and teamwork of players within the same team tend to be more synchronized than those of players from different teams.
+
+The structure of these data sets suggest inherent patterns of similarities or correlation among outcomes. This kind of correlation is referred to as the Intraclass Correlation Coefficient (ICC). Intraclass Correlation Coefficient (ICC) is a statistical measure commonly used to quantify the degree of agreement or correlation among observations or measurements within the same group or cluster. In the context of correlated data structures, ICC provides valuable insights into the consistency and reliability of measurements taken on related entities, such as repeated testing of the same athlete or observations within the same training group.
+
+ICC assesses the proportion of total variance in measurements that can be attributed to differences between entities within the same group relative to the total variance, thereby quantifying the degree of agreement or correlation among these entities. A high ICC value indicates strong agreement or consistency among observations within the group, suggesting a high degree of correlation among the entities.
+
+For example, when analyzing the sprint times of the same track athlete across multiple training sessions, a high ICC value would indicate that the athlete's performance is consistent across sessions, reflecting a strong correlation among the measurements. This suggests that the athlete's sprint times are influenced by factors such as their training regimen, physical condition, and technique, rather than random variability or measurement error.
+
+ICC is particularly useful for evaluating the reliability of measurements within correlated data structures, as it accounts for both within-group variability (variability among individual entities within the group) and between-group variability (variability between different groups). By quantifying the degree of agreement among related observations, ICC enhances the interpretation and reliability of data in sports science and related fields, enabling researchers to make more informed decisions and draw meaningful conclusions based on the observed correlations.
+
+## Levels
+
+In the context of correlated data structures, such as athletes trained by the same coach or patients treated by the same healthcare provider, the concept of levels refers to the hierarchical structure of the data. Each level represents a different unit of analysis or aggregation within the dataset, with higher levels encompassing lower levels and potentially introducing additional sources of variability or correlation.
+
+For example, consider a study analyzing the performance of athletes within the same sports team. In this scenario, the hierarchical structure may consist of the following levels:
+
+-   **Level 1 - Individual Athletes**: This level represents the lowest level of analysis, with each individual athlete serving as a separate unit of observation. Data collected at this level may include athlete-specific characteristics, such as age, gender, skill level, and performance metrics (e.g., sprint times, jump heights).
+-   **Level 2 - Sports Teams**: This level represents the aggregation of individual athletes into sports teams or groups. Data collected at this level may include team-specific variables, such as coaching style, team dynamics, training regimen, and overall team performance.
+
+![](https://i.ibb.co/C1kqKS6/Level1a.png)
+
+Within this hierarchical structure, correlations and dependencies may exist both within each level (e.g., similarities among athletes within the same team) and between different levels (e.g., similarities between teams coached by the same coach). Analyzing data at multiple levels allows researchers to account for the nested nature of the data and explore the effects of both individual-level and group-level factors on outcomes of interest.
+
+## Fixed and Random Effects
+
+In statistical modeling, particularly in the context of correlated data structures with hierarchical levels, researchers often need to make decisions about whether to include fixed effects, random effects, or both in their models. Understanding the differences between fixed and random effects is crucial for appropriately modeling the data and drawing accurate conclusions. Let's delve into each:
+
+### Fixed Effects:
+
+Fixed effects are parameters that are treated as constants in the model, representing specific levels or categories of a factor. They are called "fixed" because they are assumed to be fixed and known quantities, rather than being sampled from a larger population.
+
+**Characteristics**:
+
+-   **Specific Levels**: Fixed effects are used to estimate the effect of specific levels or categories of a factor on the outcome variable.
+-   **Parameter Estimation**: In a model with fixed effects, separate coefficients are estimated for each level of the factor.
+-   **Interpretation**: The coefficients associated with fixed effects provide information about the average effect of each level of the factor on the outcome variable.
+
+**Example**: In a study examining the effect of different training programs on sprint performance, fixed effects would estimate the average improvement in sprint times associated with each training program.
+
+### Random Effects:
+
+Random effects, on the other hand, are variables that are treated as random draws from a larger population. They represent variability within a particular level of a factor, capturing unobserved heterogeneity or random variation that is shared among observations within the same level.
+
+**Characteristics**:
+
+-   **Shared Variability**: Random effects capture variability that is shared among observations within the same level of a factor.
+-   **Parameter Estimation**: In a model with random effects, parameters are estimated for the distribution of the random effects rather than for each individual level of the factor.
+-   **Interpretation**: The variance component associated with random effects quantifies the amount of variability within each level of the factor.
+
+**Example**: In a study analyzing the effect of coaching style on athlete performance, random effects would capture the variability in performance outcomes that is shared among athletes coached by the same coach.
+
+### Fixed vs. Random Effects:
+
+**Considerations**:
+
+-   **Interpretation**: Fixed effects provide information about the average effect of specific levels of a factor, while random effects capture variability within levels.
+-   **Model Complexity**: Including random effects can increase the complexity of the model but may provide a more accurate representation of the data structure.
+-   **Inference**: Fixed effects are often used for hypothesis testing and making inferences about specific levels of a factor, while random effects are useful for estimating overall variance and accounting for clustering within levels.
+
+**Integration**: In many cases, both fixed and random effects may be included in the same model to account for different sources of variability and provide a comprehensive understanding of the data. This approach, known as mixed-effects modeling, allows researchers to simultaneously estimate fixed effects associated with specific factors of interest and random effects associated with variability within levels of those factors.
+
+### Slopes & Intercepts
+
+Now that we understand the distinctions between fixed and random effects, let's delve deeper into the critical decisions surrounding *slopes* and *intercepts* when constructing LMMs for correlated data structures. See the textbox below for a reminder on intercepts and slopes.
+
+::: callout-tip
+### Reminder: Intercepts & Slopes
+
+**Intercept**: In statistical modeling, the intercept (often denoted as β~0~) is a constant term in the model equation that represents the predicted value of the outcome variable when all predictor variables are set to zero. It represents the starting point of the regression line when all predictors have zero values.
+
+**Slope**: The slope (often denoted as β~1~) represents the rate of change in the outcome variable for a one-unit change in the predictor variable. It quantifies the strength and direction of the relationship between the predictor and outcome variables.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate simulated data
+x <- seq(1, 20, by = 1)
+y <- 2 * x + rnorm(length(x), mean = 0, sd = 5) # Simulate linear relationship with noise
+data <- data.frame(x = x, y = y)
+
+# Fit linear regression model
+model <- lm(y ~ x, data = data)
+
+# Extract coefficients
+intercept <- coef(model)[1]
+slope <- coef(model)[2]
+
+# Create scatterplot with regression line
+plot <- ggplot(data, aes(x = x, y = y)) +
+  geom_point(color = "blue") + 
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(x = "X",
+       y = "Y") +
+  theme_minimal()
+
+# Add text for slope and intercept with arrows
+plot + 
+  annotate("text", x = 3, y = 32, 
+           label = paste("Intercept:", round(intercept, 2)), 
+           color = "black") +
+  annotate("text", x = 8, y = 42, 
+           label = paste("Slope:", round(slope, 2)), 
+           color = "black") +
+  geom_segment(aes(x = 3, y = 30, xend = 1, yend = 4), arrow = arrow(length = unit(0.3, "cm")), color = "black") +
+  geom_segment(aes(x = 8, y = 40, xend = 10, yend = 21), arrow = arrow(length = unit(0.3, "cm")), color = "black")
+
+
+```
+:::
+
+Click on the tabs below to visualise models with different fixed and random effects for intercepts and slopes:
+
+::: panel-tabset
+## 1.
+
+**The data** <br> We will consider the same example from section 1 (athletes clustered within different coaches). In the plot below, each point represents a different athlete. The colors represent different coaches (or clusters). The dependent variable is performance score, and the independent variable is weeks of training missed.
+
+![](https://i.ibb.co/gr1K24T/lmm-eg-1.png)
+
+## 2.
+
+**Fixed Intercept & Slope** <br> Fitting an ordinary linear model, with fixed intercept and slope, would ignore the correlated data structure, and assume each athlete has the same starting performance score (intercept), and the same rate of decrease in performance score (slope). <br><br>
+
+![](https://i.ibb.co/VpDd03p/lmm-eg-2.png)
+
+## 3.
+
+**Random Intercepts** <br> It may be the case that each coach has a different starting performance score for their athletes, while the rate at which performance decreases is consistent across all athletes. If we believe this to be the case, we would want to allow the intercept to vary by coach.<br><br>
+
+![](https://i.ibb.co/JdKPMJM/lmm-eg-3.png)
+
+## 4.
+
+**Random Slopes** <br> Alternatively, we could imagine that athletes performance starts at the same level (fixed intercept) but decreases at different rates depending on the coach. We could incorporate this idea into a statistical model by allowing the slope to vary, rather than the intercept. <br><br>
+
+![](https://i.ibb.co/THw8mtq/lmm-eg-4.png)
+
+## 5.
+
+**Random Intercepts & Slopes** <br> It's reasonable to imagine that the most realistic situation is a combination of the scenarios described as: "Athletic performance start at different levels and decrease at different rates depending on the coach." To incorporate both of these realities into our model, we want both the slope and the intercept to vary.
+
+![](https://i.ibb.co/8dm5sV9/lmm-eg-5.png)
+:::
+
+# Assumptions
+
+1.  **Linearity**: The relationship between the predictors and the response variable is assumed to be linear.
+2.  **Normality of residuals**: The residuals are assumed to be normally distributed.
+3.  **Homogeneity of variances**: The variance of the residuals is constant across all levels of the predictors.
+4.  **Normality of random effects**: The random effects are assumed to be normally distributed.
+
+# Case Study
+
+## What to expect
+
+In this lesson we will investigate the impact of recovery methods, such as compression garments and electrical stimulation, on the countermovement jump (CMJ) height of elite cross-country skiers relative to a control group, post competition. Measurements will be conducted at baseline and at 8, 20, 44, and 66 hours after a competition.
+
+Specifically, we will investigate if there is a main effect for `TIME` and `CONDITION`, as well as an interaction effect for `TIME`$\times$`CONDITION`.
+
+## Data Loading and Cleaning
+
+For this exercise, we will use the `Govus_2018_Recovery` data set, which \[update this section when this gets added to the speedsR package, for now I will just load it locally\].
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+Recovery <- read.csv("data/Govus_2018_Recovery.csv")
+```
+
+## Initial Exploratory Analyses
+
+### Data organisation
+
+`Govus_2018_Recovery` is a data set that contains 9 variables:
+
+-   `ID`: Athlete ID
+-   `SEX`: Male, Female
+-   `TIME`: Baseline, 8 hours post-race; 20 hours post-race; 44 hours post-race; 68 hours post-race
+-   C`ONDITION`: Recovery Condition (Control; compression garment; electrical stimulation)
+-   `CK`: Creatine kinase (ukat)
+-   `UREA`: Urea (mmol/L)
+-   `DP_PEAK`: Double pole ergometer test peak power (W)
+-   `CMJ_HEIGHT`: Countermovement jump height (cm)
+-   `SLEEP_HOURS`: Self reported sleep (hours)
+
+To begin, we're going to clean our data. This will involve converting some of the variables to factors and redefining the levels within `TIME` and `CONDITION` so that "Baseline" and "Control" can be used as reference levels.
+
+```{r}
+Recovery_cleaned <- Recovery |> 
+  as_tibble() |> 
+  mutate_at(c('ID','SEX'), as.factor) |> 
+  mutate(TIME = factor(TIME, levels = c('Baseline',
+                                        '8 h Post-Race',
+                                        '20 h Post-Race',
+                                        '44 h Post-Race',
+                                        '68 h Post-Race'))) |> 
+  mutate(CONDITION = factor(CONDITION, levels = c('Control',
+                                                  'Compression',
+                                                  'Electrical Stimulation')))
+```
+
+Given the known sex differences for urea and CMJ height, we will construct separate models for males and females:
+
+```{r}
+Recovery_cleaned_F <- Recovery_cleaned |> filter(SEX == 'F')
+Recovery_cleaned_M <- Recovery_cleaned |> filter(SEX == 'M')
+```
+
+### Summary statistics
+
+An initial exploration of `CMJ_HEIGHT` reveals a some-what normal distribution, with values primarily between 16cm and 46cm.
+
+```{r, warning=FALSE, message=FALSE}
+ggplot(Recovery_cleaned, aes(CMJ_HEIGHT)) +
+  geom_histogram()
+```
+
+There is an outlier at 0cm (a male participant) - which does not make sense (I think? Even if you just raise your heal off the ground, that should be \> 0?) and will be removed from further analyses:
+
+```{r}
+# Filter for full data
+Recovery_cleaned <- Recovery_cleaned |> filter(CMJ_HEIGHT > 0)
+
+# Filter for males
+Recovery_cleaned_M <- Recovery_cleaned |> filter(SEX == 'M',
+                                                 CMJ_HEIGHT > 0)
+```
+
+We can use the `skimr` package to quicky obtain summary statistics for our chosen variables:
+
+```{r}
+skim_m <- skimr::skim(Recovery_cleaned_M)
+skim_f <- skimr::skim(Recovery_cleaned_F)
+```
+
+```{r}
+skim_m |> filter(skim_type == 'factor') |> select(2,6,7)
+```
+
+In the output above (for men) we can see that each of the 18 `ID`s have 5 measurements (Baseline to 68h post competition). As explained in section 1, this is a correlated data structure, where CMJ height measurements will be similar within the same athlete. Thus, we can treat `ID` as a cluster variable.
+
+### Time effects
+
+Next, let us explore how `CMJ_HEIGHT` changes over time. Given the known biological differences between males and females, we will split the plots by `SEX`:
+
+```{r, warning=FALSE, message=FALSE}
+# Relabel the time factors so it fits better on the plots
+Recovery_cleaned_Time.01 <- 
+  Recovery_cleaned |> 
+  mutate(TIME = case_when(
+    TIME == 'Baseline' ~ 0,
+    TIME == '8 h Post-Race' ~ 1,
+    TIME == '20 h Post-Race' ~ 2,
+    TIME == '44 h Post-Race' ~ 3,
+    TIME == '68 h Post-Race' ~ 4,
+  ))
+
+# Create a plot for TIME versus CMJ Height
+n1 <- ggplot(Recovery_cleaned_Time.01, aes(TIME, CMJ_HEIGHT)) +
+  geom_line(aes(group = ID), color = 'dark grey') +
+  geom_smooth(aes(group = 1), color = 'black') +
+  facet_wrap(~SEX)
+
+# Same as above but factoring in CONDITION
+n2 <- ggplot(Recovery_cleaned_Time.01, aes(TIME, CMJ_HEIGHT, color = CONDITION)) +
+  geom_line(aes(group = ID), color = 'dark grey') +
+  geom_smooth(aes(group = CONDITION)) +
+  theme(legend.position = 'right',
+        legend.text = element_text(size = 7),
+        legend.title = element_text(size = 7)) +
+  facet_wrap(~SEX)
+
+# Place the plots on top of each other
+library(patchwork)
+n1 / n2
+```
+
+In the plot above, the gray lines represent individual IDs and their change in `CMJ_HEIGHT` over the 5 time points. The black line (top panel) represents the main effect for time (i.e. when you average all of the individual effects).
+
+-   From the top panel, we can see that whilst Males typically have higher `CMJ_HEIGHTS` compared the females (as expected), the change over time appears quite similar for both sexes.
+-   In the bottom panel, we can see how CMJ height changes over time when split by recovery condition. There are some noticeable differences here, so we should take note of these when we ran the main analysis.
+
+## Buldining the LMM
+
+### An initial model
+
+The first model fit in almost any multilevel context should be the unconditional means model, also called a random intercepts model. In this model, there are no predictors at either level; rather, the purpose of the unconditional means model is to assess the amount of variation at each level---to compare variability within subject to variability between subjects. Expanded models will then attempt to explain sources of between and within subject variability.
+
+```{r, warning=FALSE, message=FALSE}
+# Load libraries
+library(lme4)
+library(lmerTest)
+
+# Build unconditional means model for females
+mod0_F <- lmer(CMJ_HEIGHT ~ 1 + (1|ID), data = Recovery_cleaned_F)
+
+# Build unconditional means model for males
+mod0_M <- lmer(CMJ_HEIGHT ~ 1 + (1|ID), data = Recovery_cleaned_M)
+```
+
+Using the `summary` function, let us examine the random effects in the model (we don't care about the fixed effects now because we haven't added any predictors yet)
+
+```{r}
+VCrandom_F <- VarCorr(mod0_F)
+print(VCrandom_F, comp = c("Variance", "Std.Dev."))
+```
+
+```{=html}
+<style>
+div.green { background-color:#b3ffb3; border-radius: 5px; padding: 20px;}
+</style>
+```
+::: green
+From this output:
+
+-   $\sigma^2=1.72$: the estimated variance in within-person deviations.
+-   $\sigma^2_u=8.58$: the estimated variance in between-persons deviations.
+
+The relative levels of between- and within-person variabilities can be compared through the intraclass correlation coefficient (ICC):
+
+$$ICC=\frac{Between\space variability}{Total\space variability}=\frac{8.58}{8.58+1.72}=.833$$
+
+Thus, 83.3% of the total variability in CMJ height for females are attributable to differences among subject. Note: as ICC approaches 0, responses from an individual are essentially independent and accounting for the multilevel structure of the data becomes less crucial. However, as ICC approaches 1, repeated observations from the same individual essentially provide no additional information and accounting for the multilevel structure becomes very important.
+:::
+
+Repeating this for males:
+
+```{r}
+VCrandom_M <- VarCorr(mod0_M)
+print(VCrandom_M, comp = c("Variance", "Std.Dev."))
+```
+
+::: green
+Here, the ICC ($\frac{26.47}{26.47+2.58}=.911$) tells us that 91.1% the total variability in CMJ height for males are attributable to differences among subject.
+:::
+
+### Adding effects
+
+Let us now add in the main and interaction effects to our models:
+
+```{r}
+# Build model for females
+mod1_F <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + TIME:CONDITION + (1|ID), 
+               data = Recovery_cleaned_F)
+
+# Build model for males
+mod1_M <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + TIME:CONDITION + (1|ID), 
+               data = Recovery_cleaned_M)
+```
+
+We can use the `anova` function to create an analysis of variance table which tests whether the model terms are significant. The function can also be used to compared deviances from different models to assess model fit. In our example, we are using it to see if the interaction time TIME$\times$CONDITION is significant. As a reminder (see Lesson 1), our goal with modeling should be to obtain the simplest model possible while retaining its predictive and explanatory power. Thus, removing non-significant interactions identified helps streamline the model's complexity, ensuring that it remains parsimonious without sacrificing its ability to capture essential relationships between variables.
+
+```{r}
+anova(mod1_F)
+anova(mod1_M)
+```
+
+::: green
+In the two outputs above, we can see that the neither interaction effects are statistically significant. Thus, it makes sense to remove them for model simplicity.
+:::
+
+Our next models will become:
+
+```{r}
+# Build model for females
+mod2_F <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + (1|ID), 
+               data = Recovery_cleaned_F)
+
+# Build model for males
+mod2_M <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + (1|ID), 
+               data = Recovery_cleaned_M)
+```
+
+We can use the `anova` function to compare
+
+```{r}
+anova(mod2_F,mod1_F)
+```
+
+As a reminder from lesson 1, AIC and BIC are metrics that we can use to assess model fit, with lower values representing better fit. From the output above, model 2 (no interaction effect) fits the data better compared to model 1 (with the time$\times$condition effect). A test of the model deviances revealed no significant difference between the two (*p* = .087). Thus, the simpler method (without the interaction) should be the preferred model.
+
+A similar observation is noted for males as well:
+
+```{r}
+anova(mod2_M,mod1_M)
+```
+
+We can also use the `tab_model()` function from the sjPlot package to view both the fixed and random effects in a table. The function also computes the ICC for us:
+
+```{r}
+sjPlot::tab_model(mod2_F, mod2_M,
+                  dv.labels = c('CMJ Height Females','CMJ Height Males'))
+```
+
+::: green
+
+From the output above we can see that:
+
+For females, CMJ height is 1.36m lower at 44h post-race compared to baseline (95% CI = -2.27 to -0.44, *p* = .004); and 1.14m lower at 68h post-race compared to baseline (95% CI = -2.06 to -0.23, *p* = 0.015), when controlling for recovery condition. The ICC reveals that 87% of the total variability in CMJ height can be attributed to differences among individual subjects.
+
+For males, CMJ height is 1.53m lower at 44h post-race compared to baseline (95% CI = -2.50 to -0.56, *p* = .002); and 1.23m lower at 68h post-race compared to baseline (95% CI = -2.18 to -0.28, *p* = 0.012), when controlling for recovery condition. The ICC reveals that 93% of the total variability in CMJ height can be attributed to differences among individual subjects.
+
+:::
+
+### Random Intercepts & Slopes
+
+Now that we have seen how to add random intercepts to a model, the next step is to consider the inclusion of random slopes. While random intercepts account for variations in the baseline level of the response variable across different groups or individuals, random slopes take our modeling capabilities a step further by allowing for the exploration of varying relationships between predictors and the response *within* these groups. Incorporating random slopes acknowledges that the effect of predictors may not remain constant across different levels of grouping factors. Instead, it acknowledges the possibility that individuals or groups may exhibit distinct trends or patterns in their responses, resulting in variations in the slopes of regression lines.
+
+A common challenge with building a mixed model is determine which of your variables should be fixed, and which should be random (or both fixed and random). In our current example, we had previously fit `CONDITION` as a fixed effect only. Let us now explore fitting it as a random slope as well:
+
+```{r, warning=FALSE, message=FALSE}
+# Build model for females
+mod2_F_slopes <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + (CONDITION|ID), 
+               data = Recovery_cleaned_F)
+
+# Build model for males
+mod2_M_slopes <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + (CONDITION|ID), 
+               data = Recovery_cleaned_M)
+```
+
+Let us now compare this random intercepts slopes model to our previous random intercepts only model:
+
+```{r}
+anova(mod2_F_slopes, mod2_F)
+```
+
+```{r}
+anova(mod2_M_slopes, mod2_M)
+```
+
+::: green
+
+The output here suggests that adding Recovery Condition as a random slope does improve model fit for neither females or males. In both instances, the random intercept only model has lower AIC and BIC values. In addition, there is no significant change in the deviances (*p* = .836 and *p* = .515, respectively).
+
+:::
+
+Note: In general, we should consider the *theory* behind the effects first, as this can save us some valuable time in the modelling process. E.g. if there is no scientific reason that Recovery Condition would vary for each ID, then there would be no reason to fit it as a random slope.
+
+### Checking assumptions
+
+As we have done in previous lessons, we can use the `check_model()` function from the 'performance' package to check the assumptions of the models:
+
+```{r, warning=FALSE, message=FALSE}
+library(performance)
+check_model(mod2_F,
+            check = c('linearity','homogeneity','qq','reqq','vif','outliers'))
+```
+
+```{r}
+check_model(mod2_M,
+            check = c('linearity','homogeneity','qq','reqq','vif','outliers'))
+```
+
+For both models, whilst there is some variation, the assumptions are relatively satisfied, and we can we happy to proceed.
+
+```{r}
+mod9_F <- lmer(CMJ_HEIGHT ~ UREA:CONDITION + (1|ID),
+               data = Recovery_cleaned_F)
+```
+
+## Conclusion & Reflection
+
+In conclusion, this guide has provided an overview of linear mixed models, beginning with a vignette for the importance of not violating *Independence*. We then learnt about correlated data structures, as well as exploring the difference between fixed and random intercepts / slopes. We then learnt how to fit different types of models to our Recovery data.  
+
+
+In addition to their versatility in handling correlated data structures, linear mixed models (LMMs) offer a significant advantage over regular linear models (LMs) by accommodating various types of data distributions and complexities. Unlike LMs, which assume independent observations, LMMs can effectively model correlated data, making them more robust and reliable in real-world applications. Moreover, the concepts learned in Lesson 2 on Poisson regression and Lesson 3 on Logistic Regression extend to generalized linear mixed models (GLMMs), providing a comprehensive toolkit for analyzing correlated data across different scenarios. Understanding the principles of GLMMs opens avenues for exploring more sophisticated statistical techniques in future lessons, enriching our understanding and application of advanced modeling approaches.
+
+Given the inherently multifaceted nature of data collected in sport and exercise science, ranging from athlete performance metrics to physiological responses, the ability to account for correlated structures is paramount. LMMs and GLMMs enable researchers and practitioners to analyze complex datasets while appropriately addressing dependencies, thereby yielding more accurate insights into athlete performance, injury prevention, training optimization, and other critical aspects of sports science. As such, mastering these techniques not only enhances the statistical rigor of analyses but also empowers professionals in sport and exercise science to make informed decisions and drive advancements in athletic performance and well-being.
+
