@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Regression Modelling Strategies 1</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="output1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="output1_files/libs/quarto-html/quarto.js"></script>
+<script src="output1_files/libs/quarto-html/popper.min.js"></script>
+<script src="output1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="output1_files/libs/quarto-html/anchor.min.js"></script>
+<link href="output1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="output1_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="output1_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="output1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="output1_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="output1_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="output1_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="toc-section-number">1</span>  Learning Outcomes</a></li>
+  <li><a href="#introduction-linear-regression" id="toc-introduction-linear-regression" class="nav-link" data-scroll-target="#introduction-linear-regression"><span class="toc-section-number">2</span>  Introduction: Linear Regression</a></li>
+  <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions"><span class="toc-section-number">3</span>  Assumptions</a></li>
+  <li><a href="#case-study" id="toc-case-study" class="nav-link" data-scroll-target="#case-study"><span class="toc-section-number">4</span>  Case Study</a>
+  <ul class="collapse">
+  <li><a href="#what-to-expect" id="toc-what-to-expect" class="nav-link" data-scroll-target="#what-to-expect"><span class="toc-section-number">4.1</span>  What to expect</a></li>
+  <li><a href="#data-loading-and-cleaning" id="toc-data-loading-and-cleaning" class="nav-link" data-scroll-target="#data-loading-and-cleaning"><span class="toc-section-number">4.2</span>  Data Loading and Cleaning</a></li>
+  <li><a href="#initial-exploratory-analyses" id="toc-initial-exploratory-analyses" class="nav-link" data-scroll-target="#initial-exploratory-analyses"><span class="toc-section-number">4.3</span>  Initial Exploratory Analyses</a>
+  <ul class="collapse">
+  <li><a href="#data-organisation" id="toc-data-organisation" class="nav-link" data-scroll-target="#data-organisation"><span class="toc-section-number">4.3.1</span>  Data organisation</a></li>
+  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics"><span class="toc-section-number">4.3.2</span>  Summary statistics</a></li>
+  <li><a href="#univariate-summaries" id="toc-univariate-summaries" class="nav-link" data-scroll-target="#univariate-summaries"><span class="toc-section-number">4.3.3</span>  Univariate summaries</a></li>
+  <li><a href="#bivariate-summaries" id="toc-bivariate-summaries" class="nav-link" data-scroll-target="#bivariate-summaries"><span class="toc-section-number">4.3.4</span>  Bivariate summaries</a></li>
+  </ul></li>
+  <li><a href="#simple-linear-regression" id="toc-simple-linear-regression" class="nav-link" data-scroll-target="#simple-linear-regression"><span class="toc-section-number">4.4</span>  Simple Linear Regression</a></li>
+  <li><a href="#multiple-linear-regression" id="toc-multiple-linear-regression" class="nav-link" data-scroll-target="#multiple-linear-regression"><span class="toc-section-number">4.5</span>  Multiple Linear Regression</a></li>
+  <li><a href="#multiple-linear-regression-with-interactions" id="toc-multiple-linear-regression-with-interactions" class="nav-link" data-scroll-target="#multiple-linear-regression-with-interactions"><span class="toc-section-number">4.6</span>  Multiple Linear Regression with interactions</a>
+  <ul class="collapse">
+  <li><a href="#categorical-categorical-interaction" id="toc-categorical-categorical-interaction" class="nav-link" data-scroll-target="#categorical-categorical-interaction"><span class="toc-section-number">4.6.1</span>  Categorical-Categorical Interaction:</a></li>
+  <li><a href="#categorical-continuous-interaction" id="toc-categorical-continuous-interaction" class="nav-link" data-scroll-target="#categorical-continuous-interaction"><span class="toc-section-number">4.6.2</span>  Categorical-Continuous Interaction:</a></li>
+  <li><a href="#continuous-continuous-interaction" id="toc-continuous-continuous-interaction" class="nav-link" data-scroll-target="#continuous-continuous-interaction"><span class="toc-section-number">4.6.3</span>  Continuous-Continuous Interaction:</a></li>
+  </ul></li>
+  <li><a href="#building-models" id="toc-building-models" class="nav-link" data-scroll-target="#building-models"><span class="toc-section-number">4.7</span>  Building models</a>
+  <ul class="collapse">
+  <li><a href="#model-parsimony" id="toc-model-parsimony" class="nav-link" data-scroll-target="#model-parsimony"><span class="toc-section-number">4.7.1</span>  Model parsimony</a></li>
+  <li><a href="#model-fit" id="toc-model-fit" class="nav-link" data-scroll-target="#model-fit"><span class="toc-section-number">4.7.2</span>  Model Fit</a></li>
+  <li><a href="#splitting-the-data" id="toc-splitting-the-data" class="nav-link" data-scroll-target="#splitting-the-data"><span class="toc-section-number">4.7.3</span>  Splitting the data</a></li>
+  <li><a href="#cross-validation" id="toc-cross-validation" class="nav-link" data-scroll-target="#cross-validation"><span class="toc-section-number">4.7.4</span>  Cross validation</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#conclusion-and-reflection" id="toc-conclusion-and-reflection" class="nav-link" data-scroll-target="#conclusion-and-reflection"><span class="toc-section-number">5</span>  Conclusion and Reflection</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regression Modelling Strategies 1</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+
+</div>
+<p>Linear Regression</p>
+<p>ABSTRACT</p>
+<p>Linear regression is a statistical modeling technique widely employed in sport science to analyze and understand the relationship between two or more variables. In the context of sports, it serves as a valuable tool for examining how changes in one factor, such as training intensity or player performance, correspond to changes in another, such as injury rates or game outcomes. The essence of linear regression lies in fitting a straight line to the data points, allowing researchers and coaches to make predictions and draw insights from the observed patterns. For instance, in sports performance analysis, linear regression might be utilized to assess the impact of various training variables on an athlete’s speed, strength, or endurance. By uncovering these quantitative relationships, sports scientists can optimize training programs, enhance player development strategies, and ultimately contribute to improved athletic performance and well-being.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Linear regression, assumptions checking, NHST</p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorised as BRONZE.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Lesson’s Main Idea
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Knowing when to use a linear regression model.</li>
+<li>Knowing how to check the assumptions of a linear regression model.</li>
+</ul>
+</div>
+</div>
+<p>Data used in this lesson <span style="color:red">is provided by XYZ</span></p>
+<section id="learning-outcomes" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning Outcomes</h1>
+<p>By the end of this lesson, you will be proficient in:</p>
+<ul>
+<li>Construct simple and multiple linear regression models in R.</li>
+<li>use residual diagnostics to examine the assumptions of linear models.</li>
+<li>Interpret parameters and test estimates from simple and multiple linear regression models.</li>
+</ul>
+</section>
+<section id="introduction-linear-regression" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction: Linear Regression</h1>
+<p>Linear regression is a versatile and widely applied statistical methodology that seeks to model the relationship between a dependent variable (Y) and one or more independent variables (X) by fitting a linear equation to observed data. The techniques is suitable when the dependent variable is a continuous outcome, e.g.&nbsp;counter-movement jump height (cm).</p>
+<p>The fundamental form of the linear regression equation for a simple linear regression model is represented as <span class="math inline">\(Y=\beta_{0}+\beta_{1}X+\epsilon\)</span>, where <span class="math inline">\(\beta_{0}\)</span> is the intercept, <span class="math inline">\(\beta_{1}\)</span> is the slope, <span class="math inline">\(X\)</span> is the independent variable, and <span class="math inline">\(\epsilon\)</span> denotes the error terms accounting for unobserved factors. The objective of linear regression is to estimate the coefficients (<span class="math inline">\(\beta_{0}\)</span> and <span class="math inline">\(\beta_{1}\)</span>) that minimize the sum of squared differences between the observed and predicted values. This method relies on several assumptions, including linearity, independence, normality of residuals, and equality of variances.</p>
+<p>The multiple linear regression extension accommodates multiple independent variables, expressed as:</p>
+<p><span class="math display">\[Y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+...+\beta_{n}X_{n}+\epsilon\]</span></p>
+<p>which broadens the scope of applications to more complex datasets, by including more predictors. Linear regression serves as a powerful analytical tool in various domains, facilitating predictive modeling, hypothesis testing, and understanding the relationships within quantitative data.</p>
+</section>
+<section id="assumptions" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Assumptions</h1>
+<p>The effectiveness of linear regression analysis relies on several key assumptions, each playing a crucial role in the reliability of the model. These assumptions collectively form the foundation of reliable linear regression analysis, and violations of these assumptions may lead to biased or inefficient results, underscoring the importance of careful consideration and validation in sport science research.</p>
+<ol type="1">
+<li><strong>Linearity</strong>: linearity assumes that the relationship between the independent and dependent variables can be adequately represented by a straight line. This assumption implies that changes in the independent variable correspond to a constant change in the dependent variable.</li>
+<li><strong>Independence</strong>: Independence assumes that the residuals, or the differences between observed and predicted values, are not correlated. This ensures that each data point provides unique information and that the model is not influenced by the order or sequence of observations.</li>
+<li><strong>Normality</strong>: Normality assumes that the residuals <em>of the model</em> follow a normal distribution, implying that the errors are symmetrically distributed around zero.</li>
+</ol>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important note on Normality
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The assumption of normality in statistical modeling is a common pitfall, often misunderstood. It is crucial to clarify that the assumption pertains to the distribution of model residuals, not the variables themselves. While variables may exhibit various distributions, the normality assumption specifically applies to the errors or residuals, emphasizing that the differences between observed and predicted values should ideally follow a normal distribution. Mistaking the normality of variables for that of residuals can lead to inaccurate inferences and compromised model reliability.</p>
+</div>
+</div>
+<ol start="4" type="1">
+<li><strong>Homogeneity</strong>: Homogeneity of variance (also called equality of variances), assumes that the spread of residuals remains constant across all levels of the independent variable.</li>
+</ol>
+</section>
+<section id="case-study" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Case Study</h1>
+<p>Understanding and optimizing an athlete’s physiological parameters are essential for performance enhancement. As we delve into the intricacies of linear regression, a powerful statistical tool, our focus turns to the predictive modeling of Absolute hemoglobin mass (ABHB) — a critical metric indicative of an athlete’s oxygen-carrying capacity.</p>
+<p>In this lesson, we will learn how variables, namely Ferritin, Transferrin Saturation, and Transferrin, play pivotal roles in deciphering the nuanced relationships that contribute to hematological outcomes. Through the lens of linear regression, we aim to unravel the complex interplay between these biomarkers and Absolute HBmass, offering valuable insights that can inform targeted interventions to enhance an athlete’s aerobic capacity and overall athletic performance.</p>
+<section id="what-to-expect" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="what-to-expect"><span class="header-section-number">4.1</span> What to expect</h2>
+<p>In this example the dependent variable is Absolute HBmass, which is a continuous variable - making linear regression an appropriate technique to employ. We will learn how to fit simple linear regression models (single predictor) as well as multiple linear regression models (many predictors) to the data. We will also learn how to use residual diagnostic tests to inspect the assumptions of our models.</p>
+</section>
+<section id="data-loading-and-cleaning" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="data-loading-and-cleaning"><span class="header-section-number">4.2</span> Data Loading and Cleaning</h2>
+<p>For this exercise, we will use the <code>HbmassSynth</code> data set, which can be loaded directly through the <code>speedsR</code> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Hbmass <span class="ot">&lt;-</span> speedsR<span class="sc">::</span>HbmassSynth</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The data set is a synthetic version of the original data examining how altitude exposure combined with oral iron supplementation influences Hbmass, total iron incorporation and blood iron parameters.</p>
+</section>
+<section id="initial-exploratory-analyses" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="initial-exploratory-analyses"><span class="header-section-number">4.3</span> Initial Exploratory Analyses</h2>
+<p>Before diving into building the regression model (or any model for that matter), it is always a good idea to explore the data. Much of this has already been covered in earlier lessons (see “Put names of lessons here”), so we will only provide a short example here.</p>
+<section id="data-organisation" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="data-organisation"><span class="header-section-number">4.3.1</span> Data organisation</h3>
+<p>The hbmass data set contains the following variables:</p>
+<ul>
+<li><code>ID</code>: The participant’s ID number</li>
+<li><code>TIME</code>: A binary factor where 0 = pre-test and 1 = post-test</li>
+<li><code>SEX</code>: The participant’s sex, where 0 = Female and 1 = Male</li>
+<li><code>SUP_DOSE</code>: The amount (in mg) of the dose that each participant took, where 0 = None, 1 = 105 mg and 2 = 210mg</li>
+<li><code>BM</code>: The participant’s Body Mass (kg)</li>
+<li><code>FER</code>: Ferritin (ug/L)</li>
+<li><code>FE</code>: Iron (ug/L)</li>
+<li><code>TSAT</code>: Transferrin Saturation (%)</li>
+<li><code>TRANS</code>: Transferrin (g/L)</li>
+<li><code>AHBM</code>: Absolute Hbmass (g)</li>
+<li><code>RHBM</code>: Relative Hbmass (g/kg)</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">Table 4.3.1: The first six observations from the Hbmass data set</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> ID </th>
+   <th style="text-align:left;"> TIME </th>
+   <th style="text-align:left;"> SEX </th>
+   <th style="text-align:left;"> SUP_DOSE </th>
+   <th style="text-align:right;"> BM </th>
+   <th style="text-align:right;"> FER </th>
+   <th style="text-align:right;"> FE </th>
+   <th style="text-align:right;"> TSAT </th>
+   <th style="text-align:right;"> TRANS </th>
+   <th style="text-align:right;"> AHBM </th>
+   <th style="text-align:right;"> RHBM </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:right;"> 97.4 </td>
+   <td style="text-align:right;"> 149.5 </td>
+   <td style="text-align:right;"> 18.7 </td>
+   <td style="text-align:right;"> 30 </td>
+   <td style="text-align:right;"> 2.6 </td>
+   <td style="text-align:right;"> 1265 </td>
+   <td style="text-align:right;"> 12.98768 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:right;"> 65.7 </td>
+   <td style="text-align:right;"> 227.8 </td>
+   <td style="text-align:right;"> 22.1 </td>
+   <td style="text-align:right;"> 43 </td>
+   <td style="text-align:right;"> 3.2 </td>
+   <td style="text-align:right;"> 904 </td>
+   <td style="text-align:right;"> 13.75951 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:right;"> 59.2 </td>
+   <td style="text-align:right;"> 133.7 </td>
+   <td style="text-align:right;"> 17.1 </td>
+   <td style="text-align:right;"> 36 </td>
+   <td style="text-align:right;"> 2.5 </td>
+   <td style="text-align:right;"> 649 </td>
+   <td style="text-align:right;"> 10.96284 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:right;"> 93.2 </td>
+   <td style="text-align:right;"> 160.9 </td>
+   <td style="text-align:right;"> 25.0 </td>
+   <td style="text-align:right;"> 34 </td>
+   <td style="text-align:right;"> 2.9 </td>
+   <td style="text-align:right;"> 1292 </td>
+   <td style="text-align:right;"> 13.86266 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:right;"> 93.2 </td>
+   <td style="text-align:right;"> 136.2 </td>
+   <td style="text-align:right;"> 25.1 </td>
+   <td style="text-align:right;"> 34 </td>
+   <td style="text-align:right;"> 2.6 </td>
+   <td style="text-align:right;"> 1292 </td>
+   <td style="text-align:right;"> 13.86266 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:right;"> 56.8 </td>
+   <td style="text-align:right;"> 133.7 </td>
+   <td style="text-align:right;"> 19.5 </td>
+   <td style="text-align:right;"> 23 </td>
+   <td style="text-align:right;"> 3.3 </td>
+   <td style="text-align:right;"> 660 </td>
+   <td style="text-align:right;"> 11.61972 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>Note that for this lesson we will only be using the pre-test measurements. As such we should create a filter to only include these measurements (i.e.&nbsp;when TIME is 0).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Hbmass_pre <span class="ot">&lt;-</span> Hbmass <span class="sc">|&gt;</span> <span class="fu">filter</span>(TIME <span class="sc">==</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will also re-code some of the categorical variables so that the plots and outputs are easier to interpret:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Hbmass_pre <span class="ot">&lt;-</span> Hbmass_pre <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">SEX =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    SEX <span class="sc">==</span> <span class="dv">0</span>, <span class="st">"Female"</span>, <span class="st">"Male"</span>)),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">SUP_DOSE =</span> <span class="fu">factor</span>(<span class="fu">case_when</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>           SUP_DOSE <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">'None'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>           SUP_DOSE <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">'105mg'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>           SUP_DOSE <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">'210mg'</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>         ), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'None'</span>,<span class="st">'105mg'</span>,<span class="st">'210mg'</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(SEX),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">is.na</span>(SUP_DOSE))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="summary-statistics" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="summary-statistics"><span class="header-section-number">4.3.2</span> Summary statistics</h3>
+<p>The <code>skimr</code> package is a powerful tool in R for efficiently obtaining summary statistics and insights about a data set. By leveraging the <code>skim()</code> function, skimr provides a comprehensive and visually informative summary of key statistics, such as mean, standard deviation, minimum, maximum, and quartiles, for each variable in a dataset. Additionally, skimr generates visual representations, including histograms and frequency tables, making it easier for users to grasp the distribution and characteristics of their data quickly.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(Hbmass_pre)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="width: auto;" class="table table-condensed">
+<caption>
+Data summary
+</caption>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+Hbmass_pre
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+178
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+factor
+</td>
+<td style="text-align:left;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+
+</table>
+<p><strong>Variable type: factor</strong></p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+ordered
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:left;">
+top_counts
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+TIME
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+0: 178, 1: 0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SEX
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+Mal: 98, Fem: 80
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SUP_DOSE
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+105: 144, 210: 19, Non: 15
+</td>
+</tr>
+</tbody>
+
+</table>
+<p><strong>Variable type: numeric</strong></p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+89.50
+</td>
+<td style="text-align:right;">
+51.53
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+45.25
+</td>
+<td style="text-align:right;">
+89.50
+</td>
+<td style="text-align:right;">
+133.75
+</td>
+<td style="text-align:right;">
+178.0
+</td>
+<td style="text-align:left;">
+▇▇▇▇▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+66.51
+</td>
+<td style="text-align:right;">
+10.71
+</td>
+<td style="text-align:right;">
+47.00
+</td>
+<td style="text-align:right;">
+59.23
+</td>
+<td style="text-align:right;">
+65.55
+</td>
+<td style="text-align:right;">
+72.90
+</td>
+<td style="text-align:right;">
+97.4
+</td>
+<td style="text-align:left;">
+▅▇▆▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FER
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+75.06
+</td>
+<td style="text-align:right;">
+39.86
+</td>
+<td style="text-align:right;">
+12.30
+</td>
+<td style="text-align:right;">
+44.17
+</td>
+<td style="text-align:right;">
+66.65
+</td>
+<td style="text-align:right;">
+98.38
+</td>
+<td style="text-align:right;">
+227.8
+</td>
+<td style="text-align:left;">
+▇▇▃▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FE
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+19.41
+</td>
+<td style="text-align:right;">
+7.45
+</td>
+<td style="text-align:right;">
+6.10
+</td>
+<td style="text-align:right;">
+14.48
+</td>
+<td style="text-align:right;">
+17.05
+</td>
+<td style="text-align:right;">
+24.14
+</td>
+<td style="text-align:right;">
+40.5
+</td>
+<td style="text-align:left;">
+▃▇▃▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TSAT
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+28.64
+</td>
+<td style="text-align:right;">
+13.73
+</td>
+<td style="text-align:right;">
+3.10
+</td>
+<td style="text-align:right;">
+20.00
+</td>
+<td style="text-align:right;">
+26.00
+</td>
+<td style="text-align:right;">
+35.00
+</td>
+<td style="text-align:right;">
+88.0
+</td>
+<td style="text-align:left;">
+▃▇▂▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TRANS
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.78
+</td>
+<td style="text-align:right;">
+0.46
+</td>
+<td style="text-align:right;">
+1.30
+</td>
+<td style="text-align:right;">
+2.50
+</td>
+<td style="text-align:right;">
+2.80
+</td>
+<td style="text-align:right;">
+3.10
+</td>
+<td style="text-align:right;">
+4.1
+</td>
+<td style="text-align:left;">
+▁▃▇▆▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AHBM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+845.16
+</td>
+<td style="text-align:right;">
+200.42
+</td>
+<td style="text-align:right;">
+488.00
+</td>
+<td style="text-align:right;">
+686.25
+</td>
+<td style="text-align:right;">
+810.00
+</td>
+<td style="text-align:right;">
+975.00
+</td>
+<td style="text-align:right;">
+1424.0
+</td>
+<td style="text-align:left;">
+▅▇▇▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RHBM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+12.67
+</td>
+<td style="text-align:right;">
+1.93
+</td>
+<td style="text-align:right;">
+7.74
+</td>
+<td style="text-align:right;">
+11.06
+</td>
+<td style="text-align:right;">
+13.12
+</td>
+<td style="text-align:right;">
+14.05
+</td>
+<td style="text-align:right;">
+18.6
+</td>
+<td style="text-align:left;">
+▂▅▇▃▁
+</td>
+</tr>
+</tbody>
+
+</table>
+</div>
+</div>
+</section>
+<section id="univariate-summaries" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="univariate-summaries"><span class="header-section-number">4.3.3</span> Univariate summaries</h3>
+<p>In this example, histograms are generated for the four variables <code>AHBM</code>, <code>FER</code>, <code>TSAT</code> and <code>TRANS</code>. Histograms are useful when we want to inspect the distribution, center and spread of continuous variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(AHBM)) <span class="sc">+</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">color =</span> <span class="st">'white'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(FER)) <span class="sc">+</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">color =</span> <span class="st">'white'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(TSAT)) <span class="sc">+</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">color =</span> <span class="st">'white'</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(TRANS)) <span class="sc">+</span> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">color =</span> <span class="st">'white'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(p1, p2, p3, p4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output1_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure 4.3.2: Histograms of important continuous variables for the Hbmass data set</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="bivariate-summaries" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="bivariate-summaries"><span class="header-section-number">4.3.4</span> Bivariate summaries</h3>
+<p>It’s also a good idea to visualise the relationship between any independent variables and the dependent variable (<code>AHBM</code>). <span style="red">Refer to one of the Visualisation Exercises here</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(FER, AHBM)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">se =</span> T)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(TSAT, AHBM)) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">se =</span> T)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>b3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(FE, AHBM)) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">se =</span> T)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>b4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(TRANS, AHBM)) <span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">se =</span> T)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>b5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(SEX, AHBM)) <span class="sc">+</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"SEX"</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>b6 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(SUP_DOSE, AHBM)) <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"SEX"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(b1, b2, b3, b4, b5, b6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output1_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure 4.3.3: Bivariate summaries of key variables with ABHM as the outcome</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can include additional factors if we wanted to inspect three-way, four-way, etc., relationships between our variables. For example, numerous studies have identified <code>Sex</code> differences across biological factors. Adding in Sex to our initial visualisations of the data supports this:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="output1_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Here, we can see that for females, as TRANS (g/L) increases, AHBM (g) increases as well. On the other hand, we can see the opposite for males - as TRANS increases, AHBM decreases.</p>
+</section>
+</section>
+<section id="simple-linear-regression" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="simple-linear-regression"><span class="header-section-number">4.4</span> Simple Linear Regression</h2>
+<p>The term ‘simple linear regression’ refers to linear regression models with only one predictor. Sometimes it may be useful to start with a simple model just to understand the relationship between the outcome and main variable of interest (if there is one) before you start adding more predictors. For example, we will begin by modelling <code>AHBM</code> as a function of <code>FER</code>, that is to say: does one’s ferritin levels (ug/L) influence their Absolute Haemoglobin mass (g)? Recall from our bivariate summary that <code>FER</code> appears to have a positive relationship with <code>AHBM</code>. Thus, we would be expecting a positive coefficient estimate for our results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(AHBM <span class="sc">~</span> FER, <span class="at">data =</span> Hbmass_pre)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>model1 <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = AHBM ~ FER, data = Hbmass_pre)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-355.51 -143.09  -23.01  119.86  563.22 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 715.7441    30.2396  23.669  &lt; 2e-16 ***
+FER           1.7242     0.3561   4.843 2.79e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 188.8 on 176 degrees of freedom
+Multiple R-squared:  0.1176,    Adjusted R-squared:  0.1126 
+F-statistic: 23.45 on 1 and 176 DF,  p-value: 2.794e-06</code></pre>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>By substituting the values from our output into the equation, we obtain a model for predicting <code>AHBM</code>:</p>
+<p><span class="math display">\[AHBM_{i}=715.74+1.72FER_{i}+\epsilon_{i}\]</span></p>
+<p>Our model can thus be interpreted as, Absolute Heamoglobin Mass (g) will increase by <span class="math inline">\(\beta_{1}=1.72g\)</span> for each additional ug/L in one’s Ferritin. The estimated value of the intercept, <span class="math inline">\(\beta_{0}=715.74\)</span> represents the estimated <code>AHBM</code> value when <code>FER</code> equals 0.</p>
+<center>
+<strong>A quick note on <span class="math inline">\(\epsilon\)</span>:</strong>
+</center>
+<p>In statistical modeling, the error term serves as a comprehensive representation of various sources of variability that affect the dependent variable but are not explicitly accounted for by the independent variables. This term amalgamates subject-specific, within-subject, technical, and measurement errors into a single entity, denoted as ε (epsilon). While the error term is often treated as a collective measure of unpredictability, it is crucial to recognize that its components can be parsed and estimated separately. In more advanced statistical techniques, such as linear mixed models, the error term can be dissected using random effects. By incorporating random effects into the model, one can capture and quantify the inherent variability arising from individual differences, providing a more nuanced understanding of the data. Future lessons may delve into the intricacies of partitioning and estimating specific components of the error term, shedding light on the nuances of variability within the context of linear mixed models and enhancing the precision of statistical analyses.</p>
+</div>
+</div>
+<p>Note: the interpretation above is for <em>this sample</em> only, i.e.&nbsp;it would be more correct to say:</p>
+<blockquote class="blockquote">
+<p>For this sample, ABHM was 1.72g greater for each addition ug/L increase in Ferritin.</p>
+</blockquote>
+<p>If we wanted to generalise these results to the overall population, we would have to apply a probabilistic framework for making inferences. For example, the <em>Null Hypothesis Significance Testing</em> (NHST) framework would look at the p-value associated with these estimates (see the output above which shows the p-value for <code>FER</code> to be <span class="math inline">\(2.79 \times10^{-6}\)</span>, or 0.00000279) and compare it to some threshold (commonly set at 0.05) and make a decision on whether of not the results could be deemed statistically significant. Here, the computed p-value (0.00000279) is much smaller than the arbitrarily set threshold of 0.05, so we would have more confidence in generalising these results to the overall population.</p>
+<p>In the realm of sport and exercise science, a discernible shift in preference has emerged, favoring interval estimation over null hypothesis significance testing (NHST). Researchers and practitioners in this field increasingly recognize the limitations of NHST in providing a comprehensive understanding of data variability and effect sizes. Interval estimation, on the other hand, offers a more nuanced approach by providing a range of plausible values for an unknown parameter, thereby offering a clearer and more informative perspective on the uncertainty associated with study findings.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Calculating the Confidence Interval
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The calculation for the 95% CI in this example is given by:</p>
+<p><span class="math display">\[CI_{b_i}=b_i\pm t_{\alpha/2}\times SE_{bi}\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(b_i\)</span> is the estimated coefficient for the predictor variable</li>
+<li><span class="math inline">\(t_{\alpha/2}\)</span> is the critical t-value from the t-distribution with <span class="math inline">\(\alpha/2\)</span> significance level and degrees of freedom (<span class="math inline">\(df\)</span>)</li>
+<li><span class="math inline">\(SE_{bi}\)</span> is the standard error of the coefficient</li>
+</ul>
+<p>From our output above, the 95% CI would be computed as:</p>
+<p><span class="math display">\[1.72 \pm 1.96 \times0.36 = [1.02, 2.43]\]</span> We could have also used the following function to obtain the same results:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 2.5 %     97.5 %
+(Intercept) 656.065246 775.422939
+FER           1.021552   2.426935</code></pre>
+</div>
+</div>
+<p>With regards to the linear regression, we can say that we expect the true slope of <code>FER</code> on <code>AHBM</code> to fall within the interval 1.02 and 2.43.</p>
+</div>
+</div>
+<p>Note, we would have even more confidence in this conclusion if the model met certain criteria (commonly referred to as statistical assumptions), which were described in Section 3. To check that these assumptions have been met, we can simply use the <code>check_model()</code> function from the <code>easystats</code> package. Note that the <code>check_model()</code> function provides a range of diagnostic tests. We will only be requesting specific ones for now:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(easystats)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_model</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  model1,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="fu">c</span>(<span class="st">'linearity'</span>,<span class="st">'homogeneity'</span>,<span class="st">'normality'</span>,<span class="st">'outliers'</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output1_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Assumptions interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>The Linearity plot (top-left panel) shows that the residuals are fairly pattern-less, as indicated by the green horizontal line - suggesting that linearity is met.</li>
+<li>The Homogeneity of variance plot (top-right panel) shows shows a slight increase in variability. However, this is only a very minor deviation from 0, so it is unlike to impact the model results too much.</li>
+<li>The Influential Observations plot (bottom-left panel) shows no cases falling outside of cuttoff lines - suggesting that there are no potential influential points of concern.</li>
+<li>The Normalality of Residuals (bottom-right panel) shows that residuals are mostly normally distributted - suggesting that normality of residuals is met.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="multiple-linear-regression" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="multiple-linear-regression"><span class="header-section-number">4.5</span> Multiple Linear Regression</h2>
+<p>In the previous example we built a linear regression model for <code>AHBM</code> using only <code>FER</code> as a predictor. As the name suggest, multiple linear regression involves building models that contain multiple predictors. As an example, let us now also include<code>FE</code> (Iron) and <code>TSAT</code> (Transferrin Saturation) into the model. Mathematically, this can be expressed as:</p>
+<p><span class="math display">\[Y_{i}=\beta_{0}+\beta_{1}FER+\beta_{2}FE+\beta_{3}TSAT+\epsilon_{i}\]</span></p>
+<p>Similar to before, we need to determine what the values of the <span class="math inline">\(\beta\)</span> coefficients are, to substitute into the equation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(AHBM <span class="sc">~</span> FER <span class="sc">+</span> FE <span class="sc">+</span> TSAT, <span class="at">data =</span> Hbmass_pre)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>model2 <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = AHBM ~ FER + FE + TSAT, data = Hbmass_pre)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-367.29 -132.12  -13.85   95.71  497.15 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  830.417     44.667  18.591  &lt; 2e-16 ***
+FER            1.796      0.350   5.131 7.63e-07 ***
+FE            -8.106      2.519  -3.218  0.00154 ** 
+TSAT           1.302      1.378   0.945  0.34573    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 183.1 on 174 degrees of freedom
+Multiple R-squared:  0.1795,    Adjusted R-squared:  0.1654 
+F-statistic: 12.69 on 3 and 174 DF,  p-value: 1.536e-07</code></pre>
+</div>
+</div>
+<p>Based upon the output above we can see that the coefficients are:</p>
+<ul>
+<li><span class="math inline">\(\beta_{0}=830.42\)</span></li>
+<li><span class="math inline">\(\beta_{1}=1.80\)</span></li>
+<li><span class="math inline">\(\beta_{2}=-8.11\)</span></li>
+<li><span class="math inline">\(\beta_{3}=1.30\)</span></li>
+</ul>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Like before, substituting the values from our output into the equation, we obtain a model for predicting <code>AHBM</code>:</p>
+<p><span class="math display">\[AHBM_{i}=830.42+1.80FER_{i}-8.11FE_i+1.30TSAT_i+\epsilon_{i}\]</span></p>
+<p>Notice that some <span class="math inline">\(\beta\)</span> estimates are positive and some are negative. This provides us with an indication the <strong>direction</strong> of change for the outcome variable.</p>
+<ul>
+<li>Absolute Heamoglobin Mass increases by <span class="math inline">\(\beta_{1}=1.80g\)</span> for each additional ug/L in one’s Ferritin, whilst controlling for FE and TSAT.</li>
+<li>Absolute Heamoglobin Mass decreases by <span class="math inline">\(\beta_{2}=8.11g\)</span> for each additional ug/L in one’s Iron, whilst controlling for FER and TSAT.</li>
+<li>Absolute Heamoglobin Mass increases by <span class="math inline">\(\beta_{3}=1.30g\)</span> for each additional % in one’s Transferrin Saturation, whilst controlling for FER and FE.</li>
+</ul>
+</div>
+</div>
+<p>Similar to the simple linear regression example, we can inspect the associated <em>p</em>-values and 95% confidence intervals for each predictor from the output above. If these values are less than the chosen threshold (e.g.&nbsp;0.05) then we have confidence in inferring these results to the larger population. In this example, <code>FER</code> and <code>FE</code> have <em>p</em>-values less than 0.05, so we can say that these results are statistically significant. Looking at the confidence intervals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 2.5 %     97.5 %
+(Intercept) 742.257999 918.576775
+FER           1.105154   2.486704
+FE          -13.078068  -3.134101
+TSAT         -1.416441   4.021285</code></pre>
+</div>
+</div>
+<p>From the output above, we can say that:</p>
+<ul>
+<li>The true slope for <code>FER</code> on <code>AHBM</code>, whilst controlling for <code>FE</code> and <code>TSAT</code> is estimated to fall within the interval 1.11 to 2.49. This interval is positive, so we would infer a 1.11 to 2.49 increase in <code>AHBM</code> for each additional increase in <code>FER</code>.</li>
+<li>The true slope for <code>FE</code> on <code>AHBM</code>, whilst controlling for <code>FER</code> and <code>TSAT</code> is estimated to fall within the interval -13.08 to -3.13. This interval is negative, so we would infer a 13.08 to 3.13 decrease in <code>AHBM</code> for each additional increase in <code>FE</code>.</li>
+<li>The true slope for <code>TSAT</code> on <code>AHBM</code> is uncertain, as it ranges from -1.42 (a decrease) to 4.02 (an increase). This aligns with the non-significant <em>p</em>-value observed for this predictor.</li>
+</ul>
+<p>Similar to previous example, we should also check the statistical assumptions to ensure that our model is valid. Multiple linear regression requires two additional assumptions to be met for a model to be valid:</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+<strong>Assumption 5: Multivariate normality</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Multivariate normality assumes data from multiple variables follow a multivariate normal distribution. In statistics, a normal distribution (or Gaussian distribution) is a symmetric, bell-shaped probability distribution that is characterized by its mean and standard deviation. The multivariate normal distribution extends this concept to multiple dimensions, where there is a vector of means and a covariance matrix that describes the relationships between the variables.</p>
+<p>There are many different methods for checking this assumption. The <code>MVN</code> package contains different methods for assessing multivariate normality. In the code below, we illustrate how to use this package with the <em>Henze-Zirkler’s</em> test.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MVN)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset the data to only include variables in the model</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>data_check <span class="ot">&lt;-</span> </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  Hbmass_pre <span class="sc">|&gt;</span> </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(AHBM, FER, FE, TSAT)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the MVN test</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">mvn</span>(data_check, <span class="at">mvnTest =</span> <span class="st">'hz'</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the results</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>multivariateNormality</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Test       HZ p value MVN
+1 Henze-Zirkler 3.135144       0  NO</code></pre>
+</div>
+</div>
+<p>One of the most common reasons for multivariate normality being violated is the presence of multivariate outliers. The <code>MVN</code> package checks for these by calculating robust Mahalanobis distances (which is simply a metric that calculates how far away each observation is to the center of the multivariate space).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mvn</span>(data_check, <span class="at">mvnTest =</span> <span class="st">'hz'</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">multivariateOutlierMethod =</span> <span class="st">'adj'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><img src="https://i.ibb.co/hHxxz11/chiqq.png" class="img-fluid"></p>
+<p>In the output above, we can observe 30 cases as multivariate outliers. A potential next step would be to inspect these observations and determine if they should be removed or retained in the data set. To keep this example simple, we will choose to retain these observations for now.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Assumption 6: <strong>Multicollinearity</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Multicollinearity assumes that the predictor variables are not perfectly correlated with each other, as perfect multicollinearity can lead to instability and unreliable estimates in the regression model. Multicollinearity can manifest when two or more independent variables are highly correlated, making it challenging to isolate the individual effects of each predictor on the dependent variable. This can result in inflated standard errors, making it difficult to discern the true significance of the variables.</p>
+<p>One essential diagnostic tool to assess multicollinearity is the Variance Inflation Factor (VIF). VIF quantifies the extent to which the variance of an estimated regression coefficient is increased due to multicollinearity. It is calculated for each predictor variable, and a high VIF value indicates a problematic level of multicollinearity. In simpler terms, a high VIF suggests that the variable may be too closely related to other predictors, making it challenging to discern its unique contribution to the model.</p>
+<p>Conversely, tolerance is another metric used to evaluate multicollinearity. Tolerance is the reciprocal of VIF and ranges between 0 and 1. A low tolerance value indicates high multicollinearity, implying that a significant proportion of the variance in a predictor can be explained by other predictors in the model. In the presence of multicollinearity, tolerance values tend to be close to zero, highlighting the challenges in isolating the independent contribution of each predictor.</p>
+<p>We can use the <code>check_collinearity()</code> function from the <code>performance</code> package to compute the VIF and Tolerence for us:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_collinearity</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Check for Multicollinearity
+
+Low Correlation
+
+ Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+  FER 1.03 [1.00, 7.44]         1.01      0.97     [0.13, 1.00]
+   FE 1.86 [1.55, 2.34]         1.36      0.54     [0.43, 0.65]
+ TSAT 1.89 [1.57, 2.38]         1.37      0.53     [0.42, 0.64]</code></pre>
+</div>
+</div>
+<p>We can also use the <code>ggpairs()</code> function from the <code>GGally</code> package to visualise the relationship among all of the predictors:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(Hbmass_pre,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">'FER'</span>,<span class="st">'FE'</span>,<span class="st">'TSAT'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output1_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><span style="color:red">Andy to include some background information here on multicollinearity between FE and TSAT. The VIF and Tolerance aren’t so extreme here, but should still be a consideration</span></p>
+</div>
+</div>
+</section>
+<section id="multiple-linear-regression-with-interactions" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="multiple-linear-regression-with-interactions"><span class="header-section-number">4.6</span> Multiple Linear Regression with interactions</h2>
+<p>In multiple regression, interaction terms play a pivotal role in capturing the combined or interactive effect of two or more predictor variables on the dependent variable. Interaction terms are introduced by multiplying the values of two or more predictors, creating new variables that represent the joint impact of the original predictors. These terms enable researchers to investigate whether:</p>
+<blockquote class="blockquote">
+<p>the relationship between a predictor and the dependent variable varies depending on the level of another predictor.</p>
+</blockquote>
+<p>The inclusion of interaction terms helps to uncover nuanced and context-dependent patterns in the data that may be overlooked when considering individual predictors in isolation. Identifying and interpreting interaction effects is crucial for a comprehensive understanding of complex relationships within a multiple regression framework, allowing researchers to account for potential synergies or moderating influences that can significantly influence the overall model.</p>
+<p>Interaction terms in multiple regression can take various forms depending on the types of variables involved. several common types are provided below. When investigating interactions, it is advised to visualise the relationship first, before looking at the model results.</p>
+<section id="categorical-categorical-interaction" class="level3" data-number="4.6.1">
+<h3 data-number="4.6.1" class="anchored" data-anchor-id="categorical-categorical-interaction"><span class="header-section-number">4.6.1</span> Categorical-Categorical Interaction:</h3>
+<p>Interaction between two categorical variables explores whether the relationship between them is different across different categories. Using the current data, we could explore how <code>SEX</code> interacts with <code>SUP_DOSE</code> to influence <code>AHBM</code>. To begin, let us inspect this relationship visually:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(SUP_DOSE, AHBM, <span class="at">fill =</span> SEX)) <span class="sc">+</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>SEX) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output1_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>One question we might ask is “<em>Is there a relationship between <code>SUP_DOSE</code> and <code>AHBM</code></em>?” Looking at the plot we might say that <em>it depends on <code>SEX</code></em>. If you’re a female, <code>AHBM</code> appears consistent across the three <code>SUP_DOSE</code> groups. On the other hand, if you’re a male, <code>AHBM</code> appears to be decreasing as <code>SUP_DOSE</code> increases (note: caution is advised when interpreting this because there are very few observations for females and none; and males and 210mg, n = 2 and n = 3 respectively).</p>
+<p>To include an interaction term in our models, we would multiply them together. For example:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(AHBM <span class="sc">~</span> SEX <span class="sc">+</span> SUP_DOSE <span class="sc">+</span> SEX<span class="sc">*</span>SUP_DOSE, <span class="at">data =</span> Hbmass_pre)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>model3 <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = AHBM ~ SEX + SUP_DOSE + SEX * SUP_DOSE, data = Hbmass_pre)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-289.62  -84.72   -6.56   73.06  386.28 
+
+Coefficients:
+                      Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)             654.50      85.88   7.621 1.62e-12 ***
+SEXMale                 445.12      92.25   4.825 3.07e-06 ***
+SUP_DOSE105mg            21.11      87.25   0.242   0.8091    
+SUP_DOSE210mg            10.56      91.09   0.116   0.9078    
+SEXMale:SUP_DOSE105mg  -147.01      94.49  -1.556   0.1216    
+SEXMale:SUP_DOSE210mg  -290.18     119.79  -2.422   0.0165 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 121.5 on 172 degrees of freedom
+Multiple R-squared:  0.6432,    Adjusted R-squared:  0.6328 
+F-statistic:    62 on 5 and 172 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                          2.5 %    97.5 %
+(Intercept)            484.9881 824.01192
+SEXMale                263.0304 627.20039
+SUP_DOSE105mg         -151.1114 193.33718
+SUP_DOSE210mg         -169.2320 190.35704
+SEXMale:SUP_DOSE105mg -333.5100  39.49243
+SEXMale:SUP_DOSE210mg -526.6159 -53.73988</code></pre>
+</div>
+</div>
+<p>Using the output from the interaction model, the regression equation for this model would be:</p>
+<p><span class="math display">\[AHBM=654.50+445.12(SEX)+21.11(SDOSE_{105})+10.56(SDOSE_{210})-\\147.01(SEX*SDOSE_{105})-290(SEX*SDOSE_{210})\]</span></p>
+<p>Recall that our codes for these variables are:</p>
+<ul>
+<li><code>SEX</code>: 0 = Female, 1 = Male</li>
+<li><code>SUP_DOSE</code>: 0 = None, 1 = 105mg, 2 = 210mg</li>
+</ul>
+<p>Thus if we want to estimate the effect for Females and None, we would substitute 0 into the equation wherever we see <code>SEX</code>, and remove these <code>SUP_DOSE</code> effects (because they correspond to 105mg and 210mg). This leaves us with:</p>
+<p><span class="math display">\[AHBM=654.50+445.12(0)+0-0-0=654.50\]</span></p>
+<p>Notice here, that this is the Intercept value from our regression model. When we only have categorical variables in our model, the intercept is equivalent to when all factors are equal to 0. You can also have a look at the box plot we generated earlier for this relationship - the mean value for Females and None should be 654.50.</p>
+<p>Now, suppose we wanted to estimate <code>AHBM</code> for males on a supplement dose of 210mg. Are formula would become:</p>
+<p><span class="math display">\[AHBM=654.50+445.12(1)+0+10.56-290(1)=809.62\]</span></p>
+<p>Again, have a look at the plot we generated. If you draw a y-intercept at 809, this should represent the mean for Males on the 210mg dose. We can repeat the process to determine the estimated <code>AHBM</code> value for different combinations of the categorical predictors.</p>
+</section>
+<section id="categorical-continuous-interaction" class="level3" data-number="4.6.2">
+<h3 data-number="4.6.2" class="anchored" data-anchor-id="categorical-continuous-interaction"><span class="header-section-number">4.6.2</span> Categorical-Continuous Interaction:</h3>
+<p>This type involves the interaction between a categorical variable and a continuous variable. Typically it is to explore if the slope in the continuous variable differs for the levels within the categorical variable. In the context of this study, suppose we wanted to look at the interaction between <code>SEX</code> and <code>TRANS</code>. Like before, let’s start with visualising this relationship:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Hbmass_pre, <span class="fu">aes</span>(TRANS, AHBM, <span class="at">color =</span> SEX)) <span class="sc">+</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">se=</span>T) <span class="sc">+</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>SEX)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="output1_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We might have a question <em>is there a relationship bewteen <code>TRANS</code> and <code>AHBM</code></em>?</p>
+<p>Looking at the plot, we can say <em>it depends on <code>SEX</code>. For females, as <code>TRANS</code> increases, <code>AHBM</code> increases. For males, as <code>TRANS</code> increases, <code>AHBM</code> decreases</em>.</p>
+<p>Running a linear regression for this model will produce the following output:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(AHBM <span class="sc">~</span> SEX <span class="sc">+</span> TRANS <span class="sc">+</span> SEX<span class="sc">*</span>TRANS, <span class="at">data =</span> Hbmass_pre)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>model4 <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = AHBM ~ SEX + TRANS + SEX * TRANS, data = Hbmass_pre)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-318.36  -67.41  -20.00   64.95  467.32 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)     533.08      84.90   6.279 2.64e-09 ***
+SEXMale         757.69     117.37   6.456 1.04e-09 ***
+TRANS            47.67      28.56   1.669  0.09689 .  
+SEXMale:TRANS  -162.87      41.60  -3.915  0.00013 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 121 on 174 degrees of freedom
+Multiple R-squared:  0.6415,    Adjusted R-squared:  0.6353 
+F-statistic: 103.8 on 3 and 174 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                    2.5 %    97.5 %
+(Intercept)    365.508837 700.64393
+SEXMale        526.040993 989.33393
+TRANS           -8.697422 104.02868
+SEXMale:TRANS -244.977788 -80.75699</code></pre>
+</div>
+</div>
+<p>The model thus becomes:</p>
+<p><span class="math display">\[AHBM=533.08+757.69(SEX)+47.67(TRANS)-162.87(SEX*TRANS)\]</span></p>
+<p>Using this output, we can derive separate equations for females and males:</p>
+<p><span class="math display">\[AHBM_{females}=533.08+0+47.67(TRANS)-167.87(0) \\ = 533.08 +47.67(TRANS)\]</span></p>
+<p><span class="math display">\[AHBM_{males}=533.08+757.69(1)+47.67(TRANS)-162,87(TRANS) \\ = 1290.77-115.2(TRANS)\]</span></p>
+<p>From these equations we can see that the intercept for females and males is 533.08 and 1290.77 respectively. The slope in these equations tell us that for females, ever additional increase in <code>TRANS</code>, equates to a 47.67 increase in <code>AHBM</code>. Conversely for males, every additional increase in <code>TRANS</code> leads to a 115.2 decrease in <code>AHBM</code>. This matches with the plot we generated earlier.</p>
+</section>
+<section id="continuous-continuous-interaction" class="level3" data-number="4.6.3">
+<h3 data-number="4.6.3" class="anchored" data-anchor-id="continuous-continuous-interaction"><span class="header-section-number">4.6.3</span> Continuous-Continuous Interaction:</h3>
+<p>Interaction between two continuous variables explores whether their combined effect on the dependent variable is different at different levels. Exploring and interpreting continuous-continuous interactions often involves investigating the relationship between two continuous variables at different levels, such as varying values around the mean, one standard deviation above and below the mean, or other meaningful intervals. This process allows for a more nuanced understanding of how the interaction effect changes across the range of the variables. This can easily be done with the <code>interact_plot()</code> function from the <code>interactions</code> package.</p>
+<p>As an example, let’s look at how the relationship between <code>FE</code> and <code>AHBM</code> might depend on <code>TSAT</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(interactions)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>model5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(AHBM <span class="sc">~</span> FE <span class="sc">+</span> FER <span class="sc">+</span> FE<span class="sc">*</span>TSAT, <span class="at">data =</span> Hbmass_pre)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">interact_plot</span>(model5, <span class="at">pred =</span> FE, <span class="at">modx =</span> TSAT)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'bottom'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output1_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>From these plots, we can see that the interaction effect is showing a negative slope. This represents the change in the effect of the predictor (<code>FE</code>) on the outcome (<code>AHBM</code>) for a one-unit increase in the moderator (<code>TSAT</code>). The plot also shows 1 standard deviation above and below the centered-mean for the moderator. This is useful for explaining how high and low values of the moderator can influence the relationship between <code>FE</code> and <code>AHBM</code>. For example: for athletes with lower <code>TSAT</code> values (represented by the - 1 SD line), the relationship between <code>FE</code> and <code>AHBM</code> decreases at a lower rate compared to athletes with a higher <code>TSAT</code> value (represented by the + 1 SD line). We can also see that the - 1 SD and + 1 SD lines cross at approximately FE = 32, suggesting that the relationship between <code>FE</code> and <code>AHBM</code> varies at different levels of <code>TSAT</code>.</p>
+<p>Looking at the output for our model, we can see that this interaction effect is statistically significant:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>model5 <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = AHBM ~ FE + FER + FE * TSAT, data = Hbmass_pre)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-395.00 -114.78  -18.31   86.23  463.57 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 654.6145    86.3004   7.585 1.95e-12 ***
+FE           -0.7878     3.9649  -0.199   0.8427    
+FER           1.6050     0.3547   4.525 1.12e-05 ***
+TSAT          8.8297     3.4553   2.555   0.0115 *  
+FE:TSAT      -0.2680     0.1131  -2.370   0.0189 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 180.7 on 173 degrees of freedom
+Multiple R-squared:  0.2053,    Adjusted R-squared:  0.1869 
+F-statistic: 11.17 on 4 and 173 DF,  p-value: 4.371e-08</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="building-models" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="building-models"><span class="header-section-number">4.7</span> Building models</h2>
+<p>As you may have noted in the previous exercises, we deliberately avoided fitting models with all available variables simultaneously. The reason behind this strategic approach lies in mitigating the risk of overfitting. Overfitting occurs when a model learns not only the underlying patterns in the training data but also captures random noise, making it overly complex and tailored specifically to the training set. While such a model may perform exceptionally well on the training data, it often fails to generalize to new, unseen data, leading to unreliable predictions. By selectively choosing variables and employing techniques such as stepwise regression or regularization methods (more on these in later lessons), we aim to strike a balance between model complexity and predictive accuracy.</p>
+<p>Selection of the appropriate model involves a nuanced understanding of the problem domain, the nature of the data, and the goals of the analysis. An expert in the field plays a crucial role in this process, leveraging domain knowledge and experience to make informed decisions. While a computerized approach facilitates model selection through algorithmic exploration, the nuanced interpretation of results and contextual understanding require human expertise. Experts guide the selection process by considering factors such as model assumptions, interpretability, computational efficiency, and the robustness of predictions.</p>
+<section id="model-parsimony" class="level3" data-number="4.7.1">
+<h3 data-number="4.7.1" class="anchored" data-anchor-id="model-parsimony"><span class="header-section-number">4.7.1</span> Model parsimony</h3>
+<p>Model parsimony is the principle of favoring simpler models that achieve a balance between explanatory power and simplicity. A parsimonious model uses the fewest variables or parameters necessary to adequately describe the observed data without overfitting. One way to formalize this principle in model selection is through the Bayesian Information Criterion (BIC). The Bayesian Information Criterion is a metric that balances goodness of fit with model complexity. In the context of multiple regression, BIC penalizes models for having more parameters. The BIC formula is given by:</p>
+<p>In the context of model parsimony, a lower BIC indicates a more parsimonious model that achieves a good fit with fewer parameters. When comparing models, one should prefer the model with the lowest BIC, as it strikes a balance between capturing the complexity in the data and avoiding unnecessary elaboration.</p>
+</section>
+<section id="model-fit" class="level3" data-number="4.7.2">
+<h3 data-number="4.7.2" class="anchored" data-anchor-id="model-fit"><span class="header-section-number">4.7.2</span> Model Fit</h3>
+<p>When building our models, one consideration to make is the model fit. Model fit examines how well the chosen model explains the variation in the dependent variable based on the included independent variable(s). In this example, how well does the model explain <code>AHBM</code>. There are different metrics that we can use to assess model fit, with a few popular choices being:</p>
+<ul>
+<li><p><strong>R-squared</strong>: R-squared is a common metric that quantifies the proportion of the variance in the dependent variable explained by the independent variables. A higher R-squared suggests a better fit, but it should be interpreted in conjunction with other diagnostics.</p></li>
+<li><p><strong>Adjusted R-squared</strong>: Adjusted R-squared adjusts for the number of predictors in the model, penalizing the inclusion of unnecessary variables. It provides a more reliable measure, especially in models with multiple predictors.</p></li>
+</ul>
+<p>Comparing a few metrics across all models that we have built so far in this lesson, allows us to compare and ultimately choose a <em>final</em> model.</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> Model </th>
+   <th style="text-align:left;"> Effects </th>
+   <th style="text-align:right;"> R.squared </th>
+   <th style="text-align:right;"> Adj.R.squared </th>
+   <th style="text-align:right;"> BIC </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> FER </td>
+   <td style="text-align:right;"> 0.1175768 </td>
+   <td style="text-align:right;"> 0.1125631 </td>
+   <td style="text-align:right;"> 2384.370 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> FER + FE + TSAT </td>
+   <td style="text-align:right;"> 0.1795098 </td>
+   <td style="text-align:right;"> 0.1653634 </td>
+   <td style="text-align:right;"> 2381.780 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> SEX + SUP_DOSE + SEX*SUP_DOSE </td>
+   <td style="text-align:right;"> 0.6431640 </td>
+   <td style="text-align:right;"> 0.6327909 </td>
+   <td style="text-align:right;"> 2243.937 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> SEX + TRANS + SEX*TRANS </td>
+   <td style="text-align:right;"> 0.6415130 </td>
+   <td style="text-align:right;"> 0.6353322 </td>
+   <td style="text-align:right;"> 2234.395 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> FE + FER + FE*TSAT </td>
+   <td style="text-align:right;"> 0.2053037 </td>
+   <td style="text-align:right;"> 0.1869292 </td>
+   <td style="text-align:right;"> 2381.277 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>Notice that both R<sup>2</sup> and adjusted R<sup>2</sup> values are largest in models 3 and 4, both of which include the predictor SEX. Additionally, the BIC is relatively lower in these two models compared to the others. While there might be a temptation to choose one of these models based on statistical metrics, it’s crucial to emphasize that the final model selection should always be supported by theory and made in consultation with a domain-specific expert. This is because some models that may appear statistically favorable may lack biological justification, or they may include variables that should not be combined in a single model</p>
+</section>
+<section id="splitting-the-data" class="level3" data-number="4.7.3">
+<h3 data-number="4.7.3" class="anchored" data-anchor-id="splitting-the-data"><span class="header-section-number">4.7.3</span> Splitting the data</h3>
+<p>The models constructed so far have used the complete dataset for both training and evaluation, posing a potential risk of overfitting, where the model may perform well on the training data but struggle with new, unseen data. To address this issue, one recommended approach is to split the data into training and testing sets. By doing so, we can assess various metrics, such as R squared mentioned earlier, on both sets. The objective is to ensure that fit metrics remain relatively consistent across both sets. For instance, if the R squared is significantly larger in the training set compared to the testing set, it may indicate a problem with overfitting.</p>
+<p>To demonstrate this, we will explore a <code>tidymodels</code> workflow on our third model, which included main effects for <code>SEX</code> and <code>SUP_DOSE</code>, and an interaction effect between these two variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1. Split the data</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>splits <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(Hbmass_pre)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>Hbmass_pre_training <span class="ot">&lt;-</span> <span class="fu">training</span>(splits)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>Hbmass_pre_testing <span class="ot">&lt;-</span> <span class="fu">testing</span>(splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2. Fit the model</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">&lt;-</span> </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(AHBM <span class="sc">~</span> SEX <span class="sc">+</span> SUP_DOSE <span class="sc">+</span> SEX<span class="sc">*</span>SUP_DOSE, <span class="at">data =</span> Hbmass_pre_training)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3. Compare metrics (here R^2) for both training and testing sets</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Find R^2 value for training</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  lm_fit <span class="sc">|&gt;</span> </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(Hbmass_pre_training) <span class="sc">|&gt;</span> </span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Truth =</span> Hbmass_pre_training<span class="sc">$</span>AHBM) <span class="sc">|&gt;</span> </span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rsq</span>(Truth, .pred),</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Find R^2 value for testing</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  lm_fit <span class="sc">|&gt;</span> </span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(Hbmass_pre_testing) <span class="sc">|&gt;</span> </span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Truth =</span> Hbmass_pre_testing<span class="sc">$</span>AHBM) <span class="sc">|&gt;</span> </span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rsq</span>(Truth, .pred)</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="fu">c</span>(<span class="st">"Train"</span>, <span class="st">"Test"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+  .metric .estimator .estimate model
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;
+1 rsq     standard       0.659 Train
+2 rsq     standard       0.555 Test </code></pre>
+</div>
+</div>
+<p>Notice in this example that the R<sup>2</sup> for the training set (R<sup>2</sup> = .659) is much larger than the R<sup>2</sup> value for the testing set (R<sup>2</sup> = .555). There can be a number of different reasons for this. For example, the model may have learned specific patterns or noise in the training data that do not generalize well to new, unseen data. This phenomenon is known as overfitting, where the model becomes too tailored to the training set and struggles to perform effectively on diverse data. Another possible reason could be the presence of outliers or anomalies in the testing set that were not adequately represented in the training data. Additionally, the model’s complexity may be a contributing factor; an overly complex model might fit the training data too closely, leading to poor generalization. Finally, it might just be due to random luck, as the process for creating the training and testing sets is based upon randomly sampling from the full data set.</p>
+</section>
+<section id="cross-validation" class="level3" data-number="4.7.4">
+<h3 data-number="4.7.4" class="anchored" data-anchor-id="cross-validation"><span class="header-section-number">4.7.4</span> Cross validation</h3>
+<p>To address the challenges highlighted by the disparity in R<sup>2</sup> values between the training and testing sets, cross-validation emerges as a valuable tool. Cross-validation involves systematically partitioning the dataset into multiple subsets, training the model on different combinations of these subsets, and evaluating its performance across various folds. By doing so, cross-validation provides a more comprehensive assessment of the model’s ability to generalize. In the context of our example, cross-validation would entail repeatedly splitting the data into training and validation sets, allowing the model to learn from different portions of the data. This process helps to smooth out the impact of specific data configurations and minimizes the influence of outliers or random variations in the initial train-test split. The average performance over multiple folds gives a more reliable estimate of how well the model is expected to perform on new, unseen data, offering a robust solution to the challenges associated with overfitting, outlier sensitivity, and random chance in the data partitioning process.</p>
+<p>An example of kfolds cross validation is demonstrated below using the <code>tidymodels</code> framework:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split data (we did this before, but we'll do this again for practice)</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>data_splits <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(Hbmass_pre)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>Hbmass_pre_training <span class="ot">&lt;-</span> <span class="fu">training</span>(data_splits)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>Hbmass_pre_testing <span class="ot">&lt;-</span> <span class="fu">testing</span>(data_splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a cross-validation set on the training data</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>cv_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(Hbmass_pre_training)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a model specification</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>lm_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">&lt;-</span> lm_spec <span class="sc">|&gt;</span> </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(AHBM <span class="sc">~</span> SEX <span class="sc">+</span> SUP_DOSE <span class="sc">+</span> SEX<span class="sc">*</span>SUP_DOSE, <span class="at">data =</span> Hbmass_pre_training)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform cross validation</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>cv_results <span class="ot">&lt;-</span> </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_resamples</span>(</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  lm_spec,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  AHBM <span class="sc">~</span> SEX <span class="sc">+</span> SUP_DOSE <span class="sc">+</span> SEX<span class="sc">*</span>SUP_DOSE,</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  cv_folds,</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">metric_set</span>(rsq),</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">control_resamples</span>(<span class="at">save_pred =</span> T)</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The code above creates 10 folds (which is the default number of folds, but we can change this if needed) and stores the results in a list:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>cv_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Resampling results
+# 10-fold cross-validation 
+# A tibble: 10 × 5
+   splits           id     .metrics         .notes           .predictions     
+   &lt;list&gt;           &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;           &lt;list&gt;           
+ 1 &lt;split [119/14]&gt; Fold01 &lt;tibble [1 × 4]&gt; &lt;tibble [0 × 3]&gt; &lt;tibble [14 × 4]&gt;
+ 2 &lt;split [119/14]&gt; Fold02 &lt;tibble [1 × 4]&gt; &lt;tibble [1 × 3]&gt; &lt;tibble [14 × 4]&gt;
+ 3 &lt;split [119/14]&gt; Fold03 &lt;tibble [1 × 4]&gt; &lt;tibble [1 × 3]&gt; &lt;tibble [14 × 4]&gt;
+ 4 &lt;split [120/13]&gt; Fold04 &lt;tibble [1 × 4]&gt; &lt;tibble [0 × 3]&gt; &lt;tibble [13 × 4]&gt;
+ 5 &lt;split [120/13]&gt; Fold05 &lt;tibble [1 × 4]&gt; &lt;tibble [0 × 3]&gt; &lt;tibble [13 × 4]&gt;
+ 6 &lt;split [120/13]&gt; Fold06 &lt;tibble [1 × 4]&gt; &lt;tibble [0 × 3]&gt; &lt;tibble [13 × 4]&gt;
+ 7 &lt;split [120/13]&gt; Fold07 &lt;tibble [1 × 4]&gt; &lt;tibble [0 × 3]&gt; &lt;tibble [13 × 4]&gt;
+ 8 &lt;split [120/13]&gt; Fold08 &lt;tibble [1 × 4]&gt; &lt;tibble [0 × 3]&gt; &lt;tibble [13 × 4]&gt;
+ 9 &lt;split [120/13]&gt; Fold09 &lt;tibble [1 × 4]&gt; &lt;tibble [0 × 3]&gt; &lt;tibble [13 × 4]&gt;
+10 &lt;split [120/13]&gt; Fold10 &lt;tibble [1 × 4]&gt; &lt;tibble [0 × 3]&gt; &lt;tibble [13 × 4]&gt;
+
+There were issues with some computations:
+
+  - Warning(s) x2: prediction from a rank-deficient fit may be misleading
+
+Run `show_notes(.Last.tune.result)` for more information.</code></pre>
+</div>
+</div>
+<p>We can extract out these results with:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>cv_results <span class="sc">|&gt;</span> <span class="fu">unnest</span>(.metrics)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 8
+   splits           id     .metric .estimator .estimate .config         .notes  
+   &lt;list&gt;           &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;           &lt;list&gt;  
+ 1 &lt;split [119/14]&gt; Fold01 rsq     standard       0.747 Preprocessor1_… &lt;tibble&gt;
+ 2 &lt;split [119/14]&gt; Fold02 rsq     standard       0.201 Preprocessor1_… &lt;tibble&gt;
+ 3 &lt;split [119/14]&gt; Fold03 rsq     standard       0.367 Preprocessor1_… &lt;tibble&gt;
+ 4 &lt;split [120/13]&gt; Fold04 rsq     standard       0.539 Preprocessor1_… &lt;tibble&gt;
+ 5 &lt;split [120/13]&gt; Fold05 rsq     standard       0.577 Preprocessor1_… &lt;tibble&gt;
+ 6 &lt;split [120/13]&gt; Fold06 rsq     standard       0.737 Preprocessor1_… &lt;tibble&gt;
+ 7 &lt;split [120/13]&gt; Fold07 rsq     standard       0.610 Preprocessor1_… &lt;tibble&gt;
+ 8 &lt;split [120/13]&gt; Fold08 rsq     standard       0.785 Preprocessor1_… &lt;tibble&gt;
+ 9 &lt;split [120/13]&gt; Fold09 rsq     standard       0.753 Preprocessor1_… &lt;tibble&gt;
+10 &lt;split [120/13]&gt; Fold10 rsq     standard       0.767 Preprocessor1_… &lt;tibble&gt;
+# ℹ 1 more variable: .predictions &lt;list&gt;</code></pre>
+</div>
+</div>
+<p>In the above, we can see the different R<sup>2</sup> values for the 10 folds of our cross validated set. To inspect the average R<sup>2</sup> value we can use:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>cv_results <span class="sc">|&gt;</span> <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 6
+  .metric .estimator  mean     n std_err .config             
+  &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+1 rsq     standard   0.608    10  0.0618 Preprocessor1_Model1</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="conclusion-and-reflection" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Conclusion and Reflection</h1>
+<p>In conclusion, delving into linear regression provides a robust framework for understanding and analyzing relationships within sport science data. By scrutinizing the assumptions and interpreting the coefficients, we’ve gained valuable insights into the dynamics between variables, paving the way for informed decision-making in athletic performance and training optimization. The ability to assess linearity, independence, normality, and equality of variances equips us with th e tools to ensure the reliability of our models. As we decipher the implications of regression coefficients, we unlock a deeper comprehension of how factors such as training intensity, player performance, and injury rates interconnect. Armed with this knowledge, sport scientists and coaches are better positioned to tailor training programs, enhance player development strategies, and contribute to the overall advancement of athletic performance and well-being.</p>
+<p>With that said, whilst linear regression is an invaluable tool for exploring relationships within sport science data, it represents just the tip of the iceberg in the realm of regression modeling. The versatility of regression extends beyond the linear framework, offering a diverse array of models to address various types of data and outcomes. Logistic regression, for instance, is well-suited for binary outcomes, making it applicable in scenarios such as predicting injury occurrence. Polynomial regression accommodates non-linear relationships, allowing for a more nuanced exploration of complex patterns in sports data. The exploration of other regression models, such as ridge regression or lasso regression, brings forth techniques for handling multicollinearity and feature selection. As we venture deeper into these advanced regression methods, we unlock new possibilities for understanding and predicting outcomes in sport science, showcasing the rich landscape of statistical tools available to researchers and practitioners alike.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
