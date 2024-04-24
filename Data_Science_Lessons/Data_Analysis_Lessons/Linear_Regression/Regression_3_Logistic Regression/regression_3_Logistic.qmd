@@ -1,0 +1,353 @@
+---
+title: "Regression Modelling Strategies 3"
+format: 
+  html:
+    toc: true
+    toc-title: Contents
+    number-sections: true
+editor: visual
+---
+
+Logistic Regression
+
+ABSTRACT
+
+Logistic regression serves as a pivotal statistical tool commonly utilized in sports science to analyze binary and binomial outcome data and to explore the relationships between variables. In the realm of sports, this modeling technique proves invaluable for investigating scenarios where the outcome of interest is a binary variable, such as winning or losing a match, qualifying for a tournament, or sustaining a specific type of injury. Unlike linear regression, logistic regression is specifically designed for situations where the dependent variable represents binary outcomes, making it particularly suitable for predicting the likelihood of an event occurring or not occurring based on various predictors. By modeling the probability of these binary outcomes, sports researchers can gain insights into the factors influencing the likelihood of specific events. For instance, in basketball analytics, logistic regression might be employed to understand how factors such as player statistics, game strategies, or opponent characteristics affect the likelihood of winning a game. This approach enables sports scientists to derive meaningful conclusions from binary outcome data, offering a statistical framework to optimize strategies, mitigate risks, and improve overall performance and success in sports contexts.
+
+::: callout-tip
+## Keywords
+
+Logistic regression, binary outcome, odds ratio, classification.
+:::
+
+::: callout-note
+## Lesson's Level
+
+The level of this lesson is categorised as BRONZE.
+:::
+
+::: callout-tip
+## Lesson's Main Idea
+
+-   Knowing when to use a logistic regression model.
+-   Identify a binomial random variable and assess the validity of the binomial assumptions.
+-   Interpret estimated coefficients in logistic regression.
+:::
+
+Data used in this lesson is provided by XYZ
+
+# Learning Outcomes
+
+By the end of this lesson, you will be proficient in:
+
+-   Construct binary logistic regression models in R.
+-   Use residual diagnostics to examine the assumptions of this model.
+-   Interpret parameters and test estimates from this model.
+
+# Introduction: Logistic Regression
+
+Logistic regression is a versatile and widely used statistical technique designed for modeling relationships between variables, particularly when the dependent variable represents binary outcomes. This methodology is particularly well-suited for scenarios where the outcome of interest is a binary event, such as whether a team wins or loses a match, whether a patient has a disease, or whether a customer makes a purchase. To visualise this, consider the plot below. This plot displays binary data, with responses being either 0's or 1's. Two models are fitted to the data (a linear and a logistic regression):
+
+<center>
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+set.seed(15)
+dat <- tibble(x=runif(200, -5, 10),
+              p=exp(-2+1*x)/(1+exp(-2+1*x)),
+              y=rbinom(200, 1, p),
+              y2=.3408+.0901*x,
+              logit=log(p/(1-p)))
+dat2 <- tibble(x = c(dat$x, dat$x),
+               y = c(dat$y2, dat$p),
+               model = c(rep("linear", 200),
+                                      rep("logistic", 200)))
+
+ggplot() + 
+  geom_point(data = dat, aes(x, y)) +
+  geom_line(data = dat2, aes(x, y, linetype = model, color = model),size = 1) +
+  theme_classic() +
+  scale_y_continuous(breaks = c(0,1))
+```
+
+</center>
+
+The linear regression model (depicted by the red line) operates under the assumption that the data is continuous, extending beyond the boundaries of 0 and 1. Conversely, the logistic regression model (indicated by the blue line) approaches 0 and 1 but never actually reaches them. This characteristic renders the logistic regression model more suitable for binary data.
+
+The fundamental form of the logistic regression model is expressed as:
+
+$$P(Y=1|X) = \frac{1}{1 + e^{-(\beta_{0} + \beta_{1}X_{1} + \beta_{2}X_{2} + \ldots + \beta_{n}X_{n})}}$$
+
+where $P(Y=1|X)$ represents the probability of the binary outcome $Y$ being 1 given the predictors $X_1, X_2, ..., X_n$, $\beta_0$ is the intercept, $\beta_1, \beta_2, ..., \beta_n$ are the coefficients associated with the independent variables $X_1, X_2, ..., X_n$, and $e$ denotes the base of the natural logarithm. The objective of logistic regression is to estimate the coefficients that maximize the likelihood of observing the given binary outcome data.
+
+# Assumptions
+
+Logistic regression adheres to the following statistical assumptions:
+
+1.  **Binary or Binomial Response**: The response variable is either binary, representing two possible outcomes (e.g., success or failure, presence or absence), or binomial, representing the count of successes out of a fixed number of trials.
+2.  **Independence**: Each observation or case in the dataset is assumed to be independent of all other observations. This assumption ensures that there is no systematic relationship between the observations.
+3.  **Linearity of Log-Odds**: The relationship between the log-odds of the outcome variable and the predictor variable(s) is assumed to be linear. In other words, the logit function (log-odds) of the probability of the event occurring is a linear function of the predictors.
+4.  **No Multicollinearity**: There should be no multicollinearity among the predictor variables. Multicollinearity occurs when two or more predictor variables are highly correlated, which can lead to unstable estimates of the coefficients.
+
+# Case Study
+
+## What to expect
+
+In this example we will re-examine the Hanstock Illness data set (see the Poisson Regression lesson for more detail). We will use the variable `Crit1and2` as our dependent variable. `Crit1and2` is a binary variable that represents whether participants meet the criteria 1 and 2 of the Jackson's common cold score (basically, do they show signs of having the common cold).
+
+We will learn how to fit logistic regression models that contain both single and multiple predictors. We will also construct models that include interaction terms. Finally, we will use residual diagnostic tests to inspect the assumptions of our models.
+
+## Data Loading and Cleaning
+
+For this exercise, we will use the `Hanstock_2016_Illness` data set, which \[update this section when this gets added to the speedsR package, for now I will just load it locally\].
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+Illness <- read.csv("data/Hanstock_2016_Illness.csv")
+```
+
+## Initial Exploratory Analyses
+
+As always, it is good practice to explore our data descriptively, before we build our models. Much of this has already been covered in earlier lessons (see "Put names of lessons here"), so we will only provide a short example here.
+
+### Data organisation
+
+`Hanstock_2016_Illness` is a data set that contains 39 variables. Some of the more relevant variables (to this exercise) are listed below:
+
+-   `ID`: The participant's ID number
+-   `group`: The testing condition for the participant, 4x(8x40/20s), 4x(12x40/20s) or 4x8min
+-   `time`: a binary factor to indicate results for either pre or post tests
+-   `Crit1and2`: A binary (true / false) variable that displays whether participant meets criteria 1 AND 2 of the Jackson Common Cold score
+-   `vo2_rel`: Relative VO2peak (L/min)
+
+Note that for this lesson we will only be using the post-test measurements. As such we should create a filter to only include these measurements (i.e. when time is post). The code below has also renamed the `Crit1and2` variable to `Cold` and changed the labels to 'Yes' and 'No':
+
+```{r}
+Illness_post <- Illness |>
+  filter(time == 'post') |>
+  dplyr::select('group', 'Crit1and2', 'vo2_rel') |>
+  rename(Cold = Crit1and2) |>
+  mutate(Cold = factor(case_when(
+    Cold == TRUE ~ 'Yes',
+    Cold == FALSE ~ 'No'
+  ))) |> 
+  mutate_if(is.character, as.factor) |> 
+  
+  # Also create a variable that codes Cold into 0s and 1s
+  mutate(Cold1 = ifelse(Cold == 'Yes', 1, 0))
+```
+
+### Summary statistics
+
+We can use the `skimr` package to quicky obtain summary statistics for our chosen variables:
+
+```{r}
+skimr::skim(Illness_post)
+```
+
+We can use the `table` and `prop.table` functions to explore the `Cold` variable further:
+
+```{r, message=FALSE, warning=FALSE}
+table(Illness_post$Cold)
+prop.table(mosaic::tally(~Illness_post$Cold))
+```
+
+Next, let us examine this Cold proportion over the group factor:
+
+```{r}
+Illness_post |> 
+  group_by(group) |> 
+  count(Cold) |> 
+  mutate(prop = n/sum(n)) |> 
+  ggplot(aes(group, prop)) +
+  geom_col(aes(fill = Cold)) +
+  geom_text(aes(label = scales::percent(prop),
+                y = prop,
+                group = Cold),
+            position = position_stack(vjust = 0.5))
+```
+
+If we consider including a continuous term in our model (in this case: VO2_rel), the logit should be linearly related. We can investigate this assumption by constructing an empirical logit plot. In order to calculate empirical logits, we first divide our data by group. Within each group, we generate subsets of equal sizes. Given the small size of this data set, we will use three groups:
+
+```{r, warning=FALSE, message=FALSE}
+Illness_post <- Illness_post %>%
+  group_by(group) %>%
+  mutate(cuts = cut_number(vo2_rel,3)) |> 
+  ungroup()
+
+```
+
+Within each group, we calculate the proportion, $\hat{p}$ that reported meeting the criteria for the common cold, and then the empirical log odds, $log(\frac{\hat{p}}{1-\hat{p}})$, that a person meets this criteria:
+
+```{r, warning=FALSE, message=FALSE}
+emplogit1 <- Illness_post %>%
+  group_by(group, cuts) %>%
+  summarise(prop.Cold = mean(Cold1), 
+            n = n(),
+            midpoint = median(vo2_rel)) %>%
+  mutate(prop.Cold = ifelse(prop.Cold==0, .01, prop.Cold),
+         emplogit = log(prop.Cold / (1 - prop.Cold)))
+```
+
+Finally, we can plot this data:
+
+```{r, warning=FALSE, message=FALSE}
+
+ggplot(emplogit1, aes(x = midpoint, y = emplogit, color = group)) +
+  geom_smooth(method = "lm", se=F)
+```
+
+From this plot we can see that all three groups exhibit an increasing linear trend on the logit scale indicating that increasing VO2_rel is associated with a higher chance of having the cold and that modeling log odds as a linear function of VO2_rel is reasonable. The slopes between the three groups are not similar, so we should consider an interaction term between VO2_rel and group in the model.
+
+## Estimation and Inference
+
+### Continuous predictor
+
+To begin, we will consider a simple model with only one predictor: `VO2_rel`. In R, we can use the `glm()` function, specifying the formula, family and data. For logistic regression, we will specify the family to be binomial.
+
+```{r}
+model1 <- glm(Cold ~ vo2_rel,
+    family = binomial,
+    data = Illness_post)
+```
+
+We can then use the `coef()` function to obtain the coefficients:
+
+```{r}
+coef(model1)
+```
+
+From this output, we can see that the intercept ($\beta_{0}$) and the coefficient for `vo2_rel` are -15.47 and 0.22, respectively. We can substitute these into the logistic regression equation (see Section 2) as follows:
+
+$$P(Cold)=\frac{e^{\beta_{0}+\beta_1VO2_{rel}}}{1+e^{\beta_{0}+\beta_1VO2_{rel}}}$$
+
+$$P(Cold)=\frac{e^{-15.47+0.22VO2_{rel}}}{1+e^{-15.47+0.22VO2_{rel}}}$$
+
+We can interpret the coefficient on `vo2_rel` by exponentiating the coefficient value, $e^{0.22}=1.25$ indicating that the odds of having a Cold increase by 25% for each additional increase in `vo2_rel`. We can also use the `tab_model()` function to quickly exponeniate the coefficients and confidence intervals:
+
+```{r}
+sjPlot::tab_model(model1)
+```
+
+### Categorical predictor
+
+Suppose we wanted to build a model with the categorical variable, `group`. In R, this would be written as:
+
+```{r}
+model2 <- glm(Cold ~ group,
+    family = binomial,
+    data = Illness_post)
+```
+
+And using the sjPlot package, we quickly obtain the exponeniated coefficients and confidence intervals:
+
+```{r}
+sjPlot::tab_model(model2)
+```
+
+We can interpret these results as:
+
+-   The odds of having a cold are 52% lower for those in the 4x(8x40/20s) group compared to those in the 4x(12x40/20s) group, albeit this is not statistically significant.
+-   The odds of having a cold are approximately the same for those in the 4x(4x8min) group compared to those in the 4x(12x40/20s) group, albeit this is not statistically significant.
+
+Note that our sample size (n = 25) is quite small, so there is a possibility that we just don't have the statistical power to detect these effects.
+
+### Multiple predictors
+
+Similar to linear regression, we can construct our logistic regression models to include multiple predictors:
+
+```{r}
+model3 <- glm(Cold ~ vo2_rel + group,
+    family = binomial,
+    data = Illness_post)
+```
+
+```{r}
+sjPlot::tab_model(model3)
+```
+
+We can interpret these results as:
+
+-   The odds of having a Cold increase by 26% for each additional unit increase in `vo2_rel` (95% CI = 1.06 to 1.65, p = .028), when controlling for group.
+-   The odds of having a cold are 65% lower for those in the 4x(8x40/20s) group compared to those in the 4x(12x40/20s) group, albeit this is not statistically significant, when controlling for `vo2_rel`.
+-   The odds of having a cold are 10% lower for those in the 4x(4x8min) group compared to those in the 4x(12x40/20s) group, albeit this is not statistically significant, when controlling for `vo2_rel`.
+
+### Interaction Effects
+
+Earlier, when we plotted the empirical logits for `vo2_rel`, for each cycling group, we observed a potential interaction effect. Thus, we can attempt to add an interaction term to our model:
+
+```{r}
+model4 <- glm(Cold ~ vo2_rel + group + vo2_rel*group,
+    family = binomial,
+    data = Illness_post)
+```
+
+```{r}
+sjPlot::tab_model(model4)
+```
+
+In the displayed output, it's evident that several odds ratios are reported with astronomical estimates, while some confidence intervals are marked as NA (not available). This phenomenon arises due to the limited size of our sample. Particularly, when we disaggregate the dependent variable across all levels of our main and interaction effects, the precision of estimates diminishes. Consequently, accurate determination of these estimates becomes challenging within the constraints of our dataset. Thus, we should revert back to model3, which did not include the interaction effect.
+
+## Evaluating our model
+
+```{r}
+summary(model3)
+```
+
+
+In lesson 1, we learnt how to use fit metrics such as R^2^, BIC, RMSE, etc., to evaluate our model. For logistic regression, one approach is to use our model to compute the probability that each subject has the cold:
+
+```{r}
+probabilities <- model3 %>% predict(Illness_post, type = "response")
+head(probabilities)
+
+```
+
+In the output above (which shows the first 6 subjects), probabilities of having a cold were computed based upon subject's `vo2_rel` measurements and cycling `group` allocation. For example, subject 1 only has a 15.5% chance, whereas subject 4 has an 88.9% chance, of having a cold based upon the model. 
+
+Using an arbitrary threshold (default: 0.50), we can classify the probabilities into 1 = 'cold' or 0 = 'no cold':
+
+```{r}
+predicted.classes <- ifelse(probabilities > .5, 1, 0)
+
+cbind(probabilities, predicted.classes) |> head()
+```
+
+From the output above (whih shows the first 6 subjects), we can see that using a threshold of 0.50, subject 2 (probability = 0.67) and subject 4 (probability = 0.89) would be predicted to be having a cold. From these 6 subjects, the remaining 4 subjects have probabilities less than the threshold of 0.50, therefore they would be predicted to be not having a cold.
+
+Finally, we can compare these predicted classes to whether or not the subjects actually had a cold:
+
+```{r, warning=FALSE, message=FALSE}
+library(caret)
+cm <- confusionMatrix(factor(predicted.classes, levels = c(1,0)), 
+                factor(Illness_post$Cold1, levels = c(1, 0)))
+cm$table
+```
+
+These results reveal that:
+
+- Of the 5 subjects predicted to have the cold, 3 of them did have the cold
+- Of the 20 subjects predicted to not have the cold, 15 of them did not have the cold
+
+Based upon these figures, the overall accuracy of this model is 72%:
+
+```{r}
+cm$overall[[1]]
+```
+
+Now, whilst this does seem like a reasonably high accuracy rating, there are some issues that we should consider:
+
+- We did not split the data into training and testing sets (see Lesson 1). Due to our small sample, splitting the data would make it very difficult to estimate the effects. This meant that we made predictions on the same data that was used to build the model. This likely would have resulted in *overfitting* the model, explaining the high accuracy rating. 
+- We chose an arbitrary value of 0.50 for the threshold to predict classes. Choosing a threshold without considering the specific context or the costs associated with false positives and false negatives may not be optimal. Different threshold values could lead to varying trade-offs between sensitivity and specificity, which are important considerations in binary classification tasks. Methods such as Receiver Operating Characteristic (ROC) curve analysis to calculate Area Under the Curve (AUC) can help with this. 
+
+# Conclusion and Reflection
+
+In conclusion, this guide has provided an overview of regression modeling techniques suitable for binary variables, beginning with the assumptions underlying such models. We explored logistic regression models different types of predictors: continuous, categorical, continuous an categorical, and interactions. We learnt how to make predictions with our model to assess the accuracy of classification. 
+
+Throughout our discussion, we applied these regression techniques to a practical example of predicting whether or not someone has he cold, using two predictor variables. In our example we saw the limitations of a small data set, and it's impact on interpretability. Nonetheless, this lesson provides a guide for you to be able to implement your own logistic regression models.
+
+
+
+
+
+
