@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Regression Modelling Strategies 2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="output2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="output2_files/libs/quarto-html/quarto.js"></script>
+<script src="output2_files/libs/quarto-html/popper.min.js"></script>
+<script src="output2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="output2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="output2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="output2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="output2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="output2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="output2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">1</span> Learning Outcomes</a></li>
+  <li><a href="#introduction-poisson-regression" id="toc-introduction-poisson-regression" class="nav-link" data-scroll-target="#introduction-poisson-regression"><span class="header-section-number">2</span> Introduction: Poisson Regression</a></li>
+  <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions"><span class="header-section-number">3</span> Assumptions</a></li>
+  <li><a href="#case-study" id="toc-case-study" class="nav-link" data-scroll-target="#case-study"><span class="header-section-number">4</span> Case Study</a>
+  <ul class="collapse">
+  <li><a href="#what-to-expect" id="toc-what-to-expect" class="nav-link" data-scroll-target="#what-to-expect"><span class="header-section-number">4.1</span> What to expect</a></li>
+  <li><a href="#data-loading-and-cleaning" id="toc-data-loading-and-cleaning" class="nav-link" data-scroll-target="#data-loading-and-cleaning"><span class="header-section-number">4.2</span> Data Loading and Cleaning</a></li>
+  <li><a href="#initial-exploratory-analyses" id="toc-initial-exploratory-analyses" class="nav-link" data-scroll-target="#initial-exploratory-analyses"><span class="header-section-number">4.3</span> Initial Exploratory Analyses</a>
+  <ul class="collapse">
+  <li><a href="#data-organisation" id="toc-data-organisation" class="nav-link" data-scroll-target="#data-organisation"><span class="header-section-number">4.3.1</span> Data organisation</a></li>
+  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics"><span class="header-section-number">4.3.2</span> Summary statistics</a></li>
+  </ul></li>
+  <li><a href="#estimation-and-inference" id="toc-estimation-and-inference" class="nav-link" data-scroll-target="#estimation-and-inference"><span class="header-section-number">4.4</span> Estimation and Inference</a>
+  <ul class="collapse">
+  <li><a href="#adding-a-covariate" id="toc-adding-a-covariate" class="nav-link" data-scroll-target="#adding-a-covariate"><span class="header-section-number">4.4.1</span> Adding a covariate</a></li>
+  <li><a href="#quasi-poisson-regression" id="toc-quasi-poisson-regression" class="nav-link" data-scroll-target="#quasi-poisson-regression"><span class="header-section-number">4.4.2</span> Quasi-Poisson Regression</a></li>
+  <li><a href="#negative-binomial-regression" id="toc-negative-binomial-regression" class="nav-link" data-scroll-target="#negative-binomial-regression"><span class="header-section-number">4.4.3</span> Negative Binomial Regression</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#conclusion-and-reflection" id="toc-conclusion-and-reflection" class="nav-link" data-scroll-target="#conclusion-and-reflection"><span class="header-section-number">5</span> Conclusion and Reflection</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regression Modelling Strategies 2</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Poisson Regression</p>
+<p>ABSTRACT</p>
+<p>Poisson regression stands as a crucial statistical methodology frequently employed in sports science for the analysis of count data and the exploration of relationships between variables. In the realm of sports, this modeling technique proves invaluable for delving into scenarios where the outcome of interest is a count variable, such as the number of goals scored, injuries sustained, or penalties incurred during a game. Unlike linear regression, Poisson regression is specifically tailored for situations where the dependent variable represents counts of events within fixed time intervals or areas. By modeling the distribution of these discrete events, sports researchers can gain insights into the factors influencing the frequency of occurrences. For example, in soccer analytics, Poisson regression might be applied to understand how various team strategies, player characteristics, or environmental conditions contribute to the number of goals scored in a match. This approach allows sports scientists to draw meaningful conclusions from count data, providing a statistical framework to optimize tactics, minimize risks, and enhance overall performance and safety in athletic contexts.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Keywords
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Poisson regression, count, discrete, frequency of occurrence.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Level
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The level of this lesson is categorised as BRONZE.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Lesson’s Main Idea
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Knowing when to use a poisson regression model.</li>
+<li>Knowing how to check the assumptions of a poisson regression model.</li>
+<li>Knowing when and how to use a negative binomial model.</li>
+</ul>
+</div>
+</div>
+<p>Date used in this lesson is provided by XYZ</p>
+<section id="learning-outcomes" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning Outcomes</h1>
+<p>By the end of this lesson, you will be proficient in:</p>
+<ul>
+<li>Construct poisson and negative binomial regression models in R.</li>
+<li>Use residual diagnostics to examine the assumptions of these models.</li>
+<li>Interpret parameters and test estimates from these models.</li>
+</ul>
+</section>
+<section id="introduction-poisson-regression" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction: Poisson Regression</h1>
+<p>Poisson regression is a versatile and widely utilized statistical technique designed for modeling relationships between variables, particularly when the dependent variable represents counts of events within fixed intervals or areas. This methodology is particularly well-suited for scenarios where the outcome of interest is a non-negative integer, such as the number of goals scored in a soccer match, incidents of player injuries, or the count of penalties during a game.</p>
+<p>The fundamental form of the Poisson regression model is expressed as:</p>
+<p><span class="math display">\[\ln(\lambda)=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+...\beta_{n}X_{n}\]</span></p>
+<p>where <span class="math inline">\(\lambda\)</span> is the expected count of events, <span class="math inline">\(\beta_{0}\)</span> is the intercept, <span class="math inline">\(\beta_{1}, \beta_{2}, ... \beta_{n}\)</span> are the coefficients associated with the independent variables <span class="math inline">\(X_{1},X_{2},...X_{n}\)</span> and <span class="math inline">\(\ln\)</span> denotes the natural logarithm. The objective of Poisson regression is to estimate the coefficients that maximize the likelihood of observing the given count data.</p>
+</section>
+<section id="assumptions" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Assumptions</h1>
+<p>Poisson regression adheres to the following statistical assumptions:</p>
+<ol type="1">
+<li><strong>Poisson Response</strong>: The response variable is characterized by count data, representing the number of events or occurrences within fixed time intervals or areas. This count data is expected to follow a Poisson distribution, which is a probability distribution that models the number of events happening in a fixed interval of time or space.</li>
+<li><strong>Independence</strong>: Each observation or count is independent of all other observations.</li>
+<li><strong>Equidispersion</strong>: The mean of the count data is approximately equal to its variance. This relationship is a distinctive characteristic of Poisson-distributed data and reflects the assumption that the variability in event occurrences is directly tied to the average rate of events.</li>
+<li><strong>Linearity</strong>: The log-transformed mean rate is assumed to be a linear function of the predictor variable(s).</li>
+</ol>
+<p>The figure below (adapted from Roback and Legler, 2021) illustrates a comparison of a linear regression model for inference to a poisson regression using a log function of <span class="math inline">\(\lambda\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output2_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Figure 1. Comparing linear regression (left) to poisson regression (right).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="case-study" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Case Study</h1>
+<section id="what-to-expect" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="what-to-expect"><span class="header-section-number">4.1</span> What to expect</h2>
+<p>In this example the dependent variable is <em>number</em> of days sick, which is a count variable - making poisson regression an appropriate initial model to test. We will learn how to fit poisson regression models that contain both single and multiple predictors. We will also learn how to use residual diagnostic tests to inspect the assumptions of our model. Finally, we will learn about <em>overdispersion</em> and how to adjust for this with other models.</p>
+</section>
+<section id="data-loading-and-cleaning" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="data-loading-and-cleaning"><span class="header-section-number">4.2</span> Data Loading and Cleaning</h2>
+<p>For this exercise, we will use the <code>Hanstock_2016_Illness</code> data set, which [update this section when this gets added to the speedsR package, for now I will just load it locally].</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Update this to speedsR when available</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Illness <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/Hanstock_2016_Illness.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This data set [Andy to include a brief description about the data].</p>
+</section>
+<section id="initial-exploratory-analyses" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="initial-exploratory-analyses"><span class="header-section-number">4.3</span> Initial Exploratory Analyses</h2>
+<p>As always, it is good practice to explore our data descriptively, before we build our models. Much of this has already been covered in earlier lessons (see “Put names of lessons here”), so we will only provide a short example here.</p>
+<section id="data-organisation" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="data-organisation"><span class="header-section-number">4.3.1</span> Data organisation</h3>
+<p><code>Hanstock_2016_Illness</code> is a data set that contains 39 variables. Some of the more relevant variables (to this exercise) are listed below:</p>
+<ul>
+<li><code>ID</code>: The participant’s ID number</li>
+<li><code>group</code>: The testing condition for the participant, 4x(8x40/20s), 4x(12x40/20s) or 4x8min</li>
+<li><code>time</code>: a binary factor to indicate results for either pre or post tests</li>
+<li><code>t_symp_score</code>: Total Common Cold symptom score</li>
+<li><code>days_sick</code>: number of days the participants were sick</li>
+</ul>
+<p>Note that for this lesson we will only be using the post-test measurements. As such we should create a filter to only include these measurements (i.e.&nbsp;when time is post). We will also only include the variables of interest in our data set:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Illness_post <span class="ot">&lt;-</span> Illness <span class="sc">|&gt;</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time <span class="sc">==</span> <span class="st">'post'</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">'ID'</span>, <span class="st">'group'</span>, <span class="st">'time'</span>, <span class="st">'t_symp_score'</span>, <span class="st">'days_sick'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="summary-statistics" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="summary-statistics"><span class="header-section-number">4.3.2</span> Summary statistics</h3>
+<p>We can use the <code>skimr</code> package to quicky obtain summary statistics for our chosen variables:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'skimr' was built under R version 4.2.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(Illness_post)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="width: auto;" class="table table-condensed">
+<caption>
+Data summary
+</caption>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+Illness_post
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+
+</table>
+<p><strong>Variable type: character</strong></p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+group
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+time
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+
+</table>
+<p><strong>Variable type: numeric</strong></p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+15.08
+</td>
+<td style="text-align:right;">
+8.39
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+▇▇▇▇▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+t_symp_score
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+40.56
+</td>
+<td style="text-align:right;">
+45.79
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:right;">
+184
+</td>
+<td style="text-align:left;">
+▇▂▂▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+days_sick
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5.32
+</td>
+<td style="text-align:right;">
+6.61
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+▇▂▂▁▂
+</td>
+</tr>
+</tbody>
+
+</table>
+</div>
+</div>
+<p>We can focus on the dependent variable further, by creating a histogram in <code>ggplot</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Illness_post, <span class="fu">aes</span>(days_sick)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">'white'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output2_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The figure above reveals a fair amount of variability in days sick: responses range from 0 to 20 with most people reporting 0 days sick. The plot is right skewed and clealy indicates that <code>days sick</code> is not normally distributed.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that this many zero’s in the distribution might suggest that a regular poisson model would not be appropriate either (see Figure 1 to inspect what a poisson distribution should look like). We will explore this below when we examine over dispersion.</p>
+</div>
+</div>
+<p>The Poisson regression model also implies that log(<span class="math inline">\(\lambda_i\)</span>), not the mean days sick <span class="math inline">\(\lambda_i\)</span>, is a linear function of common cold severity score; i.e., <span class="math inline">\(log(\lambda_i)=\beta_0+\beta_1\textrm{cold score}_i\)</span>. Therefore, to check the linearity assumption (Assumption 4) for Poisson regression, we would like to plot log(<span class="math inline">\(\lambda_i\)</span>) by t_symp_score. Unfortunately, <span class="math inline">\(\lambda_i\)</span> is unknown. Our best guess of <span class="math inline">\(\lambda_i\)</span> is the observed mean number of days sick for each common cold score (level of <span class="math inline">\(X\)</span>). Because these means are computed for observed data, they are referred to as <strong>empirical</strong> means. Taking the logs of the empirical means and plotting by t_symp_score provides a way to assess the linearity assumption.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sumstats <span class="ot">&lt;-</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  Illness_post <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(t_symp_score) <span class="sc">|&gt;</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">m_days_sick =</span> <span class="fu">mean</span>(days_sick),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">logm_days_sick =</span> <span class="fu">log</span>(m_days_sick))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sumstats <span class="sc">|&gt;</span> <span class="fu">filter</span>(t_symp_score <span class="sc">&lt;</span> <span class="dv">180</span>), <span class="fu">aes</span>(t_symp_score, logm_days_sick)) <span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"loess"</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Log of the empirical mean number of days sick"</span>) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Common cold severity score'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>In the plot above, the relationship between cold score and the log of the mean days sick appears relatively linear (note, an extreme outlier has been omitted).</p>
+</section>
+</section>
+<section id="estimation-and-inference" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="estimation-and-inference"><span class="header-section-number">4.4</span> Estimation and Inference</h2>
+<p>To begin, we will consider a simple model with only one predictor: <code>t_symp_score</code>. Similar to the linear regression, the estimated regression equation for the Poisson model also contains an intercept (<span class="math inline">\(\beta_{0}\)</span>) and coefficients for the predictors (<span class="math inline">\(\beta_{1}\)</span>, <span class="math inline">\(\beta_{2}\)</span>, etc.):</p>
+<p><span class="math display">\[
+log(\hat{\lambda})=\beta_{0}+\beta_{1}x_{1}+\beta_{2}x_{2} + ...+\beta_{n}x_{n}
+\]</span></p>
+<p>Similar to linear regression, we can use R to obtain the <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> values. Poisson regression falls under the <em>Generalised Linear Model</em> family, which uses the function <code>glm()</code> to analysis. The code is similar to linear regression, where you have:</p>
+<ul>
+<li>an argument for the formula (in this case: <code>days_sick</code> ~ <code>t_symp_score</code>)</li>
+<li>an argument for the data (in this case: <code>Illness_post</code>)</li>
+</ul>
+<p>However, in addition to the formula and data, you also need to specify the <em>family</em>, which represents the error distribution and link function to be used in the model. For Poisson regression, the family = ‘poisson’.</p>
+<p>Therefore, we can run a poisson model in base R with the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(days_sick <span class="sc">~</span> t_symp_score,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> Illness_post,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> poisson)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As per usual, we can call the model results with the <code>summary()</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = days_sick ~ t_symp_score, family = poisson, data = Illness_post)
+
+Deviance Residuals: 
+   Min      1Q  Median      3Q     Max  
+-2.883  -2.180  -1.583   1.145   3.909  
+
+Coefficients:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)   0.74564    0.14568   5.118 3.08e-07 ***
+t_symp_score  0.01498    0.00131  11.432  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 209.539  on 24  degrees of freedom
+Residual deviance:  99.806  on 23  degrees of freedom
+AIC: 157.68
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<p>With this output, we can substitute the Intercept and <span class="math inline">\(\beta\)</span> coefficient into our model:</p>
+<p><span class="math display">\[log(\hat{\lambda})=0.746+0.015{SympScore}\]</span></p>
+<p>Note that the equation above would need to be back-transformed to be interpreted in the original units. Here, exponentiation the coefficient on <code>t_symp_score</code> provides us with the multiplicative factor by which the mean count changes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fl">0.015</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.015113</code></pre>
+</div>
+</div>
+<p>In this case, the mean number of sick days changes by a factor of <span class="math inline">\(e^{0.015}=1.015\)</span> or increases by 1.5% with each additional score of Common Cold severity. This is also referred to as a <strong>rate ratio</strong> or <strong>relative risk</strong>, and it represents a percent change in the response for a unit change in the predictor.</p>
+<p>We can also exponeniate our confidence intervals to interpret them in a similar manner:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">confint</span>(model1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Waiting for profiling to be done...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                2.5 %   97.5 %
+(Intercept)  1.568051 2.777643
+t_symp_score 1.012460 1.017681</code></pre>
+</div>
+</div>
+<p>From the above output, we would be 95% confident that the mean number of sick days increases between 1.25% and 1.77% for each additional score of Common Cold severity. Note that because our interval does not include 1, we can conclude that <code>t_symp_score</code> is significantly associated with number of days sick.</p>
+<section id="adding-a-covariate" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="adding-a-covariate"><span class="header-section-number">4.4.1</span> Adding a covariate</h3>
+<p>Let us now add a covariate to the model, specifically group, which is made up of:</p>
+<ul>
+<li>4x(8x40/20s),</li>
+<li>4x(12x40/20s) or</li>
+<li>4x8min</li>
+</ul>
+<p>Recall from the multiple regression lesson that for categorical predictors, a reference level is chosen from the categories, to serve as a baseline for comparison against the other levels. In this example, 4x(12x40/20s) is chosen by default as the reference category.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(days_sick <span class="sc">~</span> t_symp_score <span class="sc">+</span> group,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> Illness_post,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> poisson)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = days_sick ~ t_symp_score + group, family = poisson, 
+    data = Illness_post)
+
+Deviance Residuals: 
+   Min      1Q  Median      3Q     Max  
+-2.474  -1.724  -1.193   1.009   2.933  
+
+Coefficients:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        0.35632    0.22888   1.557  0.11952    
+t_symp_score       0.01980    0.00186  10.645  &lt; 2e-16 ***
+group4x(8x40/20s)  0.60422    0.21544   2.805  0.00504 ** 
+group4x8min       -0.75589    0.25130  -3.008  0.00263 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 209.54  on 24  degrees of freedom
+Residual deviance:  72.48  on 21  degrees of freedom
+AIC: 134.35
+
+Number of Fisher Scoring iterations: 6</code></pre>
+</div>
+</div>
+<p>Like before, we will need to exponeniate the coefficients and confidence intervals to interpret this output:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(model2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      (Intercept)      t_symp_score group4x(8x40/20s)       group4x8min 
+        1.4280704         1.0199927         1.8298202         0.4695931 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">confint</span>(model2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Waiting for profiling to be done...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      2.5 %    97.5 %
+(Intercept)       0.8919344 2.1920425
+t_symp_score      1.0163949 1.0238581
+group4x(8x40/20s) 1.2037316 2.8074274
+group4x8min       0.2845771 0.7645142</code></pre>
+</div>
+</div>
+<p>Note, you can also use the <code>tab_model()</code> function from the sjPlot package to do this for you:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>sjPlot<span class="sc">::</span><span class="fu">tab_model</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">&nbsp;</td>
+<td colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">days sick</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">Predictors</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">Incidence Rate Ratios</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">CI</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">p</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">(Intercept)</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.43</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.89&nbsp;–&nbsp;2.19</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.120</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">t symp score</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.02</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.02&nbsp;–&nbsp;1.02</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>&lt;0.001</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">group [4x(8x40/20s)]</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.83</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.20&nbsp;–&nbsp;2.81</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>0.005</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">group [4x8min]</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.47</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.28&nbsp;–&nbsp;0.76</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>0.003</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">Observations</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">R<sup>2</sup> Nagelkerke</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">0.996</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Each of these effects can be interpreted as:</p>
+<ul>
+<li>The mean number of days sick increases by 2% for each additional increase in cold symptom score, and this is statistically significant (95% CI = 1.02 to 1.02, <em>p</em> &lt; .001), when holding other factors constant.</li>
+<li>The mean number of days sick increases by 83% for those in the 4x(8x40/20s) group compared to those in the 4x(12x40/20s) group, and this is statistically significant (95% CI = 1.20 to 2.81, <em>p</em> = .005), when holding other factors constant.</li>
+<li>The mean number of days sick decreases by 53% for those in the [4x8min] group compared to those in the 4x(12x40/20s) group, and this is statistically significant (95% CI = 0.28 to 0.76, <em>p</em> = .003), when holding other factors constant.</li>
+</ul>
+<p>As we did with linear regression, we should check the statistical assumptions to have more confidence in our results. To check that these assumptions have been met, we can simply use the <code>check_model()</code> function from the <code>easystats</code> package. Note that the <code>check_model()</code> function provides a range of diagnostic tests. We will only be requesting specific ones for now:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(easystats)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_model</span>(model2,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">check =</span> <span class="fu">c</span>(<span class="st">'overdispersion'</span>,<span class="st">'outliers'</span>,<span class="st">'qq'</span>,<span class="st">'vif'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output2_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The influential observations, multicollinearity and normality of the residuals plots are interpreted in a similar manner to multiple regression (and this case, these look mostly met, with one influential observation worth investigating).</p>
+<p>The assumption of equidispersion is assessed from the top-left panel. If there the mean is approximately equal to the variance, then we would expect a dispersion ratio ~ 1, with the plot displaying the residual variance overlapping the predicted residual variance. Here, the residual variance is greater than the predicted residual variance, as indicated by the green line being above the blue line, at all levels. We can inspect this further with:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_overdispersion</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Overdispersion test
+
+       dispersion ratio =   3.141
+  Pearson's Chi-Squared =  65.958
+                p-value = &lt; 0.001</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Overdispersion detected.</code></pre>
+</div>
+</div>
+<p>The dispersion ratio here is 3.141, with the test indicating that the residual variances being significantly different to the predicted residual variances (<span class="math inline">\(\chi^{2}=65.96, p &lt; .001\)</span>). Ignoring overdispersion can lead to underestimated standard errors, resulting in overly optimistic inference about the model’s coefficients. Note: we suspected this from the start when we inspected the distribution of sick days.</p>
+<p>We will have to try some different models to address this assumption.</p>
+</section>
+<section id="quasi-poisson-regression" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="quasi-poisson-regression"><span class="header-section-number">4.4.2</span> Quasi-Poisson Regression</h3>
+<p>The quasi-Poisson regression model is a flexible extension of the standard Poisson regression that accommodates overdispersion in count data analysis. In quasi-Poisson regression, the variance is allowed to be a multiple of the mean, providing a more realistic representation of the variability in the data. This is achieved by introducing a dispersion parameter that scales the variance, allowing for greater flexibility in modeling count data with varying levels of dispersion. Estimating the dispersion parameter enables adjustment of the standard errors of the coefficient estimates, accounting for the additional variability in the data. Quasi-Poisson regression is particularly useful when dealing with count data exhibiting overdispersion, providing researchers with a robust framework for analyzing data while maintaining the interpretability and simplicity of the Poisson regression model.</p>
+<p>It’s quite simple to run a quasi-poisson model in R. We would just have to change the family type:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">glm</span>(days_sick <span class="sc">~</span> t_symp_score <span class="sc">+</span> group,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> Illness_post,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> quasipoisson)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>sjPlot<span class="sc">::</span><span class="fu">tab_model</span>(model2, model3,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">dv.labels =</span> <span class="fu">c</span>(<span class="st">'Poisson Model'</span>,<span class="st">'Quasi-poisson Model'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">&nbsp;</td>
+<td colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">Poisson Model</td>
+<td colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">Quasi-poisson Model</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">Predictors</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">Incidence Rate Ratios</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">CI</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">p</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">Incidence Rate Ratios</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">CI</td>
+<td style="text-align: center;">p</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">(Intercept)</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.43</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.89&nbsp;–&nbsp;2.19</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.120</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.43</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.60&nbsp;–&nbsp;2.98</td>
+<td style="text-align: center;">0.380</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">t symp score</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.02</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.02&nbsp;–&nbsp;1.02</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>&lt;0.001</strong></td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.02</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.01&nbsp;–&nbsp;1.03</td>
+<td style="text-align: center;"><strong>&lt;0.001</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">group [4x(8x40/20s)]</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.83</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.20&nbsp;–&nbsp;2.81</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>0.005</strong></td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.83</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.87&nbsp;–&nbsp;3.95</td>
+<td style="text-align: center;">0.114</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">group [4x8min]</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.47</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.28&nbsp;–&nbsp;0.76</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>0.003</strong></td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.47</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.19&nbsp;–&nbsp;1.11</td>
+<td style="text-align: center;">0.090</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">Observations</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">25</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">R<sup>2</sup> Nagelkerke</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">0.996</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">0.996</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>In the table above, we can compare the effects for the two models (Poisson versus Quasi-poisson). Notice that the Incidence Rate Ratios (exponentiated <span class="math inline">\(\beta\)</span> coefficients) are the same between the two models. The difference lies in the confidence intervals and the estimation of the <em>p</em>-value. For the Quasi-poisson Model, only the effect of Cold Symptom Score is statistically significant, with the group comparisons displaying non-significant effects. We should check the assumptions to validate our results:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_model</span>(model3,</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">check =</span> <span class="fu">c</span>(<span class="st">'overdispersion'</span>,<span class="st">'outliers'</span>,<span class="st">'qq'</span>,<span class="st">'vif'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="output2_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_overdispersion</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Overdispersion test
+
+       dispersion ratio =   3.141
+  Pearson's Chi-Squared =  65.958
+                p-value = &lt; 0.001</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Overdispersion detected.</code></pre>
+</div>
+</div>
+<p>In this case, changing to the quasi-poisson model only changed to estimates for the confidence intervals, but had little effect on overdispersion. We will have to try a different approach.</p>
+</section>
+<section id="negative-binomial-regression" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="negative-binomial-regression"><span class="header-section-number">4.4.3</span> Negative Binomial Regression</h3>
+<p>The negative binomial regression model is a powerful extension of the Poisson regression model designed to handle overdispersed count data. Unlike the Poisson distribution, which assumes that the mean and variance are equal, the negative binomial distribution relaxes this constraint by introducing an additional parameter called the dispersion parameter. This parameter captures the extra variability in the data, allowing the variance to be larger or smaller than the mean. Negative binomial regression estimates both the regression coefficients for predictor variables and the dispersion parameter, providing a flexible and robust approach for modeling count data with overdispersion. By explicitly modeling the variance-mean relationship, negative binomial regression offers improved accuracy in parameter estimation and statistical inference compared to Poisson regression when dealing with overdispersed count data.</p>
+<p>While both the negative binomial (NB) regression model and the quasi-Poisson regression model are extensions of the Poisson regression model designed to handle overdispersed count data, they differ in their underlying assumptions and modeling approaches.</p>
+<ol type="1">
+<li><strong>Parameterisation</strong>:</li>
+</ol>
+<ul>
+<li>In negative binomial regression, the overdispersion is explicitly modeled through an additional parameter called the dispersion parameter (often denoted as <span class="math inline">\(\theta\)</span>). This parameter governs the relationship between the mean and variance of the count data.</li>
+<li>In quasi-Poisson regression, overdispersion is addressed by allowing the variance to be a multiple of the mean without directly estimating a dispersion parameter. Instead, the variance is assumed to be proportional to the mean, and the dispersion parameter is implicitly absorbed into the model’s standard errors.</li>
+</ul>
+<ol start="2" type="1">
+<li><strong>Flexibility</strong>:</li>
+</ol>
+<ul>
+<li>Negative binomial regression provides greater flexibility in modeling the relationship between the mean and variance of count data. The dispersion parameter allows for varying degrees of overdispersion, accommodating cases where the variance is greater or less than the mean.</li>
+<li>Quasi-Poisson regression, while more flexible than the standard Poisson regression, assumes a specific relationship between the mean and variance (i.e., variance is proportional to the mean). This assumption may not always accurately capture the variability in count data, especially in cases where the relationship between the mean and variance is not strictly proportional.</li>
+</ul>
+<ol start="3" type="1">
+<li><strong>Interpretation</strong>:</li>
+</ol>
+<ul>
+<li>Negative binomial regression estimates both regression coefficients for predictor variables and the dispersion parameter. The interpretation of coefficients remains similar to Poisson regression, while the dispersion parameter quantifies the degree of overdispersion.</li>
+<li>Quasi-Poisson regression does not estimate a dispersion parameter explicitly. Instead, the overdispersion is accounted for through adjusted standard errors of coefficient estimates. Consequently, the interpretation of coefficients in quasi-Poisson regression remains the same as in Poisson regression, with no additional parameter to quantify overdispersion.</li>
+</ul>
+<p>The run a negative binomial regression we can use the <code>glm.nb</code> function from the <code>MASS</code> package. Note we do note need to specify the family argument because this is assumed to be negative binomial from the function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MASS'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    select</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(days_sick <span class="sc">~</span> t_symp_score <span class="sc">+</span> group,</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> Illness_post)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in glm.nb(days_sick ~ t_symp_score + group, data = Illness_post):
+alternation limit reached</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>sjPlot<span class="sc">::</span><span class="fu">tab_model</span>(model2, model3, model4,</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">dv.labels =</span> <span class="fu">c</span>(<span class="st">'Poisson'</span>,<span class="st">'Quasi-poisson'</span>, <span class="st">'Negative binomial'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">&nbsp;</td>
+<td colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">Poisson</td>
+<td colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">Quasi-poisson</td>
+<td colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-top: double; font-style: normal; font-weight: bold; padding: 0.2cm;">Negative binomial</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">Predictors</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">Incidence Rate Ratios</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">CI</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">p</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">Incidence Rate Ratios</td>
+<td style="text-align: center; border-bottom: 1px solid; font-style: italic; font-weight: normal;">CI</td>
+<td style="text-align: center;">p</td>
+<td style="text-align: center;">Incidence Rate Ratios</td>
+<td style="text-align: center;">CI</td>
+<td style="text-align: center;">p</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">(Intercept)</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.43</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.89&nbsp;–&nbsp;2.19</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.120</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.43</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.60&nbsp;–&nbsp;2.98</td>
+<td style="text-align: center;">0.380</td>
+<td style="text-align: center;">0.65</td>
+<td style="text-align: center;">0.21&nbsp;–&nbsp;1.89</td>
+<td style="text-align: center;">0.385</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">t symp score</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.02</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.02&nbsp;–&nbsp;1.02</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>&lt;0.001</strong></td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.02</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.01&nbsp;–&nbsp;1.03</td>
+<td style="text-align: center;"><strong>&lt;0.001</strong></td>
+<td style="text-align: center;">1.03</td>
+<td style="text-align: center;">1.02&nbsp;–&nbsp;1.04</td>
+<td style="text-align: center;"><strong>&lt;0.001</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">group [4x(8x40/20s)]</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.83</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.20&nbsp;–&nbsp;2.81</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>0.005</strong></td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">1.83</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.87&nbsp;–&nbsp;3.95</td>
+<td style="text-align: center;">0.114</td>
+<td style="text-align: center;">2.20</td>
+<td style="text-align: center;">0.79&nbsp;–&nbsp;6.31</td>
+<td style="text-align: center;">0.142</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">group [4x8min]</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.47</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.28&nbsp;–&nbsp;0.76</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;"><strong>0.003</strong></td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.47</td>
+<td style="text-align: left; padding: 0.2cm; vertical-align: top;">0.19&nbsp;–&nbsp;1.11</td>
+<td style="text-align: center;">0.090</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">0.32&nbsp;–&nbsp;3.24</td>
+<td style="text-align: center;">0.994</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">Observations</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">25</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">25</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm; border-top: 1px solid;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">R<sup>2</sup> Nagelkerke</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">0.996</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">0.996</td>
+<td colspan="3" style="text-align: left; padding: 0.2cm; vertical-align: top; padding-top: 0.1cm; padding-bottom: 0.1cm;">0.805</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>And like we did before, let us check the assumptions of this new model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_overdispersion</span>(model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Overdispersion test
+
+       dispersion ratio =  0.974
+  Pearson's Chi-Squared = 20.448
+                p-value =  0.493</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>No overdispersion detected.</code></pre>
+</div>
+</div>
+<p>Notice that for this model, the dispersion ration is much closer to 1, and the statistical test has identified no overdispersion.</p>
+</section>
+</section>
+</section>
+<section id="conclusion-and-reflection" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Conclusion and Reflection</h1>
+<p>In conclusion, this guide has provided an overview of regression modeling techniques suitable for count variables, beginning with the assumptions underlying such models. We explored the classical Poisson regression, which assumes equidispersion, and its extensions, including quasi-Poisson and negative binomial regression, which accommodate overdispersion commonly encountered in count data. While our focus was on these three models, it’s worth noting that there are other approaches available, such as zero-inflated and hurdle models, which can further enhance our understanding of count data by addressing excess zeros and modeling zero counts separately from positive counts.</p>
+<p>Throughout our discussion, we applied these regression techniques to a practical example of predicting the number of days sick for cyclists, using two predictor variables. However, it’s important to acknowledge that this is just a starting point. We can extend our analysis by incorporating additional predictor variables and we can also explore interactions between variables to uncover more complex relationships and better capture the nuances of the data (see the lesson on Regression Modeling 1).</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

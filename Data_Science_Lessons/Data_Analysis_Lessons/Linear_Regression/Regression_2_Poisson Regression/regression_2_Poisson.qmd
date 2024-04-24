@@ -1,0 +1,406 @@
+---
+title: "Regression Modelling Strategies 2"
+format: 
+  html:
+    toc: true
+    toc-title: Contents
+    number-sections: true
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)
+library(kableExtra)
+
+data <- read.csv("data/Hanstock_2016_Illness.csv") |> as_tibble() |> filter(time == 'post')
+```
+
+Poisson Regression
+
+ABSTRACT
+
+Poisson regression stands as a crucial statistical methodology frequently employed in sports science for the analysis of count data and the exploration of relationships between variables. In the realm of sports, this modeling technique proves invaluable for delving into scenarios where the outcome of interest is a count variable, such as the number of goals scored, injuries sustained, or penalties incurred during a game. Unlike linear regression, Poisson regression is specifically tailored for situations where the dependent variable represents counts of events within fixed time intervals or areas. By modeling the distribution of these discrete events, sports researchers can gain insights into the factors influencing the frequency of occurrences. For example, in soccer analytics, Poisson regression might be applied to understand how various team strategies, player characteristics, or environmental conditions contribute to the number of goals scored in a match. This approach allows sports scientists to draw meaningful conclusions from count data, providing a statistical framework to optimize tactics, minimize risks, and enhance overall performance and safety in athletic contexts.
+
+::: callout-tip
+## Keywords
+
+Poisson regression, count, discrete, frequency of occurrence.
+:::
+
+::: callout-note
+## Lesson's Level
+
+The level of this lesson is categorised as BRONZE.
+:::
+
+::: callout-tip
+## Lesson's Main Idea
+
+-   Knowing when to use a poisson regression model.
+-   Knowing how to check the assumptions of a poisson regression model.
+-   Knowing when and how to use a negative binomial model.
+:::
+
+Date used in this lesson is provided by XYZ
+
+# Learning Outcomes
+
+By the end of this lesson, you will be proficient in:
+
+-   Construct poisson and negative binomial regression models in R.
+-   Use residual diagnostics to examine the assumptions of these models.
+-   Interpret parameters and test estimates from these models.
+
+# Introduction: Poisson Regression
+
+Poisson regression is a versatile and widely utilized statistical technique designed for modeling relationships between variables, particularly when the dependent variable represents counts of events within fixed intervals or areas. This methodology is particularly well-suited for scenarios where the outcome of interest is a non-negative integer, such as the number of goals scored in a soccer match, incidents of player injuries, or the count of penalties during a game.
+
+The fundamental form of the Poisson regression model is expressed as:
+
+$$\ln(\lambda)=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+...\beta_{n}X_{n}$$
+
+where $\lambda$ is the expected count of events, $\beta_{0}$ is the intercept, $\beta_{1}, \beta_{2}, ... \beta_{n}$ are the coefficients associated with the independent variables $X_{1},X_{2},...X_{n}$ and $\ln$ denotes the natural logarithm. The objective of Poisson regression is to estimate the coefficients that maximize the likelihood of observing the given count data.
+
+# Assumptions
+
+Poisson regression adheres to the following statistical assumptions:
+
+1.  **Poisson Response**: The response variable is characterized by count data, representing the number of events or occurrences within fixed time intervals or areas. This count data is expected to follow a Poisson distribution, which is a probability distribution that models the number of events happening in a fixed interval of time or space.
+2.  **Independence**: Each observation or count is independent of all other observations.
+3.  **Equidispersion**: The mean of the count data is approximately equal to its variance. This relationship is a distinctive characteristic of Poisson-distributed data and reflects the assumption that the variability in event occurrences is directly tied to the average rate of events.
+4.  **Linearity**: The log-transformed mean rate is assumed to be a linear function of the predictor variable(s).
+
+The figure below (adapted from Roback and Legler, 2021) illustrates a comparison of a linear regression model for inference to a poisson regression using a log function of $\lambda$.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap='Figure 1. Comparing linear regression (left) to poisson regression (right).'}
+library(ggplot2)
+library(gridExtra)
+set.seed(0)
+dat <- data.frame(x=(x=runif(10000, 0, 35)),
+                  y=rnorm(10000, 5*x, 100))
+## breaks: where you want to compute densities
+breaks <- seq(0, max(dat$x), len=5)
+dat$section <- cut(dat$x, breaks)
+## Get the residuals
+dat$res <- residuals(lm(y ~ x, data=dat))
+## Compute densities for each section, flip the axes, add means 
+## of sections.  Note: densities need to be scaled in relation 
+## to section size (2000 here)
+dens <- do.call(rbind, lapply(split(dat, dat$section), function(x) {
+  d <- density(x$res, n=5000)
+  res <- data.frame(x=max(x$x)- d$y*1000, y=d$x+mean(x$y))
+  res <- res[order(res$y), ]
+  ## Get some data for normal lines as well
+  xs <- seq(min(x$res), max(x$res), len=5000)
+  res <- rbind(res, data.frame(y=xs + mean(x$y),
+                x=max(x$x) - 1000*dnorm(xs, 0, sd(x$res))))
+  res$type <- rep(c("empirical", "normal"), each=5000)
+  res
+}))
+dens$section <- rep(levels(dat$section), each=10000)
+ols_assume <- ggplot(dat, aes(x, y)) +
+  geom_point(size = 0.1, alpha = .25) +
+  geom_smooth(method="lm", fill=NA, lwd=2, color = 'darkgreen') +
+  geom_path(data=dens[dens$type=="normal",], 
+            aes(x, y, group=section), 
+            color="red", lwd=1.1) +
+  theme_bw() +
+  geom_vline(xintercept=breaks, lty=2)
+# Now make Poisson regression picture
+set.seed(0)
+dat <- data.frame(x=(x=runif(1000, 0, 20)),
+                  y=rpois(1000, exp(.1*x)))
+## breaks: where you want to compute densities
+breaks <- seq(2, max(dat$x), len=5)
+dat$section <- cut(dat$x, breaks)
+## Get the residuals
+dat$res <- dat$y - .1*dat$x
+## Compute densities for each section, flip the axes, add means
+## of sections.  Note: densities need to be scaled in relation 
+## to section size
+dens <- do.call(rbind, lapply(split(dat, dat$section), function(x) {
+  d <- density(x$res, n=500)
+  res <- data.frame(x=max(x$x)- d$y*10, y=d$x+mean(x$y))
+  res <- res[order(res$y), ]
+  ## Get some data for poisson lines as well
+  xs <- seq(min(x$y), max(x$y), len=500)
+  res <- rbind(res, data.frame(y=xs,
+          x=max(x$x) - 10*dpois(round(xs), exp(.1*max(x$x)))))
+  res$type <- rep(c("empirical", "poisson"), each=500)
+  res
+}))
+dens$section <- rep(levels(dat$section), each=1000)
+pois_assume <- ggplot(dat, aes(x, jitter(y, .25))) +
+  geom_point(size = 0.1) +
+  geom_smooth(method="loess", fill=NA, lwd=2, color = 'darkgreen') +
+  geom_path(data=dens[dens$type=="poisson",], 
+            aes(x, y, group=section), 
+            color="red", lwd=1.1) +
+  theme_bw() + ylab("y") + xlab("x") +
+  geom_vline(xintercept=breaks, lty=2)
+grid.arrange(ols_assume, pois_assume, ncol = 2)
+```
+
+# Case Study
+
+## What to expect
+
+In this example the dependent variable is *number* of days sick, which is a count variable - making poisson regression an appropriate initial model to test. We will learn how to fit poisson regression models that contain both single and multiple predictors. We will also learn how to use residual diagnostic tests to inspect the assumptions of our model. Finally, we will learn about *overdispersion* and how to adjust for this with other models.
+
+## Data Loading and Cleaning
+
+For this exercise, we will use the `Hanstock_2016_Illness` data set, which \[update this section when this gets added to the speedsR package, for now I will just load it locally\].
+
+```{r}
+# Update this to speedsR when available
+Illness <- read.csv("data/Hanstock_2016_Illness.csv")
+```
+
+This data set \[Andy to include a brief description about the data\].
+
+## Initial Exploratory Analyses
+
+As always, it is good practice to explore our data descriptively, before we build our models. Much of this has already been covered in earlier lessons (see "Put names of lessons here"), so we will only provide a short example here.
+
+### Data organisation
+
+`Hanstock_2016_Illness` is a data set that contains 39 variables. Some of the more relevant variables (to this exercise) are listed below:
+
+-   `ID`: The participant's ID number
+-   `group`: The testing condition for the participant, 4x(8x40/20s), 4x(12x40/20s) or 4x8min
+-   `time`: a binary factor to indicate results for either pre or post tests
+-   `t_symp_score`: Total Common Cold symptom score
+-   `days_sick`: number of days the participants were sick
+
+Note that for this lesson we will only be using the post-test measurements. As such we should create a filter to only include these measurements (i.e. when time is post). We will also only include the variables of interest in our data set:
+
+```{r}
+Illness_post <- Illness |> 
+  filter(time == 'post') |> 
+  dplyr::select('ID', 'group', 'time', 't_symp_score', 'days_sick')
+```
+
+### Summary statistics
+
+We can use the `skimr` package to quicky obtain summary statistics for our chosen variables:
+
+```{r}
+library(skimr)
+skim(Illness_post)
+```
+
+We can focus on the dependent variable further, by creating a histogram in `ggplot`:
+
+```{r}
+ggplot(Illness_post, aes(days_sick)) +
+  geom_histogram(bins = 10, color = 'white')
+```
+
+The figure above reveals a fair amount of variability in days sick: responses range from 0 to 20 with most people reporting 0 days sick. The plot is right skewed and clealy indicates that `days sick` is not normally distributed.
+
+::: callout-important
+Note that this many zero's in the distribution might suggest that a regular poisson model would not be appropriate either (see Figure 1 to inspect what a poisson distribution should look like). We will explore this below when we examine over dispersion.
+:::
+
+The Poisson regression model also implies that log($\lambda_i$), not the mean days sick $\lambda_i$, is a linear function of common cold severity score; i.e., $log(\lambda_i)=\beta_0+\beta_1\textrm{cold score}_i$. Therefore, to check the linearity assumption (Assumption 4) for Poisson regression, we would like to plot log($\lambda_i$) by t_symp_score. Unfortunately, $\lambda_i$ is unknown. Our best guess of $\lambda_i$ is the observed mean number of days sick for each common cold score (level of $X$). Because these means are computed for observed data, they are referred to as **empirical** means. Taking the logs of the empirical means and plotting by t_symp_score provides a way to assess the linearity assumption.
+
+```{r, warning=FALSE, message=FALSE}
+sumstats <- 
+  Illness_post |> 
+  group_by(t_symp_score) |> 
+  summarise(m_days_sick = mean(days_sick),
+            logm_days_sick = log(m_days_sick))
+
+ggplot(sumstats |> filter(t_symp_score < 180), aes(t_symp_score, logm_days_sick)) +
+  geom_point()+
+  geom_smooth(method = "loess", size = 1.5) +
+  ylab("Log of the empirical mean number of days sick") +
+  xlab('Common cold severity score')
+```
+
+In the plot above, the relationship between cold score and the log of the mean days sick appears relatively linear (note, an extreme outlier has been omitted).
+
+## Estimation and Inference
+
+To begin, we will consider a simple model with only one predictor: `t_symp_score`. Similar to the linear regression, the estimated regression equation for the Poisson model also contains an intercept ($\beta_{0}$) and coefficients for the predictors ($\beta_{1}$, $\beta_{2}$, etc.):
+
+$$
+log(\hat{\lambda})=\beta_{0}+\beta_{1}x_{1}+\beta_{2}x_{2} + ...+\beta_{n}x_{n}
+$$
+
+Similar to linear regression, we can use R to obtain the $\alpha$ and $\beta$ values. Poisson regression falls under the *Generalised Linear Model* family, which uses the function `glm()` to analysis. The code is similar to linear regression, where you have:
+
+- an argument for the formula (in this case: `days_sick` ~ `t_symp_score`)
+- an argument for the data (in this case: `Illness_post`)
+
+However, in addition to the formula and data, you also need to specify the *family*, which represents the error distribution and link function to be used in the model. For Poisson regression, the family = 'poisson'.
+
+Therefore, we can run a poisson model in base R with the following:
+
+```{r}
+model1 <- glm(days_sick ~ t_symp_score,
+              data = Illness_post,
+              family = poisson)
+```
+
+As per usual, we can call the model results with the `summary()` function:
+
+```{r}
+summary(model1)
+```
+
+With this output, we can substitute the Intercept and $\beta$ coefficient into our model:
+
+$$log(\hat{\lambda})=0.746+0.015{SympScore}$$
+
+Note that the equation above would need to be back-transformed to be interpreted in the original units. Here, exponentiation the coefficient on `t_symp_score` provides us with the multiplicative factor by which the mean count changes.
+
+```{r}
+exp(0.015)
+```
+
+In this case, the mean number of sick days changes by a factor of $e^{0.015}=1.015$ or increases by 1.5% with each additional score of Common Cold severity. This is also referred to as a **rate ratio** or **relative risk**, and it represents a percent change in the response for a unit change in the predictor.  
+
+We can also exponeniate our confidence intervals to interpret them in a similar manner:
+
+```{r}
+exp(confint(model1))
+```
+
+From the above output, we would be 95% confident that the mean number of sick days increases between 1.25% and 1.77% for each additional score of Common Cold severity. Note that because our interval does not include 1, we can conclude that `t_symp_score` is significantly associated with number of days sick.
+
+### Adding a covariate
+
+Let us now add a covariate to the model, specifically group, which is made up of:
+
+- 4x(8x40/20s), 
+- 4x(12x40/20s) or 
+- 4x8min
+
+Recall from the multiple regression lesson that for categorical predictors, a reference level is chosen from the categories, to serve as a baseline for comparison against the other levels. In this example, 4x(12x40/20s) is chosen by default as the reference category.
+
+```{r}
+model2 <- glm(days_sick ~ t_symp_score + group,
+              data = Illness_post,
+              family = poisson)
+
+summary(model2)
+```
+
+
+Like before, we will need to exponeniate the coefficients and confidence intervals to interpret this output:
+
+```{r}
+exp(coef(model2))
+```
+
+```{r}
+exp(confint(model2))
+```
+
+Note, you can also use the `tab_model()` function from the sjPlot package to do this for you:
+
+```{r}
+sjPlot::tab_model(model2)
+```
+
+Each of these effects can be interpreted as:
+
+- The mean number of days sick increases by 2% for each additional increase in cold symptom score, and this is statistically significant (95% CI = 1.02 to 1.02, *p* < .001), when holding other factors constant.
+- The mean number of days sick increases by 83% for those in the 4x(8x40/20s) group compared to those in the 4x(12x40/20s) group, and this is statistically significant (95% CI = 1.20 to 2.81, *p* = .005), when holding other factors constant.
+- The mean number of days sick decreases by 53% for those in the [4x8min] group compared to those in the 4x(12x40/20s) group, and this is statistically significant (95% CI = 0.28 to 0.76, *p* = .003), when holding other factors constant.
+
+As we did with linear regression, we should check the statistical assumptions to have more confidence in our results. To check that these assumptions have been met, we can simply use the `check_model()` function from the `easystats` package. Note that the `check_model()` function provides a range of diagnostic tests. We will only be requesting specific ones for now:
+
+```{r, warning=FALSE, message=FALSE}
+library(easystats)
+check_model(model2,
+            check = c('overdispersion','outliers','qq','vif'))
+```
+
+The influential observations, multicollinearity and normality of the residuals plots are interpreted in a similar manner to multiple regression (and this case, these look mostly met, with one influential observation worth investigating).
+
+The assumption of equidispersion is assessed from the top-left panel. If there the mean is approximately equal to the variance, then we would expect a dispersion ratio ~ 1, with the plot displaying the residual variance overlapping the predicted residual variance. Here, the residual variance is greater than the predicted residual variance, as indicated by the green line being above the blue line, at all levels. We can inspect this further with:
+
+```{r}
+check_overdispersion(model2)
+```
+
+The dispersion ratio here is 3.141, with the test indicating that the residual variances being significantly different to the predicted residual variances ($\chi^{2}=65.96, p < .001$). Ignoring overdispersion can lead to underestimated standard errors, resulting in overly optimistic inference about the model's coefficients. Note: we suspected this from the start when we inspected the distribution of sick days.
+
+We will have to try some different models to address this assumption.
+
+### Quasi-Poisson Regression
+
+The quasi-Poisson regression model is a flexible extension of the standard Poisson regression that accommodates overdispersion in count data analysis. In quasi-Poisson regression, the variance is allowed to be a multiple of the mean, providing a more realistic representation of the variability in the data. This is achieved by introducing a dispersion parameter that scales the variance, allowing for greater flexibility in modeling count data with varying levels of dispersion. Estimating the dispersion parameter enables adjustment of the standard errors of the coefficient estimates, accounting for the additional variability in the data. Quasi-Poisson regression is particularly useful when dealing with count data exhibiting overdispersion, providing researchers with a robust framework for analyzing data while maintaining the interpretability and simplicity of the Poisson regression model.
+
+It's quite simple to run a quasi-poisson model in R. We would just have to change the family type:
+
+```{r}
+model3 <- glm(days_sick ~ t_symp_score + group,
+              data = Illness_post,
+              family = quasipoisson)
+
+sjPlot::tab_model(model2, model3,
+                  dv.labels = c('Poisson Model','Quasi-poisson Model'))
+```
+
+In the table above, we can compare the effects for the two models (Poisson versus Quasi-poisson). Notice that the Incidence Rate Ratios (exponentiated $\beta$ coefficients) are the same between the two models. The difference lies in the confidence intervals and the estimation of the *p*-value. For the Quasi-poisson Model, only the effect of Cold Symptom Score is statistically significant, with the group comparisons displaying non-significant effects. We should check the assumptions to validate our results:
+
+```{r}
+check_model(model3,
+            check = c('overdispersion','outliers','qq','vif'))
+```
+
+```{r}
+check_overdispersion(model3)
+```
+
+In this case, changing to the quasi-poisson model only changed to estimates for the confidence intervals, but had little effect on overdispersion. We will have to try a different approach.
+
+### Negative Binomial Regression
+
+The negative binomial regression model is a powerful extension of the Poisson regression model designed to handle overdispersed count data. Unlike the Poisson distribution, which assumes that the mean and variance are equal, the negative binomial distribution relaxes this constraint by introducing an additional parameter called the dispersion parameter. This parameter captures the extra variability in the data, allowing the variance to be larger or smaller than the mean. Negative binomial regression estimates both the regression coefficients for predictor variables and the dispersion parameter, providing a flexible and robust approach for modeling count data with overdispersion. By explicitly modeling the variance-mean relationship, negative binomial regression offers improved accuracy in parameter estimation and statistical inference compared to Poisson regression when dealing with overdispersed count data.
+
+While both the negative binomial (NB) regression model and the quasi-Poisson regression model are extensions of the Poisson regression model designed to handle overdispersed count data, they differ in their underlying assumptions and modeling approaches.
+
+1. **Parameterisation**:
+  - In negative binomial regression, the overdispersion is explicitly modeled through an additional parameter called the dispersion parameter (often denoted as $\theta$). This parameter governs the relationship between the mean and variance of the count data.
+  - In quasi-Poisson regression, overdispersion is addressed by allowing the variance to be a multiple of the mean without directly estimating a dispersion parameter. Instead, the variance is assumed to be proportional to the mean, and the dispersion parameter is implicitly absorbed into the model's standard errors.
+2. **Flexibility**:
+  - Negative binomial regression provides greater flexibility in modeling the relationship between the mean and variance of count data. The dispersion parameter allows for varying degrees of overdispersion, accommodating cases where the variance is greater or less than the mean.
+- Quasi-Poisson regression, while more flexible than the standard Poisson regression, assumes a specific relationship between the mean and variance (i.e., variance is proportional to the mean). This assumption may not always accurately capture the variability in count data, especially in cases where the relationship between the mean and variance is not strictly proportional.
+3. **Interpretation**:
+- Negative binomial regression estimates both regression coefficients for predictor variables and the dispersion parameter. The interpretation of coefficients remains similar to Poisson regression, while the dispersion parameter quantifies the degree of overdispersion.
+- Quasi-Poisson regression does not estimate a dispersion parameter explicitly. Instead, the overdispersion is accounted for through adjusted standard errors of coefficient estimates. Consequently, the interpretation of coefficients in quasi-Poisson regression remains the same as in Poisson regression, with no additional parameter to quantify overdispersion.
+
+The run a negative binomial regression we can use the `glm.nb` function from the `MASS` package. Note we do note need to specify the family argument because this is assumed to be negative binomial from the function.
+
+```{r}
+library(MASS)
+model4 <- glm.nb(days_sick ~ t_symp_score + group,
+                 data = Illness_post)
+
+sjPlot::tab_model(model2, model3, model4,
+                  dv.labels = c('Poisson','Quasi-poisson', 'Negative binomial'))
+```
+
+And like we did before, let us check the assumptions of this new model:
+
+```{r}
+check_overdispersion(model4)
+```
+
+Notice that for this model, the dispersion ration is much closer to 1, and the statistical test has identified no overdispersion. 
+
+# Conclusion and Reflection
+In conclusion, this guide has provided an overview of regression modeling techniques suitable for count variables, beginning with the assumptions underlying such models. We explored the classical Poisson regression, which assumes equidispersion, and its extensions, including quasi-Poisson and negative binomial regression, which accommodate overdispersion commonly encountered in count data. While our focus was on these three models, it's worth noting that there are other approaches available, such as zero-inflated and hurdle models, which can further enhance our understanding of count data by addressing excess zeros and modeling zero counts separately from positive counts.
+
+Throughout our discussion, we applied these regression techniques to a practical example of predicting the number of days sick for cyclists, using two predictor variables. However, it's important to acknowledge that this is just a starting point. We can extend our analysis by incorporating additional predictor variables and we can also explore interactions between variables to uncover more complex relationships and better capture the nuances of the data (see the lesson on Regression Modeling 1).
+
+
+
+
+
+
+
