@@ -1,0 +1,83 @@
+p {
+  text-align: justify;
+}
+
+.abstract {
+  text-align: justify;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.grid-item {
+  text-align: center; /* Centers the content: images, names, and bios */
+  padding-bottom: 20px; /* Adds space below each grid item */
+}
+
+.grid-item img {
+  display: block;
+  margin: 0 auto; /* Centers the image horizontally */
+  margin-bottom: 10px; /* Adds space directly below the image */
+}
+
+.grid-item a {
+  color: #1DA1F2; /* Twitter's brand color, can be changed */
+  text-decoration: none; /* Optional: removes underline from links */
+  font-weight: bold; /* Makes the Twitter handle bold */
+}
+
+.grid-item img.twitter-icon {
+  height: 1em; /* Sets the icon's height relative to the font size */
+  width: auto; /* Maintains the aspect ratio of the icon */
+  vertical-align: middle; /* Aligns the icon with the text */
+  margin-right: 5px; /* Space between the icon and text */
+}
+
+.grid-item a, .grid-item a img {
+  display: inline;
+  vertical-align: middle; /* Keeps text and image aligned in the middle */
+}
+
+
+
+.grid-item a, .grid-item a img, .grid-item span {
+  display: inline;
+  vertical-align: middle; /* Ensures everything is aligned in the middle */
+}
+
+.grid-item img.twitter-icon, .grid-item img.ltu-logo {
+  height: 1em; /* Sets initial icon size relative to font */
+  width: auto; /* Maintains aspect ratio */
+  margin-right: 5px; /* Space between icon and text */
+}
+
+.grid-item .ltu-logo {
+  height: 1.5em; /* Larger size for the LTU logo */
+  width: auto; /* Maintains aspect ratio */
+  margin-right: 5px; /* Space between the logo and the link text */
+}
+
+
+
+.grid-item a, .grid-item a img, .grid-item span {
+  display: inline;
+  vertical-align: middle; /* Ensures vertical alignment in the middle */
+}
+
+.grid-item img.twitter-icon, .grid-item img.ltu-logo, .grid-item img.linkedin-logo {
+  height: 1em; /* Consistent size for all icons */
+  width: auto; /* Maintains aspect ratio */
+  margin-right: 5px; /* Space between icon and text */
+}
+
+.grid-item .linkedin-logo {
+  height: 1.5em; /* Slightly larger, adjust as needed */
+}
+
+
+
+
