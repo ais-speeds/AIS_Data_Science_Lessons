@@ -29,7 +29,7 @@ library(gridExtra)
 ::: callout-tip
 ## Keywords
 
-Dimensionality reduction, vectors, matrices, PCA, factor analysis, UMAP.
+Dimensionality reduction, vectors, matrices, PCA, factor analysis.
 :::
 
 ::: callout-note
@@ -39,7 +39,7 @@ The level of this lesson is categorised as SILVER.
 :::
 
 ::: callout-tip
-## Lesson's Main Idea
+## Lesson's Main Ideas
 
 -   Knowing the basic concepts underlying dimensionality reduction.
 -   Knowing how to implement common dimensionality reduction methods.
@@ -60,8 +60,6 @@ By the end of this lesson, you will be proficient in:
 
 -   Factor Analysis (FA).
 
-As well as have some familiarity with non-linear dimensionality
-reduction methods.
 
 # Background knowledge
 
@@ -287,9 +285,8 @@ $$
 $$
 
 However, as shown in the preceding sections, it is possible to express
-the data with respect to a different set of basis vectors. The same
-strength testing dataset is shown below, but using a different set of
-basis vectors:
+the data with respect to a different set of basis vectors. The **same**
+strength testing dataset is shown below, but using a **different set of basis vectors**:
 
 $$
 \mathcal{D} 
@@ -342,7 +339,7 @@ set of basis vectors**. Specifically the PCA algorithm constructs the
 first basis vector to point in the direction of maximal variation in the
 data, then the second in the direction of maximal variation with the
 constraint that it must be uncorrelated with the first, and so on (see
-REFXXX for the full details).
+Chapter 12 of *An Introduction to Statistical Learning* available online [here](https://www.statlearning.com/) for more details).
 
 The concept of aligning the new basis vectors with the variation present
 in the data can be visualised clearly in 2-dimensions. In the figure
@@ -522,24 +519,34 @@ to use a **variable factor map** (shown below using the `fviz_pca_var()` functio
 the `factoextra` package).
 
 The arrows in this diagram show how **correlated** each of the input variables is
-with the first two PCs.
-
-
-
-**XXXXXXXXXXXXX Add a few points of interpretation here.**
-
-
+with the first two PCs. The angle between the different arrows reflects the strength
+of correlation between those variables.
 
 ```{r message = F}
 library(factoextra)
 fviz_pca_var(dec_pca, axes = c(1, 2), repel = TRUE)
 ```
 
+Interpretation of the variable factor map of the decathlon data offers some insights into how the scores
+for each event are related and how each PC relates to the original variables;
 
-```{r}
-fviz_pca_var(dec_pca, axes = c(1, 3), repel = TRUE)
-```
+* Variables that are close together on the plot are highly correlated. The 100m, 110m hurdle, and long jump seem to be clustered together, suggesting a strong correlation between these events. Similarly the discus, shot put and high jump.
+* All variables positively load the first principal component (all arrows point to the right). Suggesting that this component seems to capture a general measure of decathlon performance across all events present in this data. 
+* The second PC is most positively correlated with the running events and long jump, and negatively correlated with the throwing events and high jump. Indicating there is variation between athletes with respect to these groups of events. An athlete's score on this dimension will provide some indication as to whether they are better/worse at the running or throwing events.
 
+
+::: callout-important
+## Interpreting results in context
+
+It is important to recognize that the interpretations of PCA (or any other dimensionality reduction method) are only valid **in the context of the data being analysed**
+(elite decathletes in this example). It is unlikely that the full correlation structure between these 
+events scores will be replicated in a different cohort.
+
+
+Similarly, results of dimensionality reduction methods can often invite over-interpretation and should always be viewed in 
+the context of relevant experimental evidence and mechanistic explanations. In the decathlon example, one may be tempted to jump to conclusions about what is *causing* the groupings of variables and the loadings on the principal components. However the results of a PCA are insufficient to determine this in isolation. 
+
+:::
 
 
 
@@ -652,12 +659,6 @@ melt(dec_pca$ind$coord) %>%
   theme_bw() + xlab('Distribution of observations on each PC axes') + ylab('PC') +
   scale_y_discrete(limits=rev)
 ```
-
-
-
-
-
-
 
 
 
@@ -879,62 +880,25 @@ $$
 
 #### How many Principal Components should be retained?
 
+This is a common question after performing a PCA. It does not have a definitive answer
+and a number of rules have been proposed. As always the choice should depend in some
+way on the purpose of the analysis and the context of the data.
 
+The meaning of *retained* depends on the context of the analysis as well. If PCA
+is being used as a pre-processing step before a secondary analysis method such as 
+clustering or regression, then *'retained'* refers to the number of PCs entered
+into the clustering algorithm or regression model. 
 
-**XXXXXXXXXXXXXXX this is a problem dependent question, list some of the common options**.
+If the purpose of the analysis 
+is exploratory or descriptive then the meaning of *'retained'* is less clear. 
+It could refer to the number of PCs visualised with variable factor maps, or the number
+of PCs interpretted using the loadings of the original variables. Other PCA results such 
+as scree plots can be reported for all PCs.
 
-
-
-
-
-
-
-
-
-
-### Extensions of PCA
-
-#### Sparse PCA
-
-PCA finds new basis vectors (principal components) that capture the most variance in a
-dataset. However, these components involve contributions from many of
-the original variables. This can make them difficult to interpret in some cases.
-
-Sparse-PCA addresses this by encouraging **sparsity** in the PC loadings (i.e. more zero loadings). Sparse PCA algorithms achieve sparsity in the principal component
-loadings (the coefficients defining each component) by incorporating
-penalties into the optimization process. These penalties push the
-coefficients towards zero, effectively making them inactive and leading
-to a sparse representation. Potential benefits of Sparse-PCA include:
-
-* Interpretability: By using only a few variables, Sparse-PCA components are
-easier to understand and relate back to the original data. 
-* Feature Selection: Sparse-PCA can implicitly perform feature selection, highlighting
-the most important variables for explaining the data's variance.
-
-
-
-**XXXXXXXXX tidy up this example a bit**
-
-
-```{r eval = F}
-# Sparse PCA
-library(sparsepca)
-sPCA <- spca(dec_events, scale = T, alpha = 0.001)
-```
-
-```{r eval = F}
-sPCA
-# print(sPCA$loadings, digits = 3, cutoff = 0.00001)
-```
-
-#### PCA on waveform data
-
-
-**XXXXXXXXX couple of sentences regarding this and point to John's tutorial**.
-
-PCA of waveforms and functional PCA: A primer for biomechanics -
-<https://github.com/johnwarmenhoven/PCA-FPCA>
-
+One possible method is to choose a threshold for total variance explained (typically 80, 90 or 95%)
+and retain the components required to reach this threshold [@jolliffe2005]. If the PCA is being 
+performed as a step in a predictive modelling pipeline then multiple choices can be 
+compared using model evaluation methods such as cross-validation.
 
 
 
@@ -943,6 +907,11 @@ PCA of waveforms and functional PCA: A primer for biomechanics -
 ------------------------------------------------------------------------
 
 ## Factor Analysis
+
+Factor analysis is more than a 'dimensionality reduction' method and has a long
+history of development and usage in research, particularly in the field of 
+psychology [@YANAI2006].
+
 
 ### How is Factor Analysis different to PCA?
 
@@ -964,12 +933,11 @@ https://www.utstat.toronto.edu/\~brunner/oldclass/431s23/textbook/Ch2.pdf
 
 In exploratory factor analysis, the goal is to describe and summarize a
 data set by explaining a set of observed variables in terms of a smaller
-number of latent variables (factors). **The factors are the reason the
+number of latent variables (factors). The assumption is that **the factors are the reason the
 observable variables have the correlations they do.**
 
-The variables are assumed to be linear combinations of the factors plus,
-for each variable, an error term, or specific factor. Thus we have, for
-j = 1, 2, ...,
+The variables are assumed to be linear combinations of the factors plus an error
+term for each variable (or specific factor). 
 
 For example, if we had a dataset with dimensionality = 6 (each
 observation is described by 6 values $x_1, x_2, ..., x_6$), and we
@@ -1039,45 +1007,163 @@ The $\lambda$ values are common for all observations in the data and
 need to be estimated, along with the factor scores for each observation.
 
 The factor analysis model accomplishes dimensionality reduction because
-each of the original 6-dimensional observations can instead be
-represented (in this example) by the 2 factor scores.
+each of the original 6-dimensional observations ($x_{i,1}, x_{i,2}, ..., x_{i,6}$) can instead be
+represented (in this example) by the 2 factor scores ($F_{i,1}, F_{i,2}$).
+
+
+
 
 ### Factor analysis in R
 
-```{r}
-dec_fa <- factanal(
-  dec_events,
-  factors = 3,
-  scores = "Bartlett",
-  rotation = "varimax"
-)
+There are multiple packages and functions that can be used to perform a factor analysis
+in `R`. The `psych` package contains a lot functionality and is what we will use for this tutorial 
+(see the [package documentation](https://personality-project.org/r/psych/HowTo/factor.pdf) for a full description of
+it's capabilities for factor analysis.
+Note that base `R` contains the function `factanal()` which uses different default estimation methods, so will return different results
+(but can be made return the same results as the `fa()` function in `psych`, see [this](https://johannestitz.com/post/2023-03-08-how-to-get-the-same-results-with-factanal-and-psych-fa-in-factor-analysis-with-r/) for how).
 
-print(dec_fa, sort = TRUE)
-```
 
 ```{r}
-dec_fac <- fa(dec_events, nfactors = 4, fm = 'ml')
-summary(dec_fac)
-print(dec_fac)
-fa.diagram(dec_fac)
+library(psych)
 ```
+
+
+
+Running a factor analysis requires a number of choices on the part of the analyst.
+Looking at the help documentation for the `fa()` function shows some important 
+ones that we are able to choose:
+
+* `nfactors` - Number of factors to extract, default is 1.
+* `rotate` - Choice of way to rotate the factors (more on this later), default is *oblimin*.
+* `fm` - Objective to optimise when finding the factor analysis solution, default is *minres*.
+
+The choice for the number of factors is going to change the returned solution the most.
+Similar to the choice of number of components to retain in PCA, there are multiple possible
+approaches to choosing this number in a factor analysis. In the absence of prior
+domain knowledge, one option is to examine a scree plot of the data overlayed with
+a scree plot from a random data matrix of the same size. The number of factors
+before the lines cross is an objective choice for the number of factors to use.
+
+A parallel analysis can be performed using the `fa.parallel()` function from the `psych` package.
+
+
+#### Decathlon data
+
+The following code runs a parallel analysis on the decathlon data.
+
+
+```{r message = F, warning = F}
+dec_pa <- fa.parallel(
+  dec_events, 
+  nfactors = 4, # A choice is still required to create the scree plot (use domain knowledge to set a reasonable value)
+  fa='fa'
+  )
+```
+
+
+There are three factors with eigenvalues above the simulated data line, suggesting
+that a three factor solution may be appropriate for the decathlon data.
+
+This can then be estimated using the `fa()` function with the code below.
 
 ```{r}
-cmjdata <- read.csv('cleaned_cmj_jnrAF.csv')
+dec_fa <- fa(dec_events, 
+             nfactors = 3, 
+             fm = 'ml',
+             rotate = 'oblimin')
 ```
+
+
+The returned object contains a lot of useful information.
+
 
 ```{r}
-cmj_fa <- fa(cmjdata, nfactors = 3, fm = 'ml')
-fa.diagram(cmj_fa)
+dec_fa
 ```
 
-#### How to choose the number of factors
+
+The information in the columns of the first table are:
+
+* **ML3, ML2, and ML1** -  these are the values that describe how the original variables relate to the factors. There are 3 columns because we specified a 3 factor solution, and there are 10 rows because the original data had 10 variables. This is the $\mathbf{\lambda}$ matrix from the factor analysis equation presented above.
+* **h2** - this is the amount of variance original variable explained by the retained factors (also called *communality*). 
+* **u2** - the proportion of variance that is “unique” to the variable and not explained by the factors (called *uniqueness*).
+
+
+The second table contains information about the ovall variance accounted for by
+each factor.
+
+
+The third table has information about the correlation **between factors**. It can 
+be seen that there is non-zero correlation between the factors returned for the
+decathlon data. **This is another difference to PCA, which will always return uncorrelated components**.
+Choosing a different rotation method in factor analysis can force a uncorrelated 
+factor solution, however this is not required, and in many cases may not be 
+desirable (more on this later). 
+
+
+A diagram of the factor loadings can be created using the `fa.diagram()` function:
+
+
+```{r}
+fa.diagram(dec_fa)
+```
+
+This diagram summarises the three factor fit we requested. Small factor loadings
+are not shown as arrows to make the diagram more interpretible. There is one 
+latent factor that is strongly related to sprint and long jump performance, 
+another to throwing and high jump performance, and one that loads only the 1500m strongly.
+In the diagram no arrows are shown between the estimated factors and pole vault
+performance, that does not mean it is ignored by the model, just that no single factor
+loads it with an absolute value greater than 0.3, the default cut point in `fa.diagram()` for 
+drawing arrows.
+
+If we lower this cut point to 0.2 we can see it is most strongly loaded by the 
+same factor as the 1500m, but negatively.
+
+
+```{r}
+fa.diagram(dec_fa, cut = 0.2)
+```
+
+
+Further interpretation of what the estimated factor solution **means**, i.e. what
+the latent factors correspond to in reality (athletic abilities, physiological qualities, anthropometry, etc.) should rely on domain knowledge and other evidence from experimental and observational research.
 
 
 
+<!-- #### Isometric testing data -->
 
 
+<!-- ```{r} -->
+<!-- isodata <- read.csv('synthetic_iso_tests.csv') -->
+<!-- ``` -->
 
+
+<!-- ```{r} -->
+<!-- ggcorrplot(cor(isodata), type = "upper") -->
+<!-- ``` -->
+
+
+<!-- ```{r} -->
+<!-- iso_pa <- fa.parallel( -->
+<!--   isodata,  -->
+<!--   nfactors = 4,  -->
+<!--   fm = "ml",  -->
+<!--   fa='fa' -->
+<!--   ) -->
+<!-- ``` -->
+
+
+<!-- ```{r} -->
+<!-- iso_fa <- fa(isodata, nfactors = 3,  -->
+<!--              fm = 'ml',  -->
+<!--              rotate = 'oblimin') -->
+
+<!-- fa.diagram(iso_fa) -->
+
+<!-- print(iso_fa) -->
+<!-- iso_fa$loadings -->
+<!-- ``` -->
 
 
 
@@ -1086,140 +1172,42 @@ fa.diagram(cmj_fa)
 
 #### Non-identifiability and rotations
 
-Non-identifiability: This means the data doesn't provide enough
-information to pinpoint unique values for the factors and loadings.
-Imagine a situation where you can rotate the factors in a certain way
-and still get the same fit for the observed data. In such a scenario,
-you wouldn't be able to distinguish between the original and rotated
-factors, leading to non-identifiability.
+The ability to choose different rotation methods in a factor analysis arises
+because there are mulitple possible *'directions'* the factors could point that 
+all provide the same quality of fit to the data (this is called non-identifiability). This does not arise in a PCA
+because the direction of the PCs is defined to be the direction of maximal variance
+in the data, then each subsequent PC is constrained to be orthogonal (zero correlation)
+with all previous PCs.
 
-Rotation methods such as varimax or promax are commonly used to address
-rotational indeterminacy in factor analysis.
+The goal of rotating the factors is to provide a solution that 
+makes the factors more interpretible, usually accomplished by having each factor
+load *different* variables (or, avoiding a solution with lots of arrows from each factor to each variable in the diagram above).
 
+The two main types of rotation are **orthogonal** and **oblique**.
 
+* Orthogonal: The underlying factors after rotation will be uncorrelated.
+* Oblique: The underlying factors after rotation can be correlated.
 
-
-
-
-
-
-
-
-------------------------------------------------------------------------
-
-## Non-linear dimensionality reduction
-
-In PCA the new basis vectors (or principal components) are constructed
-as a **linear combination of the original input variables**. In Factor
-Analysis, the observations are assumed to be a **linear combination of the underlying factors**.
-
-
-**XXXXXXXXX bit more on NLDR**
+The default choice in `fa()` is `oblimin` which is an oblique rotation. In general,
+these are less restrictive and can be a good choice if you don't have a
+reason to expect that the latent traits you want to discover are uncorrelated.
 
 
 
-### UMAP
+--------------------
 
-**UMAP**, which stands for **U**niform **M**anifold **A**pproximation
-and **P**rojection, is a technique used to reduce the dimensionality of
-data for visualization and analysis. It was published in 2018 and XXXXXXXX
-
-
-
-The technical details of how the UMAP algorithm works are beyond the
-scope of this tutorial (see
-\[here\](https://umap-learn.readthedocs.io/en/latest/how_umap_works.html)
-for an intermediate level explanation, and
-\[here\](https://arxiv.org/pdf/1802.03426.pdf) for the complete
-formulation).
-
-
-**XXXXXX working on a plainer language description of the concept**
-
-
-UMAP employs a distance-dependent nearest neighbor approach within the
-initial high-dimensional space to fine localized regions where data
-points tend to be interconnected. These connections are depicted through
-a directed graph model, with many points remaining unconnected.
-
-
-Subsequently, UMAP transposes graph points into a lower-dimensional
-space. Through an optimization procedure leveraging cross-entropy, the
-algorithm efficiently maps data points onto a reduced feature set,
-ensuring a robust approximation of the graph.
-
-
-
-#### AFL player statistics
-
-
-**Explain the dataset**
-
-
-```{r}
-afl <- read.csv('afl_stats_2012_23_means.csv')
-```
-
-```{r}
-ggcorrplot(cor(afl[, 5:54]), type = "upper")
-```
-
-#### UMAP in R
-
-The UMAP algorithm can be
-
-```{r eval = T}
-library(uwot)
-
-umap_afl <- umap(
-  X = afl[, 5:54],
-  n_neighbors = 5,
-  n_components = 2,
-  metric = "euclidean",
-  init = 'random',
-  scale = T
-)
-```
-
-What does the function return
-
-```{r}
-str(umap_afl)
-```
-
-Plot the data in the new coordinate system
-
-```{r}
-ggplot(data.frame(umap_afl), aes(x = X1, y = X2)) +
-  geom_point() + theme_bw()
-```
-
-```{r eval = T}
-umap_afl_data <- cbind(afl, data.frame(umap_afl))
-
-umap_afl_data %>%
-  # filter(position_mode != 'BENCH') %>%
-  ggplot(aes(x = X1, y = X2)) +
-  geom_point(aes(col = position_mode)) +
-  theme_bw()
-
-```
-
-```{r}
-# ggplot(um_afl_data, aes(x = `2`, y = `3`)) +
-#   geom_point() +
-#   geom_point(data = subset(um_afl_data, player %in% highlight_players),
-#              aes(col = player),
-#              size = 4) +
-#   theme_bw()
-```
-
-## Cautions
+::: callout-important
+## Caution
 
 No analysis method is without potential issues that can lead to
 misinterpreting data. Dimensionality reduction methods are no exception
 to this. As always there is no substitute for careful thinking, checking
 and re-checking, and being cautious.
+
+:::
+
+
+--------------------
 
 ## References
 
