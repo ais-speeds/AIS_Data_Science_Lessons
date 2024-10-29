@@ -18,12 +18,10 @@ ABSTRACT
 
 Linear mixed models (LMMs) stand as a versatile and robust statistical framework extensively employed in sports science to delve into complex data structures and uncover nuanced relationships among variables. In the realm of sports research, LMMs serve as a cornerstone for analyzing longitudinal or repeated measures data, accounting for both fixed effects—such as player performance or training interventions—and random effects, which encapsulate individual variability or team-specific characteristics. This modeling approach proves particularly adept at handling data with hierarchical or clustered structures, where observations are nested within players, teams, or seasons. Within the sporting domain, LMMs find application in various contexts, including performance analysis, injury prevention, talent identification, and training optimization. For instance, in assessing the effectiveness of training interventions over time, LMMs allow researchers to discern not only the overall impact of a training regimen but also how individual athletes respond differently to the same intervention. Moreover, LMMs enable the exploration of within-subject variability and the identification of factors contributing to fluctuations in performance or injury occurrence across different phases of a season or competition cycle.
 
-
 ::: callout-tip
 ## Keywords
 
 Mixed models, multi-level models, fixed and random effects
-
 :::
 
 ::: callout-note
@@ -209,7 +207,7 @@ Correlated data structures refer to a concept where entities within a dataset ex
 -   Injury rehabilitation outcomes of athletes under the care of the same sports physiotherapist are more similar than outcomes of athletes under different physiotherapists.
 -   The coordination and teamwork of players within the same team tend to be more synchronized than those of players from different teams.
 
-The structure of these data sets suggest inherent patterns of similarities or correlation among outcomes. This kind of correlation is referred to as the Intraclass Correlation Coefficient (ICC). Intraclass Correlation Coefficient (ICC) is a statistical measure commonly used to quantify the degree of agreement or correlation among observations or measurements within the same group or cluster. In the context of correlated data structures, ICC provides valuable insights into the consistency and reliability of measurements taken on related entities, such as repeated testing of the same athlete or observations within the same training group.
+These data structures suggest inherent patterns of similarity or correlation among outcomes, often modeled using the **Intraclass Correlation Coefficient** (ICC), also known as the **Variance Partition Coefficient** (VPC) or the **Intracluster Coefficient**. The ICC is a statistical measure that quantifies the degree of agreement or correlation among observations or measurements within the same group or cluster.
 
 ICC assesses the proportion of total variance in measurements that can be attributed to differences between entities within the same group relative to the total variance, thereby quantifying the degree of agreement or correlation among these entities. A high ICC value indicates strong agreement or consistency among observations within the group, suggesting a high degree of correlation among the entities.
 
@@ -217,9 +215,33 @@ For example, when analyzing the sprint times of the same track athlete across mu
 
 ICC is particularly useful for evaluating the reliability of measurements within correlated data structures, as it accounts for both within-group variability (variability among individual entities within the group) and between-group variability (variability between different groups). By quantifying the degree of agreement among related observations, ICC enhances the interpretation and reliability of data in sports science and related fields, enabling researchers to make more informed decisions and draw meaningful conclusions based on the observed correlations.
 
+In a linear mixed model, the **between-group ICC** can be interpreted as the proportion of the total variance that is explained by differences between groups (random intercepts). The formula for the between-group ICC is:
+
+$$
+ICC_{between} = \frac{\sigma^2_{\text{random intercept}}}{\sigma^2_{\text{random intercept}} + \sigma^2_{\text{residual}}}
+$$
+
+Where:
+
+-   \$ \sigma\^2\_{\text{random intercept}} \$ represents the variance due to the random intercept (i.e., variance between groups or clusters).
+-   \$ \sigma\^2\_{\text{residual}} \$ represents the residual variance (i.e., variance within groups or the error variance).
+
+This ICC quantifies the degree of similarity of observations within the same group. A higher ICC means that a larger proportion of the total variance is explained by the group-level differences.
+
+The **within-group ICC** (or within-group correlation) is typically a measure of the reliability of the residuals, reflecting how much of the variation is unexplained by the grouping structure. It can be interpreted as:
+
+$$
+ICC_{within} = 1 - ICC_{between} = \frac{\sigma^2_{\text{residual}}}{\sigma^2_{\text{random intercept}} + \sigma^2_{\text{residual}}}
+$$
+
+Where:
+
+-   \$ \sigma\^2\_{\text{residual}} \$ is the variance within groups (unexplained by the model).
+-   \$ \sigma\^2\_{\text{random intercept}} + \sigma\^2\_{\text{residual}} \$ is the total variance in the model.
+
 ## Levels
 
-In the context of correlated data structures, such as athletes trained by the same coach or patients treated by the same healthcare provider, the concept of levels refers to the hierarchical structure of the data. Each level represents a different unit of analysis or aggregation within the dataset, with higher levels encompassing lower levels and potentially introducing additional sources of variability or correlation.
+In the context of correlated data structures, such as athletes trained by the same coach or patients treated by the same heelthcare provider, the concept of levels refers to the hierarchical structure of the data. Each level represents a different unit of analysis or aggregation within the dataset, with higher levels encompassing lower levels and potentially introducing additional sources of variability or correlation.
 
 For example, consider a study analyzing the performance of athletes within the same sports team. In this scenario, the hierarchical structure may consist of the following levels:
 
@@ -424,7 +446,7 @@ ggplot(Recovery_cleaned, aes(CMJ_HEIGHT)) +
   geom_histogram()
 ```
 
-There is an outlier at 0cm (a male participant) - which does not make sense (I think? Even if you just raise your heal off the ground, that should be \> 0?) and will be removed from further analyses:
+There is an outlier at 0cm (a male participant) - which does not make sense (I think? Even if you just raise your heel off the ground, that should be \> 0?) and will be removed from further analyses:
 
 ```{r}
 # Filter for full data
@@ -514,12 +536,8 @@ VCrandom_F <- VarCorr(mod0_F)
 print(VCrandom_F, comp = c("Variance", "Std.Dev."))
 ```
 
-```{=html}
-<style>
-div.green { background-color:#b3ffb3; border-radius: 5px; padding: 20px;}
-</style>
-```
-::: green
+<br>
+
 From this output:
 
 -   $\sigma^2=1.72$: the estimated variance in within-person deviations.
@@ -530,7 +548,6 @@ The relative levels of between- and within-person variabilities can be compared 
 $$ICC=\frac{Between\space variability}{Total\space variability}=\frac{8.58}{8.58+1.72}=.833$$
 
 Thus, 83.3% of the total variability in CMJ height for females are attributable to differences among subject. Note: as ICC approaches 0, responses from an individual are essentially independent and accounting for the multilevel structure of the data becomes less crucial. However, as ICC approaches 1, repeated observations from the same individual essentially provide no additional information and accounting for the multilevel structure becomes very important.
-:::
 
 Repeating this for males:
 
@@ -539,9 +556,19 @@ VCrandom_M <- VarCorr(mod0_M)
 print(VCrandom_M, comp = c("Variance", "Std.Dev."))
 ```
 
-::: green
 Here, the ICC ($\frac{26.47}{26.47+2.58}=.911$) tells us that 91.1% the total variability in CMJ height for males are attributable to differences among subject.
-:::
+
+<br>
+
+Using the `plot_model()` function from sjPlot, we can visualise this random effects to get a sense of the variability between and within participants. In the function we would specify `type = 're'` (where re = random effect).
+
+```{r}
+sjPlot::plot_model(mod0_F, type = 're', grid = F, sort.est = T)
+```
+
+```{r}
+sjPlot::plot_model(mod0_M, type = 're', grid = F, sort.est = T)
+```
 
 ### Adding effects
 
@@ -564,9 +591,7 @@ anova(mod1_F)
 anova(mod1_M)
 ```
 
-::: green
 In the two outputs above, we can see that the neither interaction effects are statistically significant. Thus, it makes sense to remove them for model simplicity.
-:::
 
 Our next models will become:
 
@@ -601,15 +626,39 @@ sjPlot::tab_model(mod2_F, mod2_M,
                   dv.labels = c('CMJ Height Females','CMJ Height Males'))
 ```
 
-::: green
+<br>
 
 From the output above we can see that:
 
-For females, CMJ height is 1.36m lower at 44h post-race compared to baseline (95% CI = -2.27 to -0.44, *p* = .004); and 1.14m lower at 68h post-race compared to baseline (95% CI = -2.06 to -0.23, *p* = 0.015), when controlling for recovery condition. The ICC reveals that 87% of the total variability in CMJ height can be attributed to differences among individual subjects.
+For females, CMJ height is 1.36cm lower at 44h post-race compared to baseline (95% CI = -2.27 to -0.44, *p* = .004); and 1.14cm lower at 68h post-race compared to baseline (95% CI = -2.06 to -0.23, *p* = 0.015), when controlling for recovery condition. The random effects indicate the average between subject standard deviation in CMJ height to be 1.46cm, with a variability of 9.47cm across individual subjects. The ICC reveals that 87% of the total variability in CMJ height can be attributed to differences among individual subjects.
 
-For males, CMJ height is 1.53m lower at 44h post-race compared to baseline (95% CI = -2.50 to -0.56, *p* = .002); and 1.23m lower at 68h post-race compared to baseline (95% CI = -2.18 to -0.28, *p* = 0.012), when controlling for recovery condition. The ICC reveals that 93% of the total variability in CMJ height can be attributed to differences among individual subjects.
+For males, CMJ height is 1.53m lower at 44h post-race compared to baseline (95% CI = -2.50 to -0.56, *p* = .002); and 1.23m lower at 68h post-race compared to baseline (95% CI = -2.18 to -0.28, *p* = 0.012), when controlling for recovery condition. The random effects indicate the average between subject standard deviation in CMJ height to be 2.04cm, with a variability of 27.83cm across individual subjects. The ICC reveals that 93% of the total variability in CMJ height can be attributed to differences among individual subjects.
 
-:::
+**Note**: The interpretation above is only relevant to the Control group, which is the reference level. To interpret for Compression and Electrical stimulation conditions as well, we can add the estimates for each effect of interest together. For example, if we look at the Female model, the estimated mean CMJ height for each of the three conditions at baseline can be calculated by adding the Intercept estimate (27.91) to the estimate for the other two conditions (1.34 and -0.46, respectively):
+
+*Baseline*:
+
+-   Control = 27.91 cm
+-   Compression = 27.91 + 1.34 = 29.25 cm
+-   Electrical S. = 27.91 - 0.46 = 27.45 cm
+
+These baseline values can then be added to estimate for each time point from the table to view the mean CMJ height:
+
+*8h Post-Race*:
+
+-   Control = 27.91 [- 0.13]{style="color:red"} = 27.78 cm
+-   Compression = 27.91 + 1.34 [- 0.13]{style="color:red"} = 29.12 cm
+-   Electrical S. = 27.91 - 0.46 [- 0.13]{style="color:red"} = 27.32 cm
+
+*20h Post-Race*:
+
+-   Control = 27.91 [- 0.68]{style="color:red"} = 27.23 cm
+-   Compression = 27.91 + 1.34 [- 0.68]{style="color:red"} = 28.44 cm
+-   Electrical S. = 27.91 - 0.46 [- 0.68]{style="color:red"} = 26.64 cm
+
+This can then be repeated for the other time points as well
+
+<br>
 
 ### Random Intercepts & Slopes
 
@@ -637,13 +686,71 @@ anova(mod2_F_slopes, mod2_F)
 anova(mod2_M_slopes, mod2_M)
 ```
 
-::: green
+The output here suggests that adding Recovery Condition as a random slope does not improve model fit for neither females or males. In both instances, the random intercept only model has lower AIC and BIC values. In addition, there is no significant change in the deviances (*p* = .836 and *p* = .515, respectively).
 
-The output here suggests that adding Recovery Condition as a random slope does improve model fit for neither females or males. In both instances, the random intercept only model has lower AIC and BIC values. In addition, there is no significant change in the deviances (*p* = .836 and *p* = .515, respectively).
+Note: In general, we should consider the *theory* behind the effects first, as this can save us some valuable time in the modelling process. E.g. if there is no scientific reason that Recovery Condition would vary for each ID, then there would be no reason to fit it as a random slope. Suppose there is theorectical sense to include Time as a random slope (with Condition). This can be coded as seen below. For the random effects structure, if you want to allow the slopes associated with `TIME` to vary across levels of ID, you need to convert `TIME` to numeric in this context. This is because random slopes are generally used for continuous predictors, allowing for variability in the relationship between TIME and the outcome for different individuals (or `ID`). When `TIME`is numeric in the random effects part, it will allow the model to account for how the effect of `TIME`on `CMJ_HEIGHT` might differ for each `ID`:
 
-:::
+```{r, warning=FALSE, message=FALSE}
+# Build model for females
+mod3_F_slopes <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + (CONDITION+as.numeric(TIME)|ID), 
+               data = Recovery_cleaned_F)
 
-Note: In general, we should consider the *theory* behind the effects first, as this can save us some valuable time in the modelling process. E.g. if there is no scientific reason that Recovery Condition would vary for each ID, then there would be no reason to fit it as a random slope.
+# Build model for males
+mod3_M_slopes <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + (CONDITION+as.numeric(TIME)|ID), 
+               data = Recovery_cleaned_M)
+```
+
+Like before, we can compare these new models using the `anova()` function:
+
+```{r}
+anova(mod3_F_slopes, mod2_F_slopes)
+```
+
+```{r}
+anova(mod3_M_slopes, mod2_M_slopes)
+```
+
+#### Heterogeneous Level 1 Variance Structures
+
+In many experimental settings, the assumption of homogeneity of variance across groups may not hold true. This can be particularly relevant when dealing with repeated measures data, where variances may differ based on the conditions or time points being evaluated. To address this issue, we can extend our linear mixed model framework by fitting a model that allows for heterogeneous variances.
+
+In this section, we utilize the `gls` function from the `nlme` package to specify a generalized least squares model with a structure that accounts for varying residual variances across different levels of the `CONDITION` factor over time. The model is formulated as follows:
+
+```{r, warning=FALSE, message=FALSE}
+library(nlme)
+mod_hetero <- gls(CMJ_HEIGHT ~ TIME * CONDITION,
+                  data = Recovery_cleaned_F,
+                  weights = varIdent(form = ~TIME | CONDITION))
+```
+
+The model includes the interaction term between `TIME` and `CONDITION`, which allows us to assess how the relationship between `TIME` and the outcome variable, `CMJ_HEIGHT`, may vary across different conditions. The weights argument specifies that the variances should be modeled as a function of `TIME`, with separate variance estimates for each `CONDITION`.
+
+To visualize the model predictions and better understand the effects, we create a new dataset that includes all combinations of `TIME` and `CONDITION` for which we want to predict CMJ_HEIGHT. This is achieved using the `expand.grid` function:
+
+```{r, warning=FALSE, message=FALSE}
+# Create a new dataset for predictions
+new_data <- expand.grid(
+  TIME = unique(Recovery_cleaned_F$TIME),
+  CONDITION = unique(Recovery_cleaned_F$CONDITION)
+)
+
+# Add predictions to the new dataset
+new_data$predicted_CMJ_HEIGHT <- predict(mod_hetero, newdata = new_data)
+```
+
+With the predictions calculated, we can create a line plot to visualize how CMJ_HEIGHT varies with TIME for each CONDITION. The following code generates this plot:
+
+```{r, warning=FALSE, message=FALSE}
+# Plot the predictions
+ggplot(new_data, aes(x = TIME, y = predicted_CMJ_HEIGHT, color = CONDITION)) +
+  geom_line(aes(group = CONDITION)) +
+  labs(title = "Predicted CMJ Height by TIME and CONDITION",
+       x = "Time",
+       y = "Predicted CMJ Height") +
+  theme_minimal()
+```
+
+This visualization provides a clear depiction of the predicted relationships, allowing us to observe how the expected `CMJ_HEIGHT` differs across conditions over time. Such insights are crucial for understanding the dynamics of the data and informing further analyses or interventions. By fitting a model that accounts for heterogeneous variances, we enhance the robustness and interpretability of our findings, ensuring that we appropriately model the complexities inherent in our data.
 
 ### Checking assumptions
 
@@ -667,12 +774,243 @@ mod9_F <- lmer(CMJ_HEIGHT ~ UREA:CONDITION + (1|ID),
                data = Recovery_cleaned_F)
 ```
 
-## Conclusion & Reflection
+<br>
 
-In conclusion, this guide has provided an overview of linear mixed models, beginning with a vignette for the importance of not violating *Independence*. We then learnt about correlated data structures, as well as exploring the difference between fixed and random intercepts / slopes. We then learnt how to fit different types of models to our Recovery data.  
+------------------------------------------------------------------------
 
+# Additional considerations
+
+## Equivalence Testing
+
+Thus far, we have examined this problem under the framework of traditional hypothesis testing, where the focus is on detecting differences between groups or conditions. However, an alternative approach known as **equivalence testing** offers a different perspective, emphasising the assessment of similarity rather than difference.
+
+In equivalence testing, researchers define a region of practical equivalence (ROPE), representing the range within which the observed difference between treatments is deemed practically indistinguishable. This ROPE is determined based on factors such as clinical relevance, prior knowledge, or regulatory requirements.
+
+Continuing with our example comparing the effectiveness of three recovery methods: control, compression, and electrical stimulation, we could employ equivalence testing to ascertain whether the outcomes produced by these methods are essentially similar.
+
+-   Within equivalence testing, two-sided testing assesses whether the observed difference falls entirely within the predefined ROPE. If so, it indicates that the treatments are practically equivalent. Conversely, if the observed difference lies entirely outside the ROPE, it suggests that the treatments are not equivalent within the specified margin. In our scenario, two-sided equivalence testing could be employed to evaluate whether the recovery outcomes associated with compression and electrical stimulation methods are practically equivalent to those of the control method within a predetermined range.
+-   Alternatively, one-sided testing can focus on determining whether the observed difference exceeds or falls short of the predefined margin, depending on the direction specified in the hypothesis. For instance, if we hypothesise that the compression method is expected to yield recovery outcomes superior to those of the control method, one-sided equivalence testing could be used to assess whether the outcomes produced by compression are practically equivalent to or better than those of the control method.
+
+We can use the `equivalence_test()` function from the `parameters` package to test this:
+
+```{r}
+# Female Model from earlier
+mod2_F <- lmer(CMJ_HEIGHT ~ TIME + CONDITION + (1|ID), 
+               data = Recovery_cleaned_F)
+
+# Equivalence test
+parameters::equivalence_test(mod2_F,
+                             range = 'default')
+```
+
+In the above output, we can see that the ROPE is computed as \[-0.31 to 0.31\]. This means that the equivalence testing procedure will consider treatment effects to be practically equivalent if the difference falls entirely within this range.
+
+Next, we can examine the confidence intervals (CI) to assess whether the observed differences between treatments fall within the ROPE. The CI provides a range of plausible values for the true treatment effect, and if this range is entirely contained within the ROPE, it suggests that the treatments can be considered equivalent. Conversely, if the CI extends beyond the boundaries of the ROPE, it indicates that the treatments are not equivalent within the specified margin.
+
+The SGPV (Significant Group Probability Value) column provides information about whether the observed difference between treatments is statistically significant. If the SGPV is less than the conventional significance level (typically 0.05), it suggests that the observed difference is statistically significant, indicating that the treatments have different effects. Conversely, if the SGPV is greater than the significance level, it indicates that the observed difference is not statistically significant, suggesting that the treatments may have similar effects.
+
+The Equivalence column indicates whether the observed difference between treatments falls within the region of practical equivalence (ROPE). If the observed difference is entirely contained within the ROPE, it is considered practically equivalent, and the Equivalence column will indicate "Accepted." On the other hand, if the observed difference extends beyond the boundaries of the ROPE, it is not considered practically equivalent, and the Equivalence column will indicate "Rejected."
+
+We can create a plot of this to interpret the results better:
+
+```{r}
+parameters::equivalence_test(mod2_F,
+                             range = 'default') |> 
+  plot()
+```
+
+<br>
+
+## Modeling Heteroscedasticity
+
+Addressing heteroscedasticity is a crucial aspect to ensure the robustness and validity of our analyses. Heteroscedasticity occurs when the variance of the dependent variable differs across levels of one or more independent variables. This phenomenon challenges the assumption of homogeneity of variance, which assumes that the variability of data points remains constant across all levels of categorical predictors. In our current example, the variability in CMJ heights may differ between recovery methods due to factors such as individual differences, treatment efficacy, or measurement error. To assess this, we can explicitly model and account for heteroscedasticity.
+
+One common approach to address heteroscedasticity in linear mixed-effects models is by specifying a variance structure that allows for different variances between levels of a categorical predictor. In R, this can be achieved using the weights argument in the `lme()` function from the `nlme` package.
+
+```{r, warning=FALSE, message=FALSE}
+library(nlme)
+
+# Fit the initial model without considering heteroscedasticity
+model0 <- lme(CMJ_HEIGHT ~ TIME + CONDITION, 
+                    random = ~ 1 | ID, 
+                    data = Recovery_cleaned_F)
+
+# Fit the model with a variance structure to account for heteroscedasticity
+model1 <- lme(CMJ_HEIGHT ~ TIME + CONDITION, 
+                   random = ~ 1 | ID, 
+                   weights = varIdent(form = ~ 1 | CONDITION),
+                   data = Recovery_cleaned_F)
+```
+
+Next, we can inspect the variance structure of model1 via the summary function:
+
+```{r}
+summary(model1)
+```
+
+The Variance function part of the output indicates the estimated variance parameters associated with each level of the CONDITION variable.
+
+In this output:
+
+-   Control (CON) condition: Estimated variance parameter = 1.000000
+-   Compression (COMP) condition: Estimated variance parameter = 1.035479
+-   Electrical Stimulation (NMES) condition: Estimated variance parameter = 1.331279
+
+These estimated variance parameters represent the standard deviations of the residuals for each level of the condition variable. Since these values are different for each condition, it suggests the presence of heteroscedasticity (note: conducting an `anova()` of the two models, or computing confidence intervals can provide further support of the differences in variances between conditions).
+
+<br>
+
+## Correlation Structures
+
+In linear mixed models, the correlation structure refers to the pattern of correlation among repeated measurements or observations within the same subject or cluster. This structure captures the dependence between observations and is essential for modeling the covariance matrix of the random effects and residuals accurately. Different correlation structures are available to accommodate various types of data and assumptions about the correlation pattern.
+
+-   The default (and what our models have assumed thus far) is the compound symmetric (CS) or exchangeable structure, which assumes that all observations within the same cluster or subject have the same correlation. This structure is appropriate when the correlation between any pair of observations is constant and does not depend on their relative positions.
+-   Another common correlation structure, especially with repeated measures, is the autoregressive (AR) structure, which assumes that the correlation between observations decreases as the time or distance between them increases. The `corAR1()` structure, for example, models the correlation between consecutive observations using a single parameter, often denoted as ρ (rho), representing the autocorrelation coefficient.
+
+As an example, let us use the `correlation()` function from the `nlme` package to explore this:
+
+```{r, warning=FALSE, message=FALSE}
+# Fit a model with default correlation structure
+model_CS <- lme(CMJ_HEIGHT ~ TIME + CONDITION, 
+              random = ~ 1 | ID, 
+              correlation = corCompSymm(),
+              data = Recovery_cleaned_F)
+
+# Fit the model with an AR correlation structure
+model_AR <- lme(CMJ_HEIGHT ~ TIME + CONDITION, 
+              random = ~ 1 | ID, 
+              correlation = corAR1(),
+              data = Recovery_cleaned_F)
+```
+
+```{r, warning=FALSE, message=FALSE}
+# Compare models
+sjPlot::tab_model(model_CS, model_AR,
+                  dv.labels = c('CS structure','AR structure'))
+```
+
+<br>
+
+The results obtained from these two models, despite utilizing different correlation structures, suggests that either correlation structure might be suitable for analyzing the given dataset. In this instance, both the compound symmetric (CS) and autoregressive (AR) correlation structures produced fixed and random effects.
+
+However, it's essential to recognize that this may not always be the case. In many scenarios, the choice of correlation structure can significantly impact the model's results. Depending on the nature of the data and the underlying correlation pattern, different correlation structures may provide more accurate and reliable estimates. For instance, in longitudinal or time-series data where observations are inherently correlated over time, an autoregressive (AR) or moving average (MA) correlation structure may better capture the temporal dependencies between observations. On the other hand, in clustered or grouped data where observations within the same group are correlated, a compound symmetric (CS) or unstructured (UN) correlation structure may be more appropriate.
+
+### Evaluating Autocorrelation in Time Series Designs
+
+In time series data, it is crucial to evaluate the autocorrelation structure of the residuals to ensure that the chosen model adequately captures the underlying dependencies in the data. The `nlme` package can be used to specify the model, and the `acf` function from the `stats` package can help us evaluate. 
+
+```{r, warning=FALSE, message=FALSE}
+library(nlme)
+library(stats)
+
+# Fit the mixed-effects model
+model <- lme(CMJ_HEIGHT ~ CONDITION + TIME, 
+             random = ~ 1 | ID, 
+             correlation = corAR1(form = ~ as.numeric(TIME) | ID), 
+             data = Recovery_cleaned_F)
+
+# Extract residuals
+residuals_model <- residuals(model, type = "normalized")
+
+# Plot the autocorrelation function
+acf(residuals_model, main = "ACF of Model Residuals")
+```
+
+From this plot we can see that autocorrelations at non-zero lags are within the confidence interval (blue dotted lines), suggesting that the AR(1) structure has effectively reduced the temporal correlation in the residuals.
+
+<br>
+
+# Conclusion & Reflection
+
+In conclusion, this guide has provided an overview of linear mixed models, beginning with a vignette for the importance of not violating *Independence*. We then learnt about correlated data structures, as well as exploring the difference between fixed and random intercepts / slopes. We then learnt how to fit different types of models to our Recovery data.
 
 In addition to their versatility in handling correlated data structures, linear mixed models (LMMs) offer a significant advantage over regular linear models (LMs) by accommodating various types of data distributions and complexities. Unlike LMs, which assume independent observations, LMMs can effectively model correlated data, making them more robust and reliable in real-world applications. Moreover, the concepts learned in Lesson 2 on Poisson regression and Lesson 3 on Logistic Regression extend to generalized linear mixed models (GLMMs), providing a comprehensive toolkit for analyzing correlated data across different scenarios. Understanding the principles of GLMMs opens avenues for exploring more sophisticated statistical techniques in future lessons, enriching our understanding and application of advanced modeling approaches.
 
 Given the inherently multifaceted nature of data collected in sport and exercise science, ranging from athlete performance metrics to physiological responses, the ability to account for correlated structures is paramount. LMMs and GLMMs enable researchers and practitioners to analyze complex datasets while appropriately addressing dependencies, thereby yielding more accurate insights into athlete performance, injury prevention, training optimization, and other critical aspects of sports science. As such, mastering these techniques not only enhances the statistical rigor of analyses but also empowers professionals in sport and exercise science to make informed decisions and drive advancements in athletic performance and well-being.
 
+# Knowledge Spot Check {.tabset}
+
+::: panel-tabset
+### Question 1
+
+How does the assumption of independence differ between linear regression and linear mixed models?
+
+a)  Linear regression assumes independence of observations within and across groups, while linear mixed models allow for correlated observations within groups.
+b)  Linear regression assumes correlated observations within groups, while linear mixed models assume independence within and across groups.
+c)  Both linear regression and linear mixed models assume independence of observations within and across groups.
+d)  Neither linear regression nor linear mixed models make assumptions about the independence of observations.
+
+### Solution
+
+a)  Linear regression assumes independence of observations within and across groups, while linear mixed models allow for correlated observations within groups.
+
+Linear regression assumes that observations are independent of each other, both within and across groups. In contrast, linear mixed models relax this assumption and allow for correlated observations within groups (e.g., repeated measurements on the same individual or clustered data). This flexibility makes linear mixed models suitable for analyzing data with correlated observations, which often occur in longitudinal or clustered study designs.
+:::
+
+::: panel-tabset
+### Question 2
+
+How does interpreting random effects in linear mixed models differ from interpreting fixed effects?
+
+a)  Random effects capture systematic variation across groups, while fixed effects capture random variation within groups.
+b)  Random effects represent unobserved, underlying group-level characteristics, while fixed effects represent observed, fixed characteristics.
+c)  Random effects are estimated from the data, while fixed effects are predetermined by the researcher.
+d)  Random effects are interpreted in terms of their effect on the outcome variable's mean, while fixed effects are interpreted in terms of their effect on the outcome variable's variability.
+
+### Solution
+
+b)  Random effects represent unobserved, underlying group-level characteristics, while fixed effects represent observed, fixed characteristics.
+
+Random effects in linear mixed models capture variation across groups that are not of primary interest but are assumed to be random samples from a larger population of groups. They represent unobserved, underlying group-level characteristics that contribute to the variability in the outcome. In contrast, fixed effects represent observed, fixed characteristics that are of primary interest and are directly estimated from the data.
+:::
+
+::: panel-tabset
+### Question 3
+
+What term in linear mixed models corresponds to the intercept term in linear regression?
+
+a)  Random effect
+b)  Fixed effect
+c)  Residual
+d)  Level
+
+### Solution
+
+a)  Random effect
+
+In linear mixed models, the random effect term corresponds to the intercept term in linear regression. It captures the variability in the outcome that is not explained by the fixed effects and represents the baseline level of the outcome when all predictor variables are set to zero.
+:::
+
+::: panel-tabset
+### Question 4
+
+In a linear mixed model analyzing the effect of a training program on athletes' sprint performance over time, which statement best describes the interpretation of the random slope term (Time\|Athlete)?
+
+a)  The random slope term represents the overall trend of sprint performance improvement across all athletes.
+b)  The random slope term represents the variability in sprint performance improvement among athletes after accounting for the training program.
+c)  The random slope term captures the individual differences in the rate of sprint performance improvement over time for each athlete, accounting for the correlation between repeated measurements from the same athlete.
+d)  The random slope term indicates the average rate of sprint performance improvement across all athletes.
+
+### Solution
+
+c)  The random slope term captures the individual differences in the rate of sprint performance improvement over time for each athlete, accounting for the correlation between repeated measurements from the same athlete.
+
+In the context of a linear mixed model analyzing athletes' sprint performance over time, the random slope term (Time\|Athlete) allows for individual variation in the rate of improvement (slope) of sprint performance over time (Time) among different athletes. This term captures how each athlete's sprint performance changes over time relative to the overall trend, accounting for the correlation between repeated measurements from the same athlete. It does not represent the overall trend of sprint performance improvement or the average improvement rate across all athletes but rather accounts for the variability in improvement trajectories among individual athletes.
+:::
+
+::: panel-tabset
+### Question 5
+
+Within the context of Linear Mixed Models (LMM), what is the primary purpose of the Intraclass Correlation Coefficient (ICC)?
+
+a)  Assessing the association between two continuous variables
+b)  Evaluating the reliability or consistency of measurements taken on the same individuals or units across multiple occasions or raters
+c)  Testing the difference in means between two independent groups
+d)  Assessing the goodness of fit of a regression model
+
+### Solution
+
+b)  Evaluating the reliability or consistency of measurements taken on the same individuals or units across multiple occasions or raters
+
+In Linear Mixed Models (LMM), the Intraclass Correlation Coefficient (ICC) is commonly used to assess the reliability or consistency of measurements taken on the same individuals or units across multiple occasions or raters. It quantifies the degree of agreement or consistency between measurements, which is essential for ensuring the validity and reproducibility of study findings within the framework of LMMs.
+:::
