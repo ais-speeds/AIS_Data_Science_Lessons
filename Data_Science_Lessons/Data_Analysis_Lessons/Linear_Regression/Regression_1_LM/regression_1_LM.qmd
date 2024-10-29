@@ -1,5 +1,5 @@
 ---
-title: "Regression Modelling Strategies 1"
+title: "Regression Modelling Strategies 1 - Linear Regression"
 format: 
   html:
     toc: true
@@ -38,7 +38,7 @@ The level of this lesson is categorised as BRONZE.
 -   Knowing how to check the assumptions of a linear regression model.
 :::
 
-Data used in this lesson [is provided by XYZ]{style="color:red"}
+We will use the `HbmassSynth` dataset in this lesson, which is available in the `speedsR` package.
 
 # Learning Outcomes
 
@@ -78,13 +78,13 @@ The assumption of normality in statistical modeling is a common pitfall, often m
 
 # Case Study
 
-Understanding and optimizing an athlete's physiological parameters are essential for performance enhancement. As we delve into the intricacies of linear regression, a powerful statistical tool, our focus turns to the predictive modeling of Absolute hemoglobin mass (ABHB) --- a critical metric indicative of an athlete's oxygen-carrying capacity.
+Understanding and optimizing an athlete's physiological parameters are essential for performance enhancement. As we delve into the intricacies of linear regression, a powerful statistical tool, our focus turns to the predictive modeling of absolute hemoglobin mass (ABHB) --- a critical metric indicative of an athlete's oxygen-carrying capacity.
 
-In this lesson, we will learn how variables, namely Ferritin, Transferrin Saturation, and Transferrin, play pivotal roles in deciphering the nuanced relationships that contribute to hematological outcomes. Through the lens of linear regression, we aim to unravel the complex interplay between these biomarkers and Absolute HBmass, offering valuable insights that can inform targeted interventions to enhance an athlete's aerobic capacity and overall athletic performance.
+In this lesson, we will learn how variables, namely Ferritin, Transferrin Saturation, and Transferrin, play pivotal roles in deciphering the nuanced relationships that contribute to hematological outcomes. Through the lens of linear regression, we aim to unravel the complex interplay between these biomarkers and absolute HBmass, offering valuable insights that can inform targeted interventions to enhance an athlete's aerobic capacity and overall athletic performance.
 
 ## What to expect
 
-In this example the dependent variable is Absolute HBmass, which is a continuous variable - making linear regression an appropriate technique to employ. We will learn how to fit simple linear regression models (single predictor) as well as multiple linear regression models (many predictors) to the data. We will also learn how to use residual diagnostic tests to inspect the assumptions of our models.
+In this example the dependent variable is absolute HBmass, which is a continuous variable - making linear regression an appropriate technique to employ. We will learn how to fit simple linear regression models (single predictor) as well as multiple linear regression models (many predictors) to the data. We will also learn how to use residual diagnostic tests to inspect the assumptions of our models.
 
 ## Data Loading and Cleaning
 
@@ -96,7 +96,7 @@ Hbmass <- speedsR::HbmassSynth
 
 The data set is a synthetic version of the original data examining how altitude exposure combined with oral iron supplementation influences Hbmass, total iron incorporation and blood iron parameters.
 
-## Initial Exploratory Analyses
+## Exploratory Data Analyses
 
 Before diving into building the regression model (or any model for that matter), it is always a good idea to explore the data. Much of this has already been covered in earlier lessons (see "Put names of lessons here"), so we will only provide a short example here.
 
@@ -113,7 +113,7 @@ The hbmass data set contains the following variables:
 -   `FE`: Iron (ug/L)
 -   `TSAT`: Transferrin Saturation (%)
 -   `TRANS`: Transferrin (g/L)
--   `AHBM`: Absolute Hbmass (g)
+-   `AHBM`: absolute Hbmass (g)
 -   `RHBM`: Relative Hbmass (g/kg)
 
 ```{r, echo=FALSE}
@@ -157,6 +157,32 @@ The `skimr` package is a powerful tool in R for efficiently obtaining summary st
 ```{r, warning=FALSE, message=FALSE}
 library(skimr)
 skim(Hbmass_pre)
+```
+
+We can also group the data before applying the `skim` function to explore the data at a lower level:
+
+```{r}
+Hbmass_pre |> 
+  group_by(SUP_DOSE) |> 
+  skim()
+```
+
+Note for Andy: the above is a bit messy, and I don't think `skimr` has a nicer way to do grouped summaries. We could use `gtsummary`, which does these better (but requires more work from the user):
+
+```{r}
+library(gtsummary)
+Hbmass_pre |> 
+  select(-c(ID, TIME)) |> 
+  tbl_strata(
+    strata = SUP_DOSE,
+    ~.x %>%
+      tbl_summary(
+        by = SEX,
+        type = where(is.numeric) ~ "continuous2",
+        statistic = list(all_continuous() ~ c(
+          "{mean} ({sd})", "{median} ({IQR})"))
+      )
+  )
 ```
 
 ### Univariate summaries
@@ -228,7 +254,7 @@ Here, we can see that for females, as TRANS (g/L) increases, AHBM (g) increases 
 
 ## Simple Linear Regression
 
-The term 'simple linear regression' refers to linear regression models with only one predictor. Sometimes it may be useful to start with a simple model just to understand the relationship between the outcome and main variable of interest (if there is one) before you start adding more predictors. For example, we will begin by modelling `AHBM` as a function of `FER`, that is to say: does one's ferritin levels (ug/L) influence their Absolute Haemoglobin mass (g)? Recall from our bivariate summary that `FER` appears to have a positive relationship with `AHBM`. Thus, we would be expecting a positive coefficient estimate for our results.
+The term 'simple linear regression' refers to linear regression models with only one predictor. Sometimes it may be useful to start with a simple model just to understand the relationship between the outcome and main variable of interest (if there is one) before you start adding more predictors. For example, we will begin by modelling `AHBM` as a function of `FER`, that is to say: does one's ferritin levels (ug/L) influence their absolute Haemoglobin mass (g)? Recall from our bivariate summary that `FER` appears to have a positive relationship with `AHBM`. Thus, we would be expecting a positive coefficient estimate for our results.
 
 ```{r}
 model1 <- lm(AHBM ~ FER, data = Hbmass_pre)
@@ -242,9 +268,9 @@ By substituting the values from our output into the equation, we obtain a model 
 
 $$AHBM_{i}=715.74+1.72FER_{i}+\epsilon_{i}$$
 
-Our model can thus be interpreted as, Absolute Heamoglobin Mass (g) will increase by $\beta_{1}=1.72g$ for each additional ug/L in one's Ferritin. The estimated value of the intercept, $\beta_{0}=715.74$ represents the estimated `AHBM` value when `FER` equals 0.
+Our model can thus be interpreted as, absolute Heamoglobin Mass (g) will increase by $\beta_{1}=1.72g$ for each additional ug/L in one's Ferritin. The estimated value of the intercept, $\beta_{0}=715.74$ represents the estimated `AHBM` value when `FER` equals 0.
 
-<center>**A quick note on $\epsilon$:**</center>
+<center>**A quick note on** $\epsilon$:</center>
 
 In statistical modeling, the error term serves as a comprehensive representation of various sources of variability that affect the dependent variable but are not explicitly accounted for by the independent variables. This term amalgamates subject-specific, within-subject, technical, and measurement errors into a single entity, denoted as ε (epsilon). While the error term is often treated as a collective measure of unpredictability, it is crucial to recognize that its components can be parsed and estimated separately. In more advanced statistical techniques, such as linear mixed models, the error term can be dissected using random effects. By incorporating random effects into the model, one can capture and quantify the inherent variability arising from individual differences, providing a more nuanced understanding of the data. Future lessons may delve into the intricacies of partitioning and estimating specific components of the error term, shedding light on the nuances of variability within the context of linear mixed models and enhancing the precision of statistical analyses.
 :::
@@ -329,9 +355,9 @@ $$AHBM_{i}=830.42+1.80FER_{i}-8.11FE_i+1.30TSAT_i+\epsilon_{i}$$
 
 Notice that some $\beta$ estimates are positive and some are negative. This provides us with an indication the **direction** of change for the outcome variable.
 
--   Absolute Heamoglobin Mass increases by $\beta_{1}=1.80g$ for each additional ug/L in one's Ferritin, whilst controlling for FE and TSAT.
--   Absolute Heamoglobin Mass decreases by $\beta_{2}=8.11g$ for each additional ug/L in one's Iron, whilst controlling for FER and TSAT.
--   Absolute Heamoglobin Mass increases by $\beta_{3}=1.30g$ for each additional % in one's Transferrin Saturation, whilst controlling for FER and FE.
+-   absolute Heamoglobin Mass increases by $\beta_{1}=1.80g$ for each additional ug/L in one's Ferritin, whilst controlling for FE and TSAT.
+-   absolute Heamoglobin Mass decreases by $\beta_{2}=8.11g$ for each additional ug/L in one's Iron, whilst controlling for FER and TSAT.
+-   absolute Heamoglobin Mass increases by $\beta_{3}=1.30g$ for each additional % in one's Transferrin Saturation, whilst controlling for FER and FE.
 :::
 
 Similar to the simple linear regression example, we can inspect the associated *p*-values and 95% confidence intervals for each predictor from the output above. If these values are less than the chosen threshold (e.g. 0.05) then we have confidence in inferring these results to the larger population. In this example, `FER` and `FE` have *p*-values less than 0.05, so we can say that these results are statistically significant. Looking at the confidence intervals:
@@ -518,6 +544,44 @@ Looking at the output for our model, we can see that this interaction effect is 
 model5 |> summary()
 ```
 
+### Confidence Intervals vs. Prediction Intervals
+
+In linear regression analysis, both confidence intervals (CIs) and prediction intervals (PIs) are important statistical tools that provide valuable insights into the model's predictions. While they might seem similar at first glance, there are key differences between them that are essential for accurate interpretation. Understanding these differences is crucial for drawing meaningful conclusions from the data and making appropriate predictions.
+
+**Confidence Intervals**
+
+A confidence interval represents the range within which we expect the average value of the dependent variable to fall, given specific values of the predictor variables, with a certain level of confidence (e.g. 95%). It focuses on estimating the mean response for a particular set of predictors. In other words, it tells us about the precision of our regression model in predicting the expected value of the outcome variable.
+
+Using our model5 as an example, the 95% confidence interval for `FER` would be 95% CI = \[0.905 to 2.305\]
+
+```{r}
+confint(model5)
+```
+
+This interval suggests that, with 95% confidence, the true effect of `FER` on `AHBM` lies between 0.9048 and 2.3051, holding all other variables in the model constant.
+
+**Prediction Intervals**
+
+A prediction interval, on the other hand, estimates the range within which a single new observation of the dependent variable is likely to fall, given specific values of the predictor variables. Prediction intervals are generally wider than confidence intervals because they account not only for the uncertainty in estimating the mean but also for the variability of individual observations around that mean.
+
+For example, suppose we have a new participant with specific characteristics: for instance, `FER` = 1.5, `FE` = 2, and `TSAT` = 10.
+
+```{r}
+new_data <- data.frame(FE = 2, FER = 1.5, TSAT = 10)
+```
+
+Using these values, we can apply our regression model to predict the dependent variable for this individual:
+
+```{r}
+predict(model5, newdata = new_data, interval = "prediction", level = 0.95)
+```
+
+This output tells us that the predicted response for the new participant is approximately 738.38, with a 95% prediction interval ranging from 364.47 to 1112.30. This range accounts for both the uncertainty in the mean prediction and the variability in individual observations.
+
+**Practical Implications**
+
+In practice, you should use confidence intervals when you want to understand the average impact of predictors in your model (e.g the average effect of `FER` on `AHBM`). Use prediction intervals when you want to estimate the range of possible outcomes for individual predictions (e.g., predicting the `AHBM` of a specific person given their `FE`, `FER` and `TSAT` values).
+
 ## Building models
 
 As you may have noted in the previous exercises, we deliberately avoided fitting models with all available variables simultaneously. The reason behind this strategic approach lies in mitigating the risk of overfitting. Overfitting occurs when a model learns not only the underlying patterns in the training data but also captures random noise, making it overly complex and tailored specifically to the training set. While such a model may perform exceptionally well on the training data, it often fails to generalize to new, unseen data, leading to unreliable predictions. By selectively choosing variables and employing techniques such as stepwise regression or regularization methods (more on these in later lessons), we aim to strike a balance between model complexity and predictive accuracy.
@@ -689,3 +753,90 @@ cv_results |> collect_metrics()
 In conclusion, delving into linear regression provides a robust framework for understanding and analyzing relationships within sport science data. By scrutinizing the assumptions and interpreting the coefficients, we've gained valuable insights into the dynamics between variables, paving the way for informed decision-making in athletic performance and training optimization. The ability to assess linearity, independence, normality, and equality of variances equips us with th e tools to ensure the reliability of our models. As we decipher the implications of regression coefficients, we unlock a deeper comprehension of how factors such as training intensity, player performance, and injury rates interconnect. Armed with this knowledge, sport scientists and coaches are better positioned to tailor training programs, enhance player development strategies, and contribute to the overall advancement of athletic performance and well-being.
 
 With that said, whilst linear regression is an invaluable tool for exploring relationships within sport science data, it represents just the tip of the iceberg in the realm of regression modeling. The versatility of regression extends beyond the linear framework, offering a diverse array of models to address various types of data and outcomes. Logistic regression, for instance, is well-suited for binary outcomes, making it applicable in scenarios such as predicting injury occurrence. Polynomial regression accommodates non-linear relationships, allowing for a more nuanced exploration of complex patterns in sports data. The exploration of other regression models, such as ridge regression or lasso regression, brings forth techniques for handling multicollinearity and feature selection. As we venture deeper into these advanced regression methods, we unlock new possibilities for understanding and predicting outcomes in sport science, showcasing the rich landscape of statistical tools available to researchers and practitioners alike.
+
+# Knowledge Spot Check
+
+::: panel-tabset
+### Question 1
+
+What type of outcome variable is typically used in linear regression?
+
+a)  Continuous
+b)  Binary
+c)  Count
+d)  Ordinal
+
+### Solution
+
+a) Continuous
+
+Linear regression is commonly used when the outcome variable is continuous, such as weight, height, or temperature. It models the relationship between one or more predictor variables and the continuous outcome variable.
+:::
+
+::: panel-tabset
+### Question 2
+
+In a multiple regression analysis, if the coefficient for a predictor variable is 3.5, what does this imply about the relationship between that predictor and the outcome variable, assuming all other variables are held constant?
+
+a) For every one-unit increase in the predictor variable, the outcome variable is expected to increase by 3.5 units, assuming all other variables are held constant.
+b) For every one-unit increase in the predictor variable, the outcome variable is expected to increase by 3.5 units, regardless of the values of other predictor variables.
+c) The outcome variable will decrease by 3.5 units for every one-unit increase in the predictor variable.
+d) The coefficient of 3.5 indicates a weak relationship between the predictor variable and the outcome variable.
+
+### Solution
+
+a) For every one-unit increase in the predictor variable, the outcome variable is expected to increase by 3.5 units, assuming all other variables are held constant.
+
+In multiple regression, the coefficient for a predictor variable represents the expected change in the outcome variable for a one-unit increase in that predictor, while controlling for the effects of all other predictor variables in the model.
+:::
+
+::: panel-tabset
+### Question 3
+
+What does the assumption of normality refer to in the context of regression analysis?
+
+a) The dependent variable must be normally distributed.
+b) The residuals of the regression model should be normally distributed.
+c) The predictor variables must be normally distributed.
+d) All of the variables must be normally distributted.
+
+### Solution
+
+b) The residuals of the regression model should be normally distributed.
+
+The assumption of normality in regression analysis specifically pertains to the distribution of the residuals (the differences between observed and predicted values). A common misconception is that this assumption relates to the dependent variable being normally distributed.
+:::
+
+::: panel-tabset
+### Question 4
+
+What does heteroscedasticity indicate in the context of linear regression?
+
+a) The variability of the outcome variable is constant across all levels of the predictor variables.
+b) The variability of the outcome variable is greater at certain levels of the predictor variables.
+c) The outcome variable follows a normal distribution rather than a uniform distribution.
+d) The outcome variable is perfectly predicted by the predictor variables.
+
+### Solution
+
+b) The variability of the outcome variable is greater at certain levels of the predictor variables.
+
+Heteroscedasticity in linear regression occurs when the variability of the outcome variable is not constant across all levels of the predictor variables, leading to inefficient estimates and potentially misleading hypothesis tests if not addressed.
+:::
+
+::: panel-tabset
+### Question 5
+
+In linear regression, how do confidence intervals and prediction intervals differ in their interpretation?
+
+a) Confidence intervals provide a range of values for the population parameter, while prediction intervals provide a range of values for a single future observation.
+b) Confidence intervals apply to individual data points, while prediction intervals apply to the mean response of the outcome variable.
+c) Confidence intervals are wider than prediction intervals because they account for variability in the outcome variable.
+d) Confidence intervals are used for categorical outcomes, while prediction intervals are used for continuous outcomes.
+
+### Solution
+
+a) Confidence intervals provide a range of values for the population parameter, while prediction intervals provide a range of values for a single future observation.
+
+In linear regression, confidence intervals estimate the range within which we expect the true population parameter (e.g., the mean response) to fall, while prediction intervals estimate the range within which we expect a single new observation to fall. Prediction intervals are generally wider than confidence intervals due to the additional variability associated with predicting individual outcomes.
+:::
